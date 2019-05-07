@@ -10,9 +10,9 @@
 
 #include "../Vulkan.h"
 #include "../Display/Window.h"
-#include "./ContextManager.h"
 #include "./Device.h"
 #include "./Surface.h"
+#include "./Swapchain.h"
 
 #include <algorithm>
 #include <cassert>
@@ -29,6 +29,8 @@
 
 namespace Onyx::Render
 {
+	class ContextManager;
+
 	class Context final
 	{
 	public:
@@ -38,6 +40,7 @@ namespace Onyx::Render
 	private:
 		Device sDevice;
 		Surface sSurface;
+		Swapchain sSwapchain;
 		VkQueue vkGraphicsQueue;
 		VkQueue vkPresentQueue;
 		std::uint32_t nGraphicsFamily;

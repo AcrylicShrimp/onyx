@@ -11,6 +11,7 @@
 #include "../Platform.h"
 #include "../Vulkan.h"
 #include "../Display/Window.h"
+#include "./Device.h"
 #include "./Surface.h"
 
 #include <algorithm>
@@ -24,9 +25,11 @@ namespace Onyx::Render
 	class Swapchain final
 	{
 	public:
+		Device *const pDevice;
 		Surface *const pSurface;
 
 	private:
+		VkExtent2D vkExtent;
 		VkSwapchainKHR vkSwapchain;
 		VkPresentModeKHR vkPresentMode;
 		std::vector<VkImage> sImageList;
@@ -34,7 +37,7 @@ namespace Onyx::Render
 		//std::vector<VkFramebuffer> sFramebufferList;
 		
 	public:
-		Swapchain(Surface *pSurface);
+		Swapchain(Device *pDevice, Surface *pSurface);
 		Swapchain(const Swapchain &sSrc) = delete;
 		~Swapchain() noexcept;
 		
@@ -43,7 +46,7 @@ namespace Onyx::Render
 		
 	public:
 		bool isCompatiblePhysicalDevice(VkPhysicalDevice vkPhysicalDevice);
-		void createSwapchainInstance(VkPhysicalDevice vkPhysicalDevice);
+		void createSwapchainInstance();
 	};
 }
 

@@ -132,7 +132,6 @@
     <ClInclude Include="Onyx\Render\Context.h" />
     <ClInclude Include="Onyx\Render\ContextManager.h" />
     <ClInclude Include="Onyx\Render\Device.h" />
-    <ClInclude Include="Onyx\Render\RenderTarget.h" />
     <ClInclude Include="Onyx\Render\Surface.h" />
     <ClInclude Include="Onyx\Render\Swapchain.h" />
     <ClInclude Include="Onyx\Version.h" />
@@ -147,7 +146,6 @@
     <ClCompile Include="Onyx\Render\Context.cpp" />
     <ClCompile Include="Onyx\Render\ContextManager.cpp" />
     <ClCompile Include="Onyx\Render\Device.cpp" />
-    <ClCompile Include="Onyx\Render\RenderTarget.cpp" />
     <ClCompile Include="Onyx\Render\Surface.cpp" />
     <ClCompile Include="Onyx\Render\Swapchain.cpp" />
     <ClCompile Include="Onyx\Run.cpp" />

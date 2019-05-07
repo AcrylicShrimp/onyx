@@ -39,9 +39,6 @@
     <ClInclude Include="Onyx\Display\Window__Windows.h">
       <Filter>Onyx\Display</Filter>
     </ClInclude>
-    <ClInclude Include="Onyx\Render\RenderTarget.h">
-      <Filter>Onyx\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Onyx\Vulkan.h">
       <Filter>Onyx</Filter>
     </ClInclude>
@@ -80,9 +77,6 @@
     </ClCompile>
     <ClCompile Include="Onyx\Display\Window__Windows.cpp">
       <Filter>Onyx\Display</Filter>
-    </ClCompile>
-    <ClCompile Include="Onyx\Render\RenderTarget.cpp">
-      <Filter>Onyx\Render</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\Swapchain.cpp">
       <Filter>Onyx\Render</Filter>

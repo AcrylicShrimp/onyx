@@ -10,16 +10,16 @@ int main()
 {
 	Onyx::Onyx sInstance{Onyx::Version{"test", 0, 0, 0}};
 
-	auto pContext{sInstance.sContextMgr.createContext()};
-
-
-
 	auto pWindow{sInstance.sDisplayMgr.createWindow("main")};
 	pWindow->create(Onyx::Display::Window::Style::Standard, L"Onyx test");
+
+	auto pContext{sInstance.sContextMgr.createContext(pWindow)};
 
 	pWindow->setVisibility(Onyx::Display::Window::Visibility::VisibleDefault);
 	pWindow->loopEvent();
 	pWindow->setVisibility(Onyx::Display::Window::Visibility::Invisible);
+
+	pContext = nullptr;
 	
 	pWindow->destroy();
 }
