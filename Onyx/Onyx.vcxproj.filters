@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Onyx">
+      <UniqueIdentifier>{37bbba2a-7563-42af-8cae-e64e459bf059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Onyx\Render">
+      <UniqueIdentifier>{6c2a013f-8ffe-4069-b35e-28cb84c4e184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Onyx\Display">
+      <UniqueIdentifier>{30259268-fa12-4471-856a-98447a74303a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Onyx\Render\Context.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Version.h">
+      <Filter>Onyx</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Onyx.h">
+      <Filter>Onyx</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Platform.h">
+      <Filter>Onyx</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Display\Window.h">
+      <Filter>Onyx\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Display\DisplayManager.h">
+      <Filter>Onyx\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Manager.h">
+      <Filter>Onyx</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\ContextManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Display\Window__Windows.h">
+      <Filter>Onyx\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\RenderTarget.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Vulkan.h">
+      <Filter>Onyx</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Swapchain.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Surface.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Device.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Onyx\Render\Context.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Version.cpp">
+      <Filter>Onyx</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Onyx.cpp">
+      <Filter>Onyx</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Run.cpp" />
+    <ClCompile Include="Onyx\Display\Window.cpp">
+      <Filter>Onyx\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Display\DisplayManager.cpp">
+      <Filter>Onyx\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Manager.cpp">
+      <Filter>Onyx</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\ContextManager.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Display\Window__Windows.cpp">
+      <Filter>Onyx\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\RenderTarget.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Swapchain.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Surface.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Device.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
