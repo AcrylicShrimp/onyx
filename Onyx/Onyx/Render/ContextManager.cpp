@@ -121,9 +121,9 @@ namespace Onyx::Render
 		vkDestroyInstance(this->vkInstance, nullptr);
 	}
 
-	std::unique_ptr<Context> ContextManager::createContext()
+	std::unique_ptr<Context> ContextManager::createContext(Display::Window *pWindow)
 	{
-		return std::make_unique<Context>(this);
+		return std::make_unique<Context>(this, pWindow);
 	}
 
 	std::vector<VkPhysicalDevice> ContextManager::fetchPhysicalDevice() const

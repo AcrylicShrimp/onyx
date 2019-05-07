@@ -12,6 +12,8 @@
 #include "../Platform.h"
 #include "../Version.h"
 #include "../Vulkan.h"
+#include "../Display/Window.h"
+#include "./Context.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -26,8 +28,6 @@
 
 namespace Onyx::Render
 {
-	class Context;
-
 	class ContextManager final : public Manager
 	{
 	private:
@@ -52,7 +52,7 @@ namespace Onyx::Render
 		inline bool hasExtension(const std::string &sExtensionName) const;
 		virtual void initialize() override;
 		virtual void finalize() override;
-		std::unique_ptr<Context> createContext();
+		std::unique_ptr<Context> createContext(Display::Window *pWindow);
 		std::vector<VkPhysicalDevice> fetchPhysicalDevice() const;
 		static std::unordered_map<std::string, VkLayerProperties> fetchLayer();
 		static std::unordered_map<std::string, VkExtensionProperties> fetchExtension();

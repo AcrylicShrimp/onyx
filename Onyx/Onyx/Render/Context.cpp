@@ -12,7 +12,8 @@ namespace Onyx::Render
 		pContextManager{pContextManager},
 		pWindow{pWindow},
 		sDevice{pContextManager},
-		sSurface{pContextManager, pWindow}
+		sSurface{pContextManager, pWindow},
+		sSwapchain{&this->sDevice, &this->sSurface}
 	{
 		assert(this->pContextManager);
 
@@ -58,9 +59,14 @@ namespace Onyx::Render
 			if (!this->sSurface.isCompatiblePhysicalDevice(sDeviceAttribute.vkDevice))
 				return false;
 
+			if (!this->sSwapchain.isCompatiblePhysicalDevice(sDeviceAttribute.vkDevice))
+				return false;
+
 			return true;
 		}))
 			throw std::runtime_error{"no suitable physical device detected"};
+
+		this->sSurface.findFormat(this->sDevice.vulkanPhysicalDevice());
 
 		const auto &sPhysicalDeviceAttribute{this->sDevice.physicalDeviceAttribute()};
 		const auto &sQueueFamilyList{sPhysicalDeviceAttribute.sQueueFamilyList};
@@ -92,6 +98,7 @@ namespace Onyx::Render
 			this->nGraphicsFamily,
 			this->nPresentFamily
 		});
+		this->sSwapchain.createSwapchainInstance();
 
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nGraphicsFamily, 0, &this->vkGraphicsQueue);
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nPresentFamily, 0, &this->vkPresentQueue);
