@@ -8,7 +8,7 @@
 
 namespace Onyx
 {
-	Version::Version(std::string_view sName, std::uint16_t nMajor, std::uint16_t nMinor, std::uint16_t nPatch) noexcept :
+	Version::Version(std::string_view sName, std::uint16_t nMajor, std::uint16_t nMinor, std::uint16_t nPatch) :
 		sName{sName},
 		nMajor{nMajor},
 		nMinor{nMinor},

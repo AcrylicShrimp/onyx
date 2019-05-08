@@ -62,9 +62,9 @@ namespace Onyx::Render
 			VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO,
 			nullptr,
 			this->pInstance->sApplicationVersion.sName.data(),
-			VK_MAKE_VERSION(this->pInstance->sApplicationVersion.nMajor, this->pInstance->sApplicationVersion.nMinor, this->pInstance->sApplicationVersion.nPatch),
+			static_cast<std::uint32_t>(VK_MAKE_VERSION(this->pInstance->sApplicationVersion.nMajor, this->pInstance->sApplicationVersion.nMinor, this->pInstance->sApplicationVersion.nPatch)),
 			this->pInstance->sVersion.sName.data(),
-			VK_MAKE_VERSION(this->pInstance->sVersion.nMajor, this->pInstance->sVersion.nMinor, this->pInstance->sVersion.nPatch),
+			static_cast<std::uint32_t>(VK_MAKE_VERSION(this->pInstance->sVersion.nMajor, this->pInstance->sVersion.nMinor, this->pInstance->sVersion.nPatch)),
 			VK_API_VERSION_1_1
 		};
 		VkInstanceCreateInfo vkInstanceCreateInfo

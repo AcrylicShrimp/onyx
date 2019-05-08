@@ -22,7 +22,7 @@ namespace Onyx
 		const std::uint16_t nPatch;
 
 	public:
-		Version(std::string_view sName, std::uint16_t nMajor, std::uint16_t nMinor, std::uint16_t nPatch) noexcept;
+		Version(std::string_view sName, std::uint16_t nMajor, std::uint16_t nMinor, std::uint16_t nPatch);
 		Version(const Version &sSrc) noexcept = default;
 		~Version() noexcept = default;
 		
