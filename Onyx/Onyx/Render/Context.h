@@ -45,9 +45,6 @@ namespace Onyx::Render
 		VkQueue vkPresentQueue;
 		std::uint32_t nGraphicsFamily;
 		std::uint32_t nPresentFamily;
-		std::vector<VkImage> sImageList;
-		std::vector<VkImageView> sImageViewList;
-		std::vector<VkFramebuffer> sFramebufferList;
 
 	public:
 		Context(ContextManager *pContextManager, Display::Window *pWindow);
