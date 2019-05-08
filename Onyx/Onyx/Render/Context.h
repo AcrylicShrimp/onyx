@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iterator>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -43,8 +44,14 @@ namespace Onyx::Render
 		Swapchain sSwapchain;
 		VkQueue vkGraphicsQueue;
 		VkQueue vkPresentQueue;
+		VkCommandPool vkCommandPool;
+		std::vector<VkCommandBuffer> sGraphicsCommandBufferList;
+		std::vector<VkCommandBuffer> sPresentCommandBufferList;
 		std::uint32_t nGraphicsFamily;
 		std::uint32_t nPresentFamily;
+		VkSemaphore vkSemaphoreAfterRendering;
+		VkSemaphore vkSemaphoreAfterOwnershipTransferred;
+		VkSemaphore vkSemaphoreAfterPresentation;
 
 	public:
 		Context(ContextManager *pContextManager, Display::Window *pWindow);
@@ -55,8 +62,26 @@ namespace Onyx::Render
 		Context &operator=(const Context &sSrc) = delete;
 
 	public:
-
+		inline const Device &device() const;
+		inline const Surface &surface() const;
+		inline const Swapchain &swapchain() const;
+		void render(VkRenderPass vkRenderPass, VkFramebuffer vkFramebuffer);
 	};
+
+	inline const Device &Context::device() const
+	{
+		return this->sDevice;
+	}
+
+	inline const Surface &Context::surface() const
+	{
+		return this->sSurface;
+	}
+
+	inline const Swapchain &Context::swapchain() const
+	{
+		return this->sSwapchain;
+	}
 }
 
 #endif

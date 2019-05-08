@@ -34,20 +34,49 @@ namespace Onyx::Render
 		VkPresentModeKHR vkPresentMode;
 		std::vector<VkImage> sImageList;
 		std::vector<VkImageView> sImageViewList;
-		//std::vector<VkFramebuffer> sFramebufferList;
-		
+
 	public:
 		Swapchain(Device *pDevice, Surface *pSurface);
 		Swapchain(const Swapchain &sSrc) = delete;
 		~Swapchain() noexcept;
-		
+
 	public:
 		Swapchain &operator=(const Swapchain &sSrc) = delete;
-		
+
 	public:
+		inline VkExtent2D vulkanExtent() const noexcept;
+		inline VkSwapchainKHR vulkanSwapchain() const noexcept;
+		inline VkPresentModeKHR vulkanPresentMode() const noexcept;
+		inline const std::vector<VkImage> &vulkanImageList() const noexcept;
+		inline const std::vector<VkImageView> &vulkanImageViewList() const noexcept;
 		bool isCompatiblePhysicalDevice(VkPhysicalDevice vkPhysicalDevice);
 		void createSwapchainInstance();
 	};
+
+	inline VkExtent2D Swapchain::vulkanExtent() const noexcept
+	{
+		return this->vkExtent;
+	}
+
+	inline VkSwapchainKHR Swapchain::vulkanSwapchain() const noexcept
+	{
+		return this->vkSwapchain;
+	}
+
+	inline VkPresentModeKHR Swapchain::vulkanPresentMode() const noexcept
+	{
+		return this->vkPresentMode;
+	}
+
+	inline const std::vector<VkImage> &Swapchain::vulkanImageList() const noexcept
+	{
+		return this->sImageList;
+	}
+
+	inline const std::vector<VkImageView> &Swapchain::vulkanImageViewList() const noexcept
+	{
+		return this->sImageViewList;
+	}
 }
 
 #endif
