@@ -115,7 +115,8 @@ namespace Onyx::Render
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 			nullptr,
-			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
+			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 			this->nGraphicsFamily
 		};
 
@@ -167,11 +168,11 @@ namespace Onyx::Render
 		vkDestroyCommandPool(this->sDevice.vulkanDevice(), this->vkCommandPool, nullptr);
 	}
 
-	void Context::render(VkRenderPass vkRenderPass, VkFramebuffer vkFramebuffer)
+	void Context::render(VkPipeline vkPipeline, VkRenderPass vkRenderPass, const std::vector<VkFramebuffer> &sFramebuffer)
 	{
 		std::uint32_t nImageIndex;
 
-		if (vkAcquireNextImageKHR(this->sDevice.vulkanDevice(), this->sSwapchain.vulkanSwapchain(), std::numeric_limits<std::uint64_t>::max(), this->vkSemaphoreAfterPresentation, nullptr, &nImageIndex) != VkResult::VK_SUCCESS)
+		if (vkAcquireNextImageKHR(this->sDevice.vulkanDevice(), this->sSwapchain.vulkanSwapchain(), std::numeric_limits<std::uint64_t>::max(), this->vkSemaphoreAfterPresentation, VK_NULL_HANDLE, &nImageIndex) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to acquire next image"};
 
 		VkCommandBufferBeginInfo vkGraphicsCommandBufferBeginInfo
@@ -209,9 +210,9 @@ namespace Onyx::Render
 				{
 					VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT,
 					0,
-					1,
+					VK_REMAINING_MIP_LEVELS,
 					0,
-					1
+					VK_REMAINING_ARRAY_LAYERS
 				}
 			};
 
@@ -235,7 +236,7 @@ namespace Onyx::Render
 			VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 			nullptr,
 			vkRenderPass,
-			vkFramebuffer,
+			sFramebuffer[nImageIndex],
 			VkRect2D{{0, 0}, this->sSwapchain.vulkanExtent()},
 			1,
 			&vkClearValue
@@ -244,6 +245,8 @@ namespace Onyx::Render
 		vkCmdBeginRenderPass(this->sGraphicsCommandBufferList[nImageIndex], &vkRenderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 
 		//TODO : Render something
+		vkCmdBindPipeline(this->sGraphicsCommandBufferList[nImageIndex], VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+		vkCmdDraw(this->sGraphicsCommandBufferList[nImageIndex], 3, 1, 0, 0);
 
 		vkCmdEndRenderPass(this->sGraphicsCommandBufferList[nImageIndex]);
 
@@ -263,9 +266,9 @@ namespace Onyx::Render
 				{
 					VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT,
 					0,
-					1,
+					VK_REMAINING_MIP_LEVELS,
 					0,
-					1
+					VK_REMAINING_ARRAY_LAYERS
 				}
 			};
 			VkImageMemoryBarrier vkPresentImageMemoryBarrier
@@ -283,9 +286,9 @@ namespace Onyx::Render
 				{
 					VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT,
 					0,
-					1,
+					VK_REMAINING_MIP_LEVELS,
 					0,
-					1
+					VK_REMAINING_ARRAY_LAYERS
 				}
 			};
 
@@ -308,7 +311,7 @@ namespace Onyx::Render
 		}
 
 		if (vkEndCommandBuffer(this->sGraphicsCommandBufferList[nImageIndex]) != VkResult::VK_SUCCESS ||
-			vkEndCommandBuffer(this->sPresentCommandBufferList[nImageIndex]))
+			vkEndCommandBuffer(this->sPresentCommandBufferList[nImageIndex]) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to end command buffer"};
 
 		VkPipelineStageFlags vkGraphicsWaitStageFlag{VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
@@ -339,8 +342,8 @@ namespace Onyx::Render
 			&this->vkSemaphoreAfterOwnershipTransferred
 		};
 
-		if (vkQueueSubmit(this->vkGraphicsQueue, 1, &vkGraphisSubmitInfo, nullptr) != VkResult::VK_SUCCESS ||
-			vkQueueSubmit(this->vkPresentQueue, 1, &vkPresentSubmitInfo, nullptr) != VkResult::VK_SUCCESS)
+		if (vkQueueSubmit(this->vkGraphicsQueue, 1, &vkGraphisSubmitInfo, VK_NULL_HANDLE) != VkResult::VK_SUCCESS ||
+			vkQueueSubmit(this->vkPresentQueue, 1, &vkPresentSubmitInfo, VK_NULL_HANDLE) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to submit to graphics queue"};
 
 		auto vkSwapchain{this->sSwapchain.vulkanSwapchain()};

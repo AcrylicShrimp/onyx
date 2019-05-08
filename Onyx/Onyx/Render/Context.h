@@ -65,7 +65,7 @@ namespace Onyx::Render
 		inline const Device &device() const;
 		inline const Surface &surface() const;
 		inline const Swapchain &swapchain() const;
-		void render(VkRenderPass vkRenderPass, VkFramebuffer vkFramebuffer);
+		void render(VkPipeline vkPipeline, VkRenderPass vkRenderPass, const std::vector<VkFramebuffer> &sFramebuffer);
 	};
 
 	inline const Device &Context::device() const

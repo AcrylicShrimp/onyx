@@ -12,7 +12,69 @@ namespace Onyx::Render
 		pContext{pContext}
 	{
 		assert(this->pContext);
+
+		auto fReadBinary{[](std::string_view sPath)
+		{
+			std::ifstream sInput{sPath.data(), std::ios_base::ate | std::ios_base::binary};
+			std::vector<char> sResult(static_cast<std::size_t>(sInput.tellg()));
+
+			sInput.seekg(0).read(sResult.data(), static_cast<std::streamsize>(sResult.size()));
+
+			return sResult;
+		}};
+
+		auto sVertexShaderBinary{fReadBinary("vert.spv")};
+		auto sFragmentShaderBinary{fReadBinary("frag.spv")};
+
+		VkShaderModule vkVertexShaderModule;
+		VkShaderModule vkFragmentShaderModule;
+
+		VkShaderModuleCreateInfo vkVertexShaderModuleCreateInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+			nullptr,
+			0,
+			sVertexShaderBinary.size(),
+			reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data())
+		};
+		VkShaderModuleCreateInfo vkFragmentShaderModuleCreateInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+			nullptr,
+			0,
+			sFragmentShaderBinary.size(),
+			reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data())
+		};
+
+		if (vkCreateShaderModule(this->pContext->device().vulkanDevice(), &vkVertexShaderModuleCreateInfo, nullptr, &vkVertexShaderModule) != VkResult::VK_SUCCESS ||
+			vkCreateShaderModule(this->pContext->device().vulkanDevice(), &vkFragmentShaderModuleCreateInfo, nullptr, &vkFragmentShaderModule) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to create shader module"};
 		
+		VkPipelineShaderStageCreateInfo vkVertexShaderStageCreateInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+			nullptr,
+			0,
+			VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT,
+			vkVertexShaderModule,
+			"main",
+			nullptr
+		};
+		VkPipelineShaderStageCreateInfo vkFragmentShaderStageCreateInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+			nullptr,
+			0,
+			VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT,
+			vkFragmentShaderModule,
+			"main",
+			nullptr
+		};
+		VkPipelineShaderStageCreateInfo vShaderStageCreateInfoArray[]
+		{
+			vkVertexShaderStageCreateInfo,
+			vkFragmentShaderStageCreateInfo
+		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
@@ -174,7 +236,7 @@ namespace Onyx::Render
 			nullptr,
 			0,
 			2,
-			nullptr,
+			vShaderStageCreateInfoArray,
 			&vkVertexInputStateCreateInfo,
 			&vkInputAssemblyStateCreateInfo,
 			nullptr,
@@ -193,10 +255,42 @@ namespace Onyx::Render
 
 		if (vkCreateGraphicsPipelines(this->pContext->device().vulkanDevice(), VK_NULL_HANDLE, 1, &vkGraphicsPipelineCreateInfo, nullptr, &this->vkPipeline) != VkResult::VK_SUCCESS)
 			std::runtime_error{"unable to create render pass"};
+
+		vkDestroyShaderModule(this->pContext->device().vulkanDevice(), vkVertexShaderModule, nullptr);
+		vkDestroyShaderModule(this->pContext->device().vulkanDevice(), vkFragmentShaderModule, nullptr);
+
+		this->sFramebufferList.resize(this->pContext->swapchain().vulkanImageList().size());
+
+		for (std::size_t nIndex{0}, nMaxIndex{this->sFramebufferList.size()}; nIndex < nMaxIndex; ++nIndex)
+		{
+			VkImageView vkAttachmentArray[]
+			{
+				this->pContext->swapchain().vulkanImageViewList()[nIndex]
+			};
+
+			VkFramebufferCreateInfo vkFramebufferCreateInfo
+			{
+				VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+				nullptr,
+				0,
+				this->vkRenderPass,
+				1,
+				vkAttachmentArray,
+				this->pContext->swapchain().vulkanExtent().width,
+				this->pContext->swapchain().vulkanExtent().height,
+				1
+			};
+
+			if (vkCreateFramebuffer(this->pContext->device().vulkanDevice(), &vkFramebufferCreateInfo, nullptr, &this->sFramebufferList[nIndex]) != VkResult::VK_SUCCESS)
+				throw std::runtime_error{"unable to create framebuffer"};
+		}
 	}
 	
 	TEST__TriangleRenderPass::~TEST__TriangleRenderPass() noexcept
 	{
+		for (auto vkFramebuffer : this->sFramebufferList)
+			vkDestroyFramebuffer(this->pContext->device().vulkanDevice(), vkFramebuffer, nullptr);
+
 		vkDestroyPipeline(this->pContext->device().vulkanDevice(), this->vkPipeline, nullptr);
 		vkDestroyPipelineLayout(this->pContext->device().vulkanDevice(), this->vkPipelineLayout, nullptr);
 		vkDestroyRenderPass(this->pContext->device().vulkanDevice(), this->vkRenderPass, nullptr);

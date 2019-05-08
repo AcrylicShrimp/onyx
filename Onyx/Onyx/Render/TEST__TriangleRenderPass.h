@@ -12,7 +12,10 @@
 #include "./Context.h"
 
 #include <cassert>
+#include <cstddef>
+#include <fstream>
 #include <stdexcept>
+#include <string_view>
 #include <vector>
 
 namespace Onyx::Render
@@ -37,12 +40,24 @@ namespace Onyx::Render
 		TEST__TriangleRenderPass &operator=(const TEST__TriangleRenderPass &sSrc) = delete;
 		
 	public:
+		inline VkPipeline vulkanPipeline() const;
 		inline VkRenderPass vulkanRenderPass() const;
+		inline const std::vector<VkFramebuffer> &vulkanFramebufferList() const;
 	};
+
+	inline VkPipeline TEST__TriangleRenderPass::vulkanPipeline() const
+	{
+		return this->vkPipeline;
+	}
 
 	inline VkRenderPass TEST__TriangleRenderPass::vulkanRenderPass() const
 	{
 		return this->vkRenderPass;
+	}
+
+	inline const std::vector<VkFramebuffer> &TEST__TriangleRenderPass::vulkanFramebufferList() const
+	{
+		return this->sFramebufferList;
 	}
 }
 
