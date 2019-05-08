@@ -29,6 +29,7 @@ namespace Onyx::Render
 		{
 #if _DEBUG
 			"VK_LAYER_KHRONOS_validation",
+			//"VK_LAYER_LUNARG_api_dump",
 			"VK_LAYER_LUNARG_monitor"
 #endif
 		};
