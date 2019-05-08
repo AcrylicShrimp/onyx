@@ -98,7 +98,7 @@ namespace Onyx::Render
 			nullptr,
 			0,
 			this->pSurface->vulkanSurface(),
-			vkSurfaceCapabilities.minImageCount + 1 < vkSurfaceCapabilities.maxImageCount ? vkSurfaceCapabilities.minImageCount + 1 : vkSurfaceCapabilities.maxImageCount,
+			static_cast<std::uint32_t>(2 < vkSurfaceCapabilities.maxImageCount ? 2 : vkSurfaceCapabilities.maxImageCount),
 			this->pSurface->vulkanSurfaceFormat().format,
 			this->pSurface->vulkanSurfaceFormat().colorSpace,
 			vkSurfaceCapabilities.currentExtent,
