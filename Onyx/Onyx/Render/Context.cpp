@@ -21,7 +21,8 @@ namespace Onyx::Render
 		pWindow{pWindow},
 		sDevice{pContextManager},
 		sSurface{pContextManager, pWindow},
-		sSwapchain{&this->sDevice, &this->sSurface}
+		sSwapchain{&this->sDevice, &this->sSurface},
+		sSynchronizer{&this->sDevice, 3}
 	{
 		assert(this->pContextManager);
 
@@ -107,72 +108,33 @@ namespace Onyx::Render
 			this->nPresentFamily
 		});
 		this->sSwapchain.createSwapchainInstance();
+		this->sSynchronizer.createSynchronizationObject(this->nGraphicsFamily, this->nPresentFamily);
 
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nGraphicsFamily, 0, &this->vkGraphicsQueue);
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nPresentFamily, 0, &this->vkPresentQueue);
-
-		VkCommandPoolCreateInfo vkCommandPoolCreateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-			nullptr,
-			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
-			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-			this->nGraphicsFamily
-		};
-
-		if (vkCreateCommandPool(this->sDevice.vulkanDevice(), &vkCommandPoolCreateInfo, nullptr, &this->vkCommandPool) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to create command pool"};
-
-		this->sGraphicsCommandBufferList.resize(this->sSwapchain.vulkanImageViewList().size());
-		this->sPresentCommandBufferList.resize(this->sSwapchain.vulkanImageViewList().size());
-
-		VkCommandBufferAllocateInfo vkGraphicsCommandBufferAllocateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-			nullptr,
-			this->vkCommandPool,
-			VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-			static_cast<std::uint32_t>(this->sGraphicsCommandBufferList.size())
-		};
-		VkCommandBufferAllocateInfo vkPresentCommandBufferAllocateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-			nullptr,
-			this->vkCommandPool,
-			VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-			static_cast<std::uint32_t>(this->sPresentCommandBufferList.size())
-		};
-
-		if (vkAllocateCommandBuffers(this->sDevice.vulkanDevice(), &vkGraphicsCommandBufferAllocateInfo, this->sGraphicsCommandBufferList.data()) != VkResult::VK_SUCCESS ||
-			vkAllocateCommandBuffers(this->sDevice.vulkanDevice(), &vkPresentCommandBufferAllocateInfo, this->sPresentCommandBufferList.data()) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to allocate command buffer"};
-
-		VkSemaphoreCreateInfo vkSemaphoreCreateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-			nullptr,
-			0
-		};
-
-		if (vkCreateSemaphore(this->sDevice.vulkanDevice(), &vkSemaphoreCreateInfo, nullptr, &this->vkSemaphoreAfterRendering) != VkResult::VK_SUCCESS ||
-			vkCreateSemaphore(this->sDevice.vulkanDevice(), &vkSemaphoreCreateInfo, nullptr, &this->vkSemaphoreAfterOwnershipTransferred) != VkResult::VK_SUCCESS ||
-			vkCreateSemaphore(this->sDevice.vulkanDevice(), &vkSemaphoreCreateInfo, nullptr, &this->vkSemaphoreAfterPresentation) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to create semaphore"};
 	}
 
 	Context::~Context() noexcept
 	{
-		vkDestroySemaphore(this->sDevice.vulkanDevice(), this->vkSemaphoreAfterRendering, nullptr);
-		vkDestroySemaphore(this->sDevice.vulkanDevice(), this->vkSemaphoreAfterOwnershipTransferred, nullptr);
-		vkDestroySemaphore(this->sDevice.vulkanDevice(), this->vkSemaphoreAfterPresentation, nullptr);
-		vkDestroyCommandPool(this->sDevice.vulkanDevice(), this->vkCommandPool, nullptr);
+		vkDeviceWaitIdle(this->sDevice.vulkanDevice());
 	}
 
 	void Context::render(VkPipeline vkPipeline, VkRenderPass vkRenderPass, const std::vector<VkFramebuffer> &sFramebuffer)
 	{
+		auto sSynchronizationObject{this->sSynchronizer.sync()};
+		auto sGraphicsCommandBuffer{std::get<0>(sSynchronizationObject)};
+		auto sPresentCommandBuffer{std::get<1>(sSynchronizationObject)};
+		auto sAfterRenderingSemaphore{std::get<2>(sSynchronizationObject)};
+		auto sAfterOwnershipTransferredSemaphore{std::get<3>(sSynchronizationObject)};
+		auto sAfterPresentationSemaphore{std::get<4>(sSynchronizationObject)};
+		auto sFence{std::get<5>(sSynchronizationObject)};
+
+		vkWaitForFences(this->sDevice.vulkanDevice(), 1, &sFence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
+		vkResetFences(this->sDevice.vulkanDevice(), 1, &sFence);
+
 		std::uint32_t nImageIndex;
 
-		if (vkAcquireNextImageKHR(this->sDevice.vulkanDevice(), this->sSwapchain.vulkanSwapchain(), std::numeric_limits<std::uint64_t>::max(), this->vkSemaphoreAfterPresentation, VK_NULL_HANDLE, &nImageIndex) != VkResult::VK_SUCCESS)
+		if (vkAcquireNextImageKHR(this->sDevice.vulkanDevice(), this->sSwapchain.vulkanSwapchain(), std::numeric_limits<std::uint64_t>::max(), sAfterPresentationSemaphore, VK_NULL_HANDLE, &nImageIndex) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to acquire next image"};
 
 		VkCommandBufferBeginInfo vkGraphicsCommandBufferBeginInfo
@@ -190,8 +152,8 @@ namespace Onyx::Render
 			nullptr
 		};
 
-		if (vkBeginCommandBuffer(this->sGraphicsCommandBufferList[nImageIndex], &vkGraphicsCommandBufferBeginInfo) != VkResult::VK_SUCCESS ||
-			vkBeginCommandBuffer(this->sPresentCommandBufferList[nImageIndex], &vkPresentCommandBufferBeginInfo) != VkResult::VK_SUCCESS)
+		if (vkBeginCommandBuffer(sGraphicsCommandBuffer, &vkGraphicsCommandBufferBeginInfo) != VkResult::VK_SUCCESS ||
+			vkBeginCommandBuffer(sPresentCommandBuffer, &vkPresentCommandBufferBeginInfo) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to begin command buffer"};
 
 		{
@@ -217,7 +179,7 @@ namespace Onyx::Render
 			};
 
 			vkCmdPipelineBarrier(
-				this->sGraphicsCommandBufferList[nImageIndex],
+				sGraphicsCommandBuffer,
 				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 				0,
@@ -228,7 +190,7 @@ namespace Onyx::Render
 
 		VkClearValue vkClearValue
 		{
-			.0f, .0f, .0f, .0f
+			.0f, .5f, .5f, .0f
 		};
 
 		VkRenderPassBeginInfo vkRenderPassBeginInfo
@@ -242,13 +204,13 @@ namespace Onyx::Render
 			&vkClearValue
 		};
 
-		vkCmdBeginRenderPass(this->sGraphicsCommandBufferList[nImageIndex], &vkRenderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBeginRenderPass(sGraphicsCommandBuffer, &vkRenderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 
 		//TODO : Render something
-		vkCmdBindPipeline(this->sGraphicsCommandBufferList[nImageIndex], VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
-		vkCmdDraw(this->sGraphicsCommandBufferList[nImageIndex], 3, 1, 0, 0);
+		vkCmdBindPipeline(sGraphicsCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+		vkCmdDraw(sGraphicsCommandBuffer, 3, 1, 0, 0);
 
-		vkCmdEndRenderPass(this->sGraphicsCommandBufferList[nImageIndex]);
+		vkCmdEndRenderPass(sGraphicsCommandBuffer);
 
 		{
 			VkImageMemoryBarrier vkGraphicsImageMemoryBarrier
@@ -257,7 +219,7 @@ namespace Onyx::Render
 				nullptr,
 				VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 				0,
-				VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 				VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 				this->nGraphicsFamily,
 				this->nPresentFamily,
@@ -277,7 +239,7 @@ namespace Onyx::Render
 				nullptr,
 				0,
 				0,
-				VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 				VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 				this->nGraphicsFamily,
 				this->nPresentFamily,
@@ -293,7 +255,7 @@ namespace Onyx::Render
 			};
 
 			vkCmdPipelineBarrier(
-				this->sGraphicsCommandBufferList[nImageIndex],
+				sGraphicsCommandBuffer,
 				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 				0,
@@ -301,7 +263,7 @@ namespace Onyx::Render
 				0, nullptr,
 				1, &vkGraphicsImageMemoryBarrier);
 			vkCmdPipelineBarrier(
-				this->sPresentCommandBufferList[nImageIndex],
+				sPresentCommandBuffer,
 				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 				VkPipelineStageFlagBits::VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 				0,
@@ -310,8 +272,8 @@ namespace Onyx::Render
 				1, &vkPresentImageMemoryBarrier);
 		}
 
-		if (vkEndCommandBuffer(this->sGraphicsCommandBufferList[nImageIndex]) != VkResult::VK_SUCCESS ||
-			vkEndCommandBuffer(this->sPresentCommandBufferList[nImageIndex]) != VkResult::VK_SUCCESS)
+		if (vkEndCommandBuffer(sGraphicsCommandBuffer) != VkResult::VK_SUCCESS ||
+			vkEndCommandBuffer(sPresentCommandBuffer) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to end command buffer"};
 
 		VkPipelineStageFlags vkGraphicsWaitStageFlag{VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
@@ -322,28 +284,28 @@ namespace Onyx::Render
 			VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			nullptr,
 			1,
-			&this->vkSemaphoreAfterPresentation,
+			&sAfterPresentationSemaphore,
 			&vkGraphicsWaitStageFlag,
 			1,
-			&this->sGraphicsCommandBufferList[nImageIndex],
+			&sGraphicsCommandBuffer,
 			1,
-			&this->vkSemaphoreAfterRendering
+			&sAfterRenderingSemaphore
 		};
 		VkSubmitInfo vkPresentSubmitInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			nullptr,
 			1,
-			&this->vkSemaphoreAfterRendering,
+			&sAfterRenderingSemaphore,
 			&vkPresentWaitStageFlag,
 			1,
-			&this->sPresentCommandBufferList[nImageIndex],
+			&sPresentCommandBuffer,
 			1,
-			&this->vkSemaphoreAfterOwnershipTransferred
+			&sAfterOwnershipTransferredSemaphore
 		};
 
 		if (vkQueueSubmit(this->vkGraphicsQueue, 1, &vkGraphisSubmitInfo, VK_NULL_HANDLE) != VkResult::VK_SUCCESS ||
-			vkQueueSubmit(this->vkPresentQueue, 1, &vkPresentSubmitInfo, VK_NULL_HANDLE) != VkResult::VK_SUCCESS)
+			vkQueueSubmit(this->vkPresentQueue, 1, &vkPresentSubmitInfo, sFence) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to submit to graphics queue"};
 
 		auto vkSwapchain{this->sSwapchain.vulkanSwapchain()};
@@ -353,7 +315,7 @@ namespace Onyx::Render
 			VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 			nullptr,
 			1,
-			&this->vkSemaphoreAfterOwnershipTransferred,
+			&sAfterOwnershipTransferredSemaphore,
 			1,
 			&vkSwapchain,
 			&nImageIndex,
