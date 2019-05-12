@@ -134,6 +134,7 @@
     <ClInclude Include="Onyx\Render\Device.h" />
     <ClInclude Include="Onyx\Render\Surface.h" />
     <ClInclude Include="Onyx\Render\Swapchain.h" />
+    <ClInclude Include="Onyx\Render\Synchronizer.h" />
     <ClInclude Include="Onyx\Render\TEST__TriangleRenderPass.h" />
     <ClInclude Include="Onyx\Version.h" />
     <ClInclude Include="Onyx\Vulkan.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="Onyx\Render\Device.cpp" />
     <ClCompile Include="Onyx\Render\Surface.cpp" />
     <ClCompile Include="Onyx\Render\Swapchain.cpp" />
+    <ClCompile Include="Onyx\Render\Synchronizer.cpp" />
     <ClCompile Include="Onyx\Render\TEST__TriangleRenderPass.cpp" />
     <ClCompile Include="Onyx\Run.cpp" />
     <ClCompile Include="Onyx\Version.cpp" />

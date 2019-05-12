@@ -25,14 +25,14 @@ namespace Onyx::Render
 
 	void ContextManager::initialize()
 	{
+#if _DEBUG
 		const char *const vLayerNameArray[]
 		{
-#if _DEBUG
 			"VK_LAYER_KHRONOS_validation",
 			//"VK_LAYER_LUNARG_api_dump",
 			"VK_LAYER_LUNARG_monitor"
-#endif
 		};
+#endif
 		const char *const vExtensionNameArray[]
 		{
 			/*
@@ -47,12 +47,15 @@ namespace Onyx::Render
 #endif
 		};
 
+#if _DEBUG
 		auto nLayerNameCount{static_cast<std::uint32_t>(std::size(vLayerNameArray))};
-		auto nExtensionNameCount{static_cast<std::uint32_t>(std::size(vExtensionNameArray))};
 
 		for (std::uint32_t nIndex{0}; nIndex < nLayerNameCount; ++nIndex)
 			if (!this->hasLayer(std::string{vLayerNameArray[nIndex]}))
 				throw std::runtime_error{"unsupported layer found : " + std::string{vLayerNameArray[nIndex]}};
+#endif
+
+		auto nExtensionNameCount{static_cast<std::uint32_t>(std::size(vExtensionNameArray))};
 
 		for (std::uint32_t nIndex{0}; nIndex < nExtensionNameCount; ++nIndex)
 			if (!this->hasExtension(std::string{vExtensionNameArray[nIndex]}))
@@ -74,8 +77,13 @@ namespace Onyx::Render
 			nullptr,
 			0,
 			&vkApplicationInfo,
+#if _DEBUG
 			nLayerNameCount,
 			vLayerNameArray,
+#else
+			0,
+			nullptr,
+#endif
 			nExtensionNameCount,
 			vExtensionNameArray
 		};

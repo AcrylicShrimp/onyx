@@ -12,6 +12,7 @@
 #include "../Display/Window.h"
 #include "./Device.h"
 #include "./Surface.h"
+#include "./Synchronizer.h"
 #include "./Swapchain.h"
 
 #include <algorithm>
@@ -42,16 +43,11 @@ namespace Onyx::Render
 		Device sDevice;
 		Surface sSurface;
 		Swapchain sSwapchain;
+		Synchronizer sSynchronizer;
 		VkQueue vkGraphicsQueue;
 		VkQueue vkPresentQueue;
-		VkCommandPool vkCommandPool;
-		std::vector<VkCommandBuffer> sGraphicsCommandBufferList;
-		std::vector<VkCommandBuffer> sPresentCommandBufferList;
 		std::uint32_t nGraphicsFamily;
 		std::uint32_t nPresentFamily;
-		VkSemaphore vkSemaphoreAfterRendering;
-		VkSemaphore vkSemaphoreAfterOwnershipTransferred;
-		VkSemaphore vkSemaphoreAfterPresentation;
 
 	public:
 		Context(ContextManager *pContextManager, Display::Window *pWindow);

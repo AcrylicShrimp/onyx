@@ -193,7 +193,7 @@ namespace Onyx::Render
 			VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE,
 			VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 			VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED,
+			VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 			VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
 		};
 		VkAttachmentReference vkAttachmentReference
@@ -288,6 +288,8 @@ namespace Onyx::Render
 	
 	TEST__TriangleRenderPass::~TEST__TriangleRenderPass() noexcept
 	{
+		vkDeviceWaitIdle(this->pContext->device().vulkanDevice());
+
 		for (auto vkFramebuffer : this->sFramebufferList)
 			vkDestroyFramebuffer(this->pContext->device().vulkanDevice(), vkFramebuffer, nullptr);
 

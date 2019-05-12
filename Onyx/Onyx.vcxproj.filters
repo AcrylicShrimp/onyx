@@ -54,6 +54,9 @@
     <ClInclude Include="Onyx\Render\TEST__TriangleRenderPass.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Onyx\Render\Synchronizer.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Onyx\Render\Context.cpp">
@@ -91,6 +94,9 @@
       <Filter>Onyx\Render</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\TEST__TriangleRenderPass.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Synchronizer.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
   </ItemGroup>
