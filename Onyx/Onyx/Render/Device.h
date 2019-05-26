@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <unordered_set>
@@ -34,6 +35,7 @@ namespace Onyx::Render
 			VkPhysicalDevice vkDevice;
 			VkPhysicalDeviceFeatures vkFeature;
 			VkPhysicalDeviceProperties vkProperty;
+			VkPhysicalDeviceMemoryProperties vkMemoryProperty;
 			std::vector<VkQueueFamilyProperties> sQueueFamilyList;
 			std::unordered_map<std::string, VkExtensionProperties> sExtensionMap;
 		};
@@ -60,6 +62,7 @@ namespace Onyx::Render
 		inline const Attribute &physicalDeviceAttribute() const;
 		bool selectPhysicalDevice(const std::vector<const char *> &sPhysicalDeviceExtensionList, const std::function<bool(const Attribute &)> &fPhysicalDeviceFilter);
 		void createDeviceInstance(const std::vector<const char *> &sPhysicalDeviceExtensionList, const std::unordered_set<std::uint32_t> &sQueueFamilySet);
+		std::optional<std::uint32_t> findMemoryType(std::uint32_t nMemoryTypeBit, VkMemoryPropertyFlags vkMemoryPropertyFlag) const;
 	};
 
 	inline VkDevice Device::vulkanDevice() const

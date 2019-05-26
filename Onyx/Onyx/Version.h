@@ -9,6 +9,7 @@
 #define _CLASS_ONYX_VERSION_H
 
 #include <cstdint>
+#include <stdexcept>
 #include <string_view>
 
 namespace Onyx

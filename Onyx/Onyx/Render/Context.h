@@ -11,9 +11,14 @@
 #include "../Vulkan.h"
 #include "../Display/Window.h"
 #include "./Device.h"
+#include "./Material.h"
+#include "./MeshManager.h"
 #include "./Surface.h"
 #include "./Synchronizer.h"
 #include "./Swapchain.h"
+#include "./ShaderManager.h"
+#include "./RenderingManager.h"
+#include "./UniformManager.h"
 
 #include <algorithm>
 #include <cassert>
@@ -21,6 +26,7 @@
 #include <cstring>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -48,6 +54,10 @@ namespace Onyx::Render
 		VkQueue vkPresentQueue;
 		std::uint32_t nGraphicsFamily;
 		std::uint32_t nPresentFamily;
+		std::unique_ptr<UniformManager> pUniformMgr;
+		std::unique_ptr<ShaderManager> pShaderMgr;
+		std::unique_ptr<RenderingManager> pRenderingMgr;
+		std::unique_ptr<MeshManager> pMeshMgr;
 
 	public:
 		Context(ContextManager *pContextManager, Display::Window *pWindow);
@@ -61,7 +71,11 @@ namespace Onyx::Render
 		inline const Device &device() const;
 		inline const Surface &surface() const;
 		inline const Swapchain &swapchain() const;
-		void render(VkPipeline vkPipeline, VkRenderPass vkRenderPass, const std::vector<VkFramebuffer> &sFramebuffer);
+		inline UniformManager &uniformMgr() const;
+		inline ShaderManager &shaderMgr() const;
+		inline RenderingManager &renderingMgr() const;
+		inline MeshManager &meshMgr() const;
+		void render(const Material &sMaterial);
 	};
 
 	inline const Device &Context::device() const
@@ -77,6 +91,26 @@ namespace Onyx::Render
 	inline const Swapchain &Context::swapchain() const
 	{
 		return this->sSwapchain;
+	}
+
+	inline UniformManager &Context::uniformMgr() const
+	{
+		return *this->pUniformMgr;
+	}
+
+	inline ShaderManager &Context::shaderMgr() const
+	{
+		return *this->pShaderMgr;
+	}
+
+	inline RenderingManager &Context::renderingMgr() const
+	{
+		return *this->pRenderingMgr;
+	}
+
+	inline MeshManager &Context::meshMgr() const
+	{
+		return *this->pMeshMgr;
 	}
 }
 

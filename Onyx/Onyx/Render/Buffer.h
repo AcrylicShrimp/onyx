@@ -1,0 +1,61 @@
+
+/*
+	2019.05.18
+	Created by AcrylicShrimp.
+*/
+
+#ifndef _CLASS_ONYX_RENDER_BUFFER_H
+
+#define _CLASS_ONYX_RENDER_BUFFER_H
+
+#include "../Vulkan.h"
+
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <optional>
+
+namespace Onyx::Render
+{
+	class Context;
+
+	class Buffer final
+	{
+	public:
+		enum Usage
+		{
+			VertexBuffer = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+		};
+
+	public:
+		Context *const pContext;
+
+	private:
+		VkBuffer vkBuffer;
+		VkDeviceMemory vkDeviceMemory;
+		VkDeviceSize nSize;
+		VkDeviceSize nAllocationSize;
+		
+	public:
+		Buffer(Context *pContext, Usage eUsage, VkDeviceSize nSize);
+		Buffer(const Buffer &sSrc) = delete;
+		Buffer(Buffer &&sSrc) = delete;
+		~Buffer() noexcept;
+		
+	public:
+		Buffer &operator=(const Buffer &sSrc) = delete;
+		Buffer &operator=(Buffer &&sSrc) = delete;
+		
+	public:
+		inline VkBuffer vulkanBuffer() const;
+		void map(std::function<void(void *)> fMapFunction);
+	};
+
+	inline VkBuffer Buffer::vulkanBuffer() const
+	{
+		return this->vkBuffer;
+	}
+}
+
+#endif

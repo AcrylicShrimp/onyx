@@ -10,17 +10,15 @@ namespace Onyx
 {
 	Onyx::Onyx(Version sApplicationVersion) :
 		sVersion{"Onyx alpha", 0, 0, 1},
-		sApplicationVersion{sApplicationVersion},
-		sDisplayMgr{this},
-		sContextMgr{this}
+		sApplicationVersion{sApplicationVersion}
 	{
-		this->sDisplayMgr.initialize();
-		this->sContextMgr.initialize();
+		this->pDisplayMgr = std::make_unique<Display::DisplayManager>(this);
+		this->pContextMgr = std::make_unique<Render::ContextManager>(this);
 	}
 
 	Onyx::~Onyx()
 	{
-		this->sContextMgr.finalize();
-		this->sDisplayMgr.finalize();
+		this->pContextMgr = nullptr;
+		this->pDisplayMgr = nullptr;
 	}
 }

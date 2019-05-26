@@ -57,6 +57,39 @@
     <ClInclude Include="Onyx\Render\Synchronizer.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Onyx\Render\ShaderManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\RenderingManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Shader.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Buffer.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Mesh.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Renderer.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Material.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\SubContextManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\MeshManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\MaterialManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\UniformManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Onyx\Render\Context.cpp">
@@ -97,6 +130,39 @@
       <Filter>Onyx\Render</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\Synchronizer.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\ShaderManager.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\RenderingManager.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Shader.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Buffer.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Mesh.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Renderer.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Material.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\SubContextManager.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\MeshManager.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\MaterialManager.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\UniformManager.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
   </ItemGroup>

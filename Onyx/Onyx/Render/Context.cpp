@@ -112,6 +112,11 @@ namespace Onyx::Render
 
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nGraphicsFamily, 0, &this->vkGraphicsQueue);
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nPresentFamily, 0, &this->vkPresentQueue);
+
+		this->pUniformMgr = std::make_unique<UniformManager>(this);
+		this->pShaderMgr = std::make_unique<ShaderManager>(this);
+		this->pRenderingMgr = std::make_unique<RenderingManager>(this);
+		this->pMeshMgr = std::make_unique<MeshManager>(this);
 	}
 
 	Context::~Context() noexcept
@@ -119,7 +124,7 @@ namespace Onyx::Render
 		vkDeviceWaitIdle(this->sDevice.vulkanDevice());
 	}
 
-	void Context::render(VkPipeline vkPipeline, VkRenderPass vkRenderPass, const std::vector<VkFramebuffer> &sFramebuffer)
+	void Context::render(const Material &sMaterial)
 	{
 		auto sSynchronizationObject{this->sSynchronizer.sync()};
 		auto sGraphicsCommandBuffer{std::get<0>(sSynchronizationObject)};
@@ -136,6 +141,8 @@ namespace Onyx::Render
 
 		if (vkAcquireNextImageKHR(this->sDevice.vulkanDevice(), this->sSwapchain.vulkanSwapchain(), std::numeric_limits<std::uint64_t>::max(), sAfterPresentationSemaphore, VK_NULL_HANDLE, &nImageIndex) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to acquire next image"};
+
+		this->pUniformMgr->updateUniform(nImageIndex);
 
 		VkCommandBufferBeginInfo vkGraphicsCommandBufferBeginInfo
 		{
@@ -188,29 +195,7 @@ namespace Onyx::Render
 				1, &vkGraphicsImageMemoryBarrier);
 		}
 
-		VkClearValue vkClearValue
-		{
-			.0f, .5f, .5f, .0f
-		};
-
-		VkRenderPassBeginInfo vkRenderPassBeginInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-			nullptr,
-			vkRenderPass,
-			sFramebuffer[nImageIndex],
-			VkRect2D{{0, 0}, this->sSwapchain.vulkanExtent()},
-			1,
-			&vkClearValue
-		};
-
-		vkCmdBeginRenderPass(sGraphicsCommandBuffer, &vkRenderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
-
-		//TODO : Render something
-		vkCmdBindPipeline(sGraphicsCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
-		vkCmdDraw(sGraphicsCommandBuffer, 3, 1, 0, 0);
-
-		vkCmdEndRenderPass(sGraphicsCommandBuffer);
+		this->pRenderingMgr->render(nImageIndex, sGraphicsCommandBuffer, sMaterial);
 
 		{
 			VkImageMemoryBarrier vkGraphicsImageMemoryBarrier

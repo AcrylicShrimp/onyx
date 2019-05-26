@@ -24,8 +24,10 @@ namespace Onyx
 	public:
 		const Version sVersion;
 		const Version sApplicationVersion;
-		Display::DisplayManager sDisplayMgr;
-		Render::ContextManager sContextMgr;
+
+	private:
+		std::unique_ptr<Display::DisplayManager> pDisplayMgr;
+		std::unique_ptr<Render::ContextManager> pContextMgr;
 		
 	public:
 		Onyx(Version sApplicationVersion);
@@ -34,7 +36,21 @@ namespace Onyx
 		
 	public:
 		Onyx &operator=(const Onyx &sSrc) = delete;
+
+	public:
+		inline Display::DisplayManager &displayMgr() const;
+		inline Render::ContextManager &contextMgr() const;
 	};
+
+	inline Display::DisplayManager &Onyx::displayMgr() const
+	{
+		return *this->pDisplayMgr;
+	}
+
+	inline Render::ContextManager &Onyx::contextMgr() const
+	{
+		return *this->pContextMgr;
+	}
 }
 
 #endif
