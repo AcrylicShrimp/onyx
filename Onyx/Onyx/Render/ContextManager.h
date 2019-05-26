@@ -41,7 +41,7 @@ namespace Onyx::Render
 	public:
 		ContextManager(Onyx *pInstance);
 		ContextManager(const ContextManager &sSrc) = delete;
-		~ContextManager() noexcept = default;
+		~ContextManager() noexcept;
 		
 	public:
 		ContextManager &operator=(const ContextManager &sSrc) = delete;
@@ -50,8 +50,6 @@ namespace Onyx::Render
 		inline VkInstance vulkanInstance() const;
 		inline bool hasLayer(const std::string &sLayerName) const;
 		inline bool hasExtension(const std::string &sExtensionName) const;
-		virtual void initialize() override;
-		virtual void finalize() override;
 		std::unique_ptr<Context> createContext(Display::Window *pWindow);
 		std::vector<VkPhysicalDevice> fetchPhysicalDevice() const;
 		static std::unordered_map<std::string, VkLayerProperties> fetchLayer();

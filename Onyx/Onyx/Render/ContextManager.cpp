@@ -20,11 +20,6 @@ namespace Onyx::Render
 		sLayerMap{ContextManager::fetchLayer()},
 		sExtensionMap{ContextManager::fetchExtension()}
 	{
-		//Empty.
-	}
-
-	void ContextManager::initialize()
-	{
 #if _DEBUG
 		const char *const vLayerNameArray[]
 		{
@@ -118,7 +113,7 @@ namespace Onyx::Render
 #endif
 	}
 
-	void ContextManager::finalize()
+	ContextManager::~ContextManager() noexcept
 	{
 #if _DEBUG
 		auto vkDestroyDebugUtilsMessengerEXT{reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(this->vkInstance, "vkDestroyDebugUtilsMessengerEXT"))};

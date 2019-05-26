@@ -32,8 +32,6 @@ namespace Onyx::Display
 		DisplayManager &operator=(const DisplayManager &sSrc) = delete;
 		
 	public:
-		virtual void initialize() override;
-		virtual void finalize() override;
 		Window *createWindow(const std::string &sId);
 		void destroyWindow(const std::string &sId);
 		Window *getWindow(const std::string &sId);

@@ -25,11 +25,7 @@ namespace Onyx
 		~Manager() noexcept = default;
 		
 	public:
-		Manager &operator=(const Manager &sSrc) noexcept = default;
-		
-	public:
-		virtual void initialize() = 0;
-		virtual void finalize() = 0;
+		Manager &operator=(const Manager &sSrc) = delete;
 	};
 }
 

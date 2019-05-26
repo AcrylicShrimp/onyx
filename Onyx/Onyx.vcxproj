@@ -28,26 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -129,13 +129,38 @@
     <ClInclude Include="Onyx\Manager.h" />
     <ClInclude Include="Onyx\Onyx.h" />
     <ClInclude Include="Onyx\Platform.h" />
+    <ClInclude Include="Onyx\Render\Buffer.h" />
     <ClInclude Include="Onyx\Render\Context.h" />
     <ClInclude Include="Onyx\Render\ContextManager.h" />
     <ClInclude Include="Onyx\Render\Device.h" />
+    <ClInclude Include="Onyx\Render\Material.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\MaterialManager.h" />
+    <ClInclude Include="Onyx\Render\Mesh.h" />
+    <ClInclude Include="Onyx\Render\MeshManager.h" />
+    <ClInclude Include="Onyx\Render\Renderer.h" />
+    <ClInclude Include="Onyx\Render\RenderingManager.h" />
+    <ClInclude Include="Onyx\Render\Shader.h" />
+    <ClInclude Include="Onyx\Render\ShaderManager.h" />
+    <ClInclude Include="Onyx\Render\SubContextManager.h" />
     <ClInclude Include="Onyx\Render\Surface.h" />
     <ClInclude Include="Onyx\Render\Swapchain.h" />
     <ClInclude Include="Onyx\Render\Synchronizer.h" />
-    <ClInclude Include="Onyx\Render\TEST__TriangleRenderPass.h" />
+    <ClInclude Include="Onyx\Render\TEST__TriangleRenderPass.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\UniformManager.h" />
     <ClInclude Include="Onyx\Version.h" />
     <ClInclude Include="Onyx\Vulkan.h" />
   </ItemGroup>
@@ -145,13 +170,38 @@
     <ClCompile Include="Onyx\Display\Window__Windows.cpp" />
     <ClCompile Include="Onyx\Manager.cpp" />
     <ClCompile Include="Onyx\Onyx.cpp" />
+    <ClCompile Include="Onyx\Render\Buffer.cpp" />
     <ClCompile Include="Onyx\Render\Context.cpp" />
     <ClCompile Include="Onyx\Render\ContextManager.cpp" />
     <ClCompile Include="Onyx\Render\Device.cpp" />
+    <ClCompile Include="Onyx\Render\Material.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\MaterialManager.cpp" />
+    <ClCompile Include="Onyx\Render\Mesh.cpp" />
+    <ClCompile Include="Onyx\Render\MeshManager.cpp" />
+    <ClCompile Include="Onyx\Render\Renderer.cpp" />
+    <ClCompile Include="Onyx\Render\RenderingManager.cpp" />
+    <ClCompile Include="Onyx\Render\Shader.cpp" />
+    <ClCompile Include="Onyx\Render\ShaderManager.cpp" />
+    <ClCompile Include="Onyx\Render\SubContextManager.cpp" />
     <ClCompile Include="Onyx\Render\Surface.cpp" />
     <ClCompile Include="Onyx\Render\Swapchain.cpp" />
     <ClCompile Include="Onyx\Render\Synchronizer.cpp" />
-    <ClCompile Include="Onyx\Render\TEST__TriangleRenderPass.cpp" />
+    <ClCompile Include="Onyx\Render\TEST__TriangleRenderPass.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\UniformManager.cpp" />
     <ClCompile Include="Onyx\Run.cpp" />
     <ClCompile Include="Onyx\Version.cpp" />
   </ItemGroup>

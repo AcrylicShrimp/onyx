@@ -9,7 +9,8 @@
 namespace Onyx::Render
 {
 	TEST__TriangleRenderPass::TEST__TriangleRenderPass(Context *pContext) :
-		pContext{pContext}
+		pContext{pContext},
+		sBuffer{pContext, Buffer::Usage::VertexBuffer, sizeof(float) * (2 + 3 + 2 + 1) * 3}
 	{
 		assert(this->pContext);
 
@@ -26,64 +27,56 @@ namespace Onyx::Render
 		auto sVertexShaderBinary{fReadBinary("vert.spv")};
 		auto sFragmentShaderBinary{fReadBinary("frag.spv")};
 
-		VkShaderModule vkVertexShaderModule;
-		VkShaderModule vkFragmentShaderModule;
+		auto pShader{this->pContext->shaderMgr().createShader("triangle")};
+		pShader->attachStage(Shader::Stage::Vertex, sVertexShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data()));
+		pShader->attachStage(Shader::Stage::Fragment, sFragmentShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data()));
 
-		VkShaderModuleCreateInfo vkVertexShaderModuleCreateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-			nullptr,
-			0,
-			sVertexShaderBinary.size(),
-			reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data())
-		};
-		VkShaderModuleCreateInfo vkFragmentShaderModuleCreateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-			nullptr,
-			0,
-			sFragmentShaderBinary.size(),
-			reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data())
-		};
+		auto sShaderStageCreateInfoList{pShader->generateShaderStageCreateInfoList()};
 
-		if (vkCreateShaderModule(this->pContext->device().vulkanDevice(), &vkVertexShaderModuleCreateInfo, nullptr, &vkVertexShaderModule) != VkResult::VK_SUCCESS ||
-			vkCreateShaderModule(this->pContext->device().vulkanDevice(), &vkFragmentShaderModuleCreateInfo, nullptr, &vkFragmentShaderModule) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to create shader module"};
-		
-		VkPipelineShaderStageCreateInfo vkVertexShaderStageCreateInfo
+		this->sBuffer.map([](void *pData)
 		{
-			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-			nullptr,
+			auto *pPointer{reinterpret_cast<float *>(pData)};
+
+			*pPointer++ = .0f; *pPointer++ = -.5f; *pPointer++ = .0f; *pPointer++ = .0f;
+			*pPointer++ = 1.f; *pPointer++ = .0f; *pPointer++ = .0f; *pPointer++ = .0f;
+
+			*pPointer++ = .5f; *pPointer++ = .5f; *pPointer++ = .0f; *pPointer++ = .0f;
+			*pPointer++ = .0f; *pPointer++ = 1.f; *pPointer++ = .0f; *pPointer++ = .0f;
+
+			*pPointer++ = -.5f; *pPointer++ = .5f; *pPointer++ = .0f; *pPointer++ = .0f;
+			*pPointer++ = .0f; *pPointer++ = .0f; *pPointer++ = 1.f; *pPointer++ = .0f;
+		});
+
+		VkVertexInputBindingDescription vkBindingDescription
+		{
 			0,
-			VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT,
-			vkVertexShaderModule,
-			"main",
-			nullptr
+			sizeof(float) * (2 + 3 + 2 + 1),
+			VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
 		};
-		VkPipelineShaderStageCreateInfo vkFragmentShaderStageCreateInfo
+		VkVertexInputAttributeDescription vVertexInputAttributeDescription[2]
 		{
-			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-			nullptr,
-			0,
-			VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT,
-			vkFragmentShaderModule,
-			"main",
-			nullptr
-		};
-		VkPipelineShaderStageCreateInfo vShaderStageCreateInfoArray[]
-		{
-			vkVertexShaderStageCreateInfo,
-			vkFragmentShaderStageCreateInfo
+			{
+				0,
+				0,
+				VkFormat::VK_FORMAT_R32G32_SFLOAT,
+				0
+			},
+			{
+				1,
+				0,
+				VkFormat::VK_FORMAT_R32G32B32_SFLOAT,
+				sizeof(float) * 4
+			}
 		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 			nullptr,
 			0,
-			0,
-			nullptr,
-			0,
-			nullptr
+			1,
+			&vkBindingDescription,
+			2,
+			vVertexInputAttributeDescription
 		};
 		VkPipelineInputAssemblyStateCreateInfo vkInputAssemblyStateCreateInfo
 		{
@@ -182,7 +175,7 @@ namespace Onyx::Render
 		};
 
 		if (vkCreatePipelineLayout(this->pContext->device().vulkanDevice(), &vkLayoutCreateInfo, nullptr, &this->vkPipelineLayout) != VkResult::VK_SUCCESS)
-			std::runtime_error{"unable to create pipeline layout"};
+			throw std::runtime_error{"unable to create pipeline layout"};
 
 		VkAttachmentDescription vkAttachmentDescription
 		{
@@ -228,15 +221,15 @@ namespace Onyx::Render
 		};
 
 		if (vkCreateRenderPass(this->pContext->device().vulkanDevice(), &vkRenderPassCreateInfo, nullptr, &this->vkRenderPass) != VkResult::VK_SUCCESS)
-			std::runtime_error{"unable to create render pass"};
+			throw std::runtime_error{"unable to create render pass"};
 
 		VkGraphicsPipelineCreateInfo vkGraphicsPipelineCreateInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 			nullptr,
 			0,
-			2,
-			vShaderStageCreateInfoArray,
+			static_cast<std::uint32_t>(sShaderStageCreateInfoList.size()),
+			sShaderStageCreateInfoList.data(),
 			&vkVertexInputStateCreateInfo,
 			&vkInputAssemblyStateCreateInfo,
 			nullptr,
@@ -254,10 +247,7 @@ namespace Onyx::Render
 		};
 
 		if (vkCreateGraphicsPipelines(this->pContext->device().vulkanDevice(), VK_NULL_HANDLE, 1, &vkGraphicsPipelineCreateInfo, nullptr, &this->vkPipeline) != VkResult::VK_SUCCESS)
-			std::runtime_error{"unable to create render pass"};
-
-		vkDestroyShaderModule(this->pContext->device().vulkanDevice(), vkVertexShaderModule, nullptr);
-		vkDestroyShaderModule(this->pContext->device().vulkanDevice(), vkFragmentShaderModule, nullptr);
+			throw std::runtime_error{"unable to create render pass"};
 
 		this->sFramebufferList.resize(this->pContext->swapchain().vulkanImageList().size());
 

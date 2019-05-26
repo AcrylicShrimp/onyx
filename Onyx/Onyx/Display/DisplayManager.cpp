@@ -14,16 +14,6 @@ namespace Onyx::Display
 		//Empty.
 	}
 	
-	void DisplayManager::initialize()
-	{
-		//Empty.
-	}
-
-	void DisplayManager::finalize()
-	{
-		this->sWindowMap.clear();
-	}
-	
 	Window *DisplayManager::createWindow(const std::string &sId)
 	{
 		auto iIndex{this->sWindowMap.find(sId)};

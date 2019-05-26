@@ -9,6 +9,7 @@
 #define _CLASS_ONYX_RENDER_TEST__TRIANGLERENDERPASS_H
 
 #include "../Vulkan.h"
+#include "./Buffer.h"
 #include "./Context.h"
 
 #include <cassert>
@@ -26,6 +27,7 @@ namespace Onyx::Render
 		Context *const pContext;
 
 	private:
+		Buffer sBuffer;
 		VkRenderPass vkRenderPass;
 		VkPipeline vkPipeline;
 		VkPipelineLayout vkPipelineLayout;
@@ -40,10 +42,16 @@ namespace Onyx::Render
 		TEST__TriangleRenderPass &operator=(const TEST__TriangleRenderPass &sSrc) = delete;
 		
 	public:
+		inline const Buffer &buffer() const;
 		inline VkPipeline vulkanPipeline() const;
 		inline VkRenderPass vulkanRenderPass() const;
 		inline const std::vector<VkFramebuffer> &vulkanFramebufferList() const;
 	};
+
+	inline const Buffer &TEST__TriangleRenderPass::buffer() const
+	{
+		return this->sBuffer;
+	}
 
 	inline VkPipeline TEST__TriangleRenderPass::vulkanPipeline() const
 	{

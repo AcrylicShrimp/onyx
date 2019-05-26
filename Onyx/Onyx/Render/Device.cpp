@@ -34,6 +34,7 @@ namespace Onyx::Render
 
 			vkGetPhysicalDeviceFeatures(vkDevice, &sAttribute.vkFeature);
 			vkGetPhysicalDeviceProperties(vkDevice, &sAttribute.vkProperty);
+			vkGetPhysicalDeviceMemoryProperties(vkDevice, &sAttribute.vkMemoryProperty);
 
 			std::uint32_t nQueueFamilyCount;
 			vkGetPhysicalDeviceQueueFamilyProperties(vkDevice, &nQueueFamilyCount, nullptr);
@@ -110,5 +111,14 @@ namespace Onyx::Render
 
 		if (vkCreateDevice(this->vkPhysicalDevice, &vkDeviceCreateInfo, nullptr, &this->vkDevice) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create device instance"};
+	}
+
+	std::optional<std::uint32_t> Device::findMemoryType(std::uint32_t nMemoryTypeBit, VkMemoryPropertyFlags vkMemoryPropertyFlag) const
+	{
+		for (std::uint32_t nIndex{0}; nIndex < this->sPhysicalDeviceAttribute.vkMemoryProperty.memoryTypeCount; ++nIndex)
+			if (nMemoryTypeBit & (1 << nIndex) && (this->sPhysicalDeviceAttribute.vkMemoryProperty.memoryTypes[nIndex].propertyFlags & vkMemoryPropertyFlag) == vkMemoryPropertyFlag)
+				return nIndex;
+
+		return std::optional<std::uint32_t>{};
 	}
 }
