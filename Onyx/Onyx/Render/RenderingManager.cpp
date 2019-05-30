@@ -101,7 +101,7 @@ namespace Onyx::Render
 	{
 		VkClearValue vkClearValue
 		{
-			.0f, .0f, .0f, .0f
+			.21f, .64f, 1.f, .0f
 		};
 		VkRenderPassBeginInfo vkRenderPassBeginInfo
 		{

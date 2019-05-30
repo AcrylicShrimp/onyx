@@ -9,6 +9,7 @@
 #include "./Render/Material.h"
 
 #include <fstream>
+#include <string>
 
 int main()
 {
@@ -19,9 +20,6 @@ int main()
 
 	auto pContext{sInstance.contextMgr().createContext(pWindow)};
 	{
-		auto pMesh{pContext->meshMgr().createMesh()};
-		auto pShader{pContext->shaderMgr().createShader("color_forward")};
-
 		auto fReadBinary{[](std::string_view sPath)
 		{
 			std::ifstream sInput{sPath.data(), std::ios_base::ate | std::ios_base::binary};
@@ -31,6 +29,11 @@ int main()
 
 			return sResult;
 		}};
+
+		auto sMeshBinary{fReadBinary("cube_tri.obj")};
+
+		auto pMesh{pContext->meshMgr().loadMeshOBJ(std::string{sMeshBinary.cbegin(), sMeshBinary.cend()})};
+		auto pShader{pContext->shaderMgr().createShader("color_forward")};
 
 		auto sVertexShaderBinary{fReadBinary("vert.spv")};
 		auto sFragmentShaderBinary{fReadBinary("frag.spv")};

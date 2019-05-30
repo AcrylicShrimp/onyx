@@ -23,7 +23,7 @@ namespace Onyx::Render
 			this->pMesh->stride(),
 			VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
 		};
-		VkVertexInputAttributeDescription vVertexInputAttributeDescription[2]
+		VkVertexInputAttributeDescription vVertexInputAttributeDescription[3]
 		{
 			{
 				0,
@@ -34,8 +34,14 @@ namespace Onyx::Render
 			{
 				1,
 				0,
-				(*this->pMesh)["color"]->vkFormat,
-				(*this->pMesh)["color"]->vkOffset
+				(*this->pMesh)["uv"]->vkFormat,
+				(*this->pMesh)["uv"]->vkOffset
+			},
+			{
+				2,
+				0,
+				(*this->pMesh)["normal"]->vkFormat,
+				(*this->pMesh)["normal"]->vkOffset
 			}
 		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
@@ -45,7 +51,7 @@ namespace Onyx::Render
 			0,
 			1,
 			&vkBindingDescription,
-			2,
+			3,
 			vVertexInputAttributeDescription
 		};
 		VkPipelineInputAssemblyStateCreateInfo vkInputAssemblyStateCreateInfo
@@ -87,8 +93,8 @@ namespace Onyx::Render
 			0,
 			VK_FALSE,
 			VK_FALSE,
-			VkPolygonMode::VK_POLYGON_MODE_FILL,
-			VkCullModeFlagBits::VK_CULL_MODE_BACK_BIT,
+			VkPolygonMode::VK_POLYGON_MODE_LINE,
+			VkCullModeFlagBits::VK_CULL_MODE_NONE,
 			VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE,
 			VK_FALSE,
 			.0f,
