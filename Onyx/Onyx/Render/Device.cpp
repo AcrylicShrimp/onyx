@@ -95,6 +95,8 @@ namespace Onyx::Render
 											  });
 
 		VkPhysicalDeviceFeatures vkPhysicalDeviceFeatures{};
+		vkPhysicalDeviceFeatures.fillModeNonSolid = VK_TRUE;
+
 		VkDeviceCreateInfo vkDeviceCreateInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,

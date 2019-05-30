@@ -13,8 +13,15 @@
 
 #include "../Vulkan.h"
 
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <memory>
+#include <optional>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -37,6 +44,7 @@ namespace Onyx::Render
 		
 	public:
 		std::unique_ptr<Mesh> createMesh();
+		std::unique_ptr<Mesh> loadMeshOBJ(const std::string &sContent);
 	};
 }
 

@@ -28,6 +28,7 @@ namespace Onyx::Render
 		//std::vector<VkFramebuffer> sPositionGBuffer;
 		//std::vector<VkFramebuffer> sNormalGBuffer;
 		//std::vector<VkFramebuffer> sColorGBuffer;
+		//std::vector<VkFramebuffer> sDepthFramebufferList;
 		std::vector<VkFramebuffer> sFinalFramebufferList;
 
 	public:
