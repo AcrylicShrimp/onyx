@@ -10,6 +10,9 @@
     <Filter Include="Onyx\Display">
       <UniqueIdentifier>{30259268-fa12-4471-856a-98447a74303a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Onyx\Transform">
+      <UniqueIdentifier>{6cefdc4b-1afe-4027-9b30-82e9e5124e45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Onyx\Render\Context.h">
@@ -89,6 +92,87 @@
     </ClInclude>
     <ClInclude Include="Onyx\Render\UniformManager.h">
       <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Vec2.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Vec2.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Vec3.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Vec3.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Vec4.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Vec4.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat22.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat22.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat23.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Vecs.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mats.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat23.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\MatMul.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat24.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat24.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat32.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat32.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat33.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat33.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat34.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat34.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat42.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat42.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat43.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat43.hpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat44.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Transform\Mat44.hpp">
+      <Filter>Onyx\Transform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

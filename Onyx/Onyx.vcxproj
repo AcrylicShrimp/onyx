@@ -161,6 +161,33 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Onyx\Render\UniformManager.h" />
+    <ClInclude Include="Onyx\Transform\Mat22.h" />
+    <ClInclude Include="Onyx\Transform\Mat22.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat23.h" />
+    <ClInclude Include="Onyx\Transform\Mat23.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat24.h" />
+    <ClInclude Include="Onyx\Transform\Mat24.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat32.h" />
+    <ClInclude Include="Onyx\Transform\Mat32.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat33.h" />
+    <ClInclude Include="Onyx\Transform\Mat33.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat34.h" />
+    <ClInclude Include="Onyx\Transform\Mat34.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat42.h" />
+    <ClInclude Include="Onyx\Transform\Mat42.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat43.h" />
+    <ClInclude Include="Onyx\Transform\Mat43.hpp" />
+    <ClInclude Include="Onyx\Transform\Mat44.h" />
+    <ClInclude Include="Onyx\Transform\Mat44.hpp" />
+    <ClInclude Include="Onyx\Transform\MatMul.h" />
+    <ClInclude Include="Onyx\Transform\Mats.h" />
+    <ClInclude Include="Onyx\Transform\Vec2.h" />
+    <ClInclude Include="Onyx\Transform\Vec2.hpp" />
+    <ClInclude Include="Onyx\Transform\Vec3.h" />
+    <ClInclude Include="Onyx\Transform\Vec3.hpp" />
+    <ClInclude Include="Onyx\Transform\Vec4.h" />
+    <ClInclude Include="Onyx\Transform\Vec4.hpp" />
+    <ClInclude Include="Onyx\Transform\Vecs.h" />
     <ClInclude Include="Onyx\Version.h" />
     <ClInclude Include="Onyx\Vulkan.h" />
   </ItemGroup>
