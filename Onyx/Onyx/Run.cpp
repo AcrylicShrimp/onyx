@@ -7,12 +7,19 @@
 #include "Onyx.h"
 
 #include "./Render/Material.h"
+#include "./Transform/Vecs.h"
+#include "./Transform/Mats.h"
 
 #include <fstream>
 #include <string>
 
 int main()
 {
+	using namespace Onyx::Transform;
+
+	auto sVector{Vec2f::one() * Vec2f::down() + 10.f};
+	auto sTestVec{static_cast<Vec2i>(sVector)};
+
 	Onyx::Onyx sInstance{Onyx::Version{"test", 0, 0, 0}};
 
 	auto pWindow{sInstance.displayMgr().createWindow("main")};
