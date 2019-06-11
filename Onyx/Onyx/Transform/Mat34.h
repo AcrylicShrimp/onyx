@@ -10,9 +10,11 @@
 
 namespace Onyx::Transform
 {
-	template<class T> class alignas(sizeof(float) * 2) Mat34 final
+	template<class T> class Mat43;
+
+	template<class T> class alignas(sizeof(T) * 4) Mat34 final
 	{
-	private:
+	public:
 		Vec4<T> tX;
 		Vec4<T> tY;
 		Vec4<T> tZ;
@@ -57,7 +59,7 @@ namespace Onyx::Transform
 		template<class U> operator Mat34<U>() const;
 
 	public:
-		Mat34<T> transposed() const;
+		Mat43<T> transposed() const;
 		static Mat34 zero();
 		static Mat34 one();
 		static Mat34 identity();

@@ -14,7 +14,7 @@
 
 namespace Onyx::Transform
 {
-	template<class T> class alignas(sizeof(float) * 4) Vec3 final
+	template<class T> class alignas(sizeof(T) * 4) Vec3 final
 	{
 	public:
 		T tX;

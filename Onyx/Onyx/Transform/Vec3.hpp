@@ -4,6 +4,10 @@
 	Created by AcrylicShrimp.
 */
 
+#ifndef _CLASS_ONYX_TRANSFORM_VEC3_HPP
+
+#define _CLASS_ONYX_TRANSFORM_VEC3_HPP
+
 namespace Onyx::Transform
 {
 	template<class T> Vec3<T>::Vec3() :
@@ -355,3 +359,5 @@ namespace Onyx::Transform
 		return {tLeft.tX / tRight.tX, tLeft.tY / tRight.tY, tLeft.tZ / tRight.tZ};
 	}
 }
+
+#endif
