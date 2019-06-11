@@ -201,7 +201,17 @@ namespace Onyx::Transform
 
 	template<class T> T Vec2<T>::length() const
 	{
-		return static_cast<T>(std::sqrt(this->tX * this->tX + this->tY * this->tY));
+		return static_cast<T>(std::sqrt(this->lengthSquare()));
+	}
+
+	template<class T> T Vec2<T>::lengthSquare() const
+	{
+		return this->tX * this->tX + this->tY * this->tY;
+	}
+
+	template<class T> Vec2<T> Vec2<T>::normalized() const
+	{
+		return (*this) / this->length();
 	}
 
 	template<class T> Vec2<T> Vec2<T>::zero()
