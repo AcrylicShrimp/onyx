@@ -12,7 +12,7 @@ namespace Onyx::Transform
 {
 	template<class T> class Mat32;
 
-	template<class T> class alignas(sizeof(float) * 2) Mat23 final
+	template<class T> class alignas(sizeof(T) * 4) Mat23 final
 	{
 	public:
 		Vec3<T> tX;

@@ -4,6 +4,10 @@
 	Created by AcrylicShrimp.
 */
 
+#ifndef _CLASS_ONYX_TRANSFORM_MAT24_HPP
+
+#define _CLASS_ONYX_TRANSFORM_MAT24_HPP
+
 namespace Onyx::Transform
 {
 	template<class T> Mat24<T>::Mat24() :
@@ -441,3 +445,5 @@ namespace Onyx::Transform
 		};
 	}
 }
+
+#endif

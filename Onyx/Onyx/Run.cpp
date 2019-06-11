@@ -20,6 +20,11 @@ int main()
 	auto sVector{Vec2f::one() * Vec2f::down() + 10.f};
 	auto sTestVec{static_cast<Vec2i>(sVector)};
 
+	auto sTestMat{Mat42f{1.f, 1.f, 2.f, 2.f, 3.f, 3.f, 4.f, 4.f}};
+	auto sTestTestMat{sTestMat.transposed()};
+
+	auto sTestResult{sTestMat % sVector};
+
 	Onyx::Onyx sInstance{Onyx::Version{"test", 0, 0, 0}};
 
 	auto pWindow{sInstance.displayMgr().createWindow("main")};

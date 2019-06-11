@@ -4,9 +4,9 @@
 	Created by AcrylicShrimp.
 */
 
-#ifndef _CLASS_ONYX_TRANSFORM_Vec4_H
+#ifndef _CLASS_ONYX_TRANSFORM_VEC4_H
 
-#define _CLASS_ONYX_TRANSFORM_Vec4_H
+#define _CLASS_ONYX_TRANSFORM_VEC4_H
 
 #include <cmath>
 #include <cstddef>
@@ -14,7 +14,7 @@
 
 namespace Onyx::Transform
 {
-	template<class T> class alignas(sizeof(float) * 4) Vec4 final
+	template<class T> class alignas(sizeof(T) * 4) Vec4 final
 	{
 	public:
 		T tX;

@@ -10,7 +10,7 @@
 
 namespace Onyx::Transform
 {
-	template<class T> class alignas(sizeof(float) * 2) Mat22 final
+	template<class T> class alignas(sizeof(T) * 2) Mat22 final
 	{
 	public:
 		Vec2<T> tX;

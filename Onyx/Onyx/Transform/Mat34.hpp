@@ -4,6 +4,10 @@
 	Created by AcrylicShrimp.
 */
 
+#ifndef _CLASS_ONYX_TRANSFORM_MAT34_HPP
+
+#define _CLASS_ONYX_TRANSFORM_MAT34_HPP
+
 namespace Onyx::Transform
 {
 	template<class T> Mat34<T>::Mat34() :
@@ -295,13 +299,14 @@ namespace Onyx::Transform
 		return {static_cast<Vec4<U>>(this->tX), static_cast<Vec4<U>>(this->tY), static_cast<Vec4<U>>(this->tZ)};
 	}
 
-	template<class T> Mat34<T> Mat34<T>::transposed() const
+	template<class T> Mat43<T> Mat34<T>::transposed() const
 	{
 		return
 		{
 			{this->tX.tX, this->tY.tX, this->tZ.tX},
 			{this->tX.tY, this->tY.tY, this->tZ.tY},
-			{this->tX.tZ, this->tY.tZ, this->tZ.tZ}
+			{this->tX.tZ, this->tY.tZ, this->tZ.tZ},
+			{this->tX.tW, this->tY.tW, this->tZ.tW}
 		};
 	}
 
@@ -482,3 +487,5 @@ namespace Onyx::Transform
 		};
 	}
 }
+
+#endif

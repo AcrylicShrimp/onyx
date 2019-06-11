@@ -4,6 +4,10 @@
 	Created by AcrylicShrimp.
 */
 
+#ifndef _CLASS_ONYX_TRANSFORM_MAT33_HPP
+
+#define _CLASS_ONYX_TRANSFORM_MAT33_HPP
+
 namespace Onyx::Transform
 {
 	template<class T> Mat33<T>::Mat33() :
@@ -481,3 +485,5 @@ namespace Onyx::Transform
 		};
 	}
 }
+
+#endif
