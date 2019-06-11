@@ -225,7 +225,17 @@ namespace Onyx::Transform
 
 	template<class T> T Vec3<T>::length() const
 	{
-		return static_cast<T>(std::sqrt(this->tX * this->tX + this->tY * this->tY + this->tZ * this->tZ));
+		return static_cast<T>(std::sqrt(this->lengthSquare()));
+	}
+
+	template<class T> T Vec3<T>::lengthSquare() const
+	{
+		return this->tX * this->tX + this->tY * this->tY + this->tZ * this->tZ;
+	}
+
+	template<class T> Vec3<T> Vec3<T>::normalized() const
+	{
+		return (*this) / this->length();
 	}
 
 	template<class T> Vec3<T> Vec3<T>::zero()

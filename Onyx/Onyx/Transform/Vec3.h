@@ -53,6 +53,8 @@ namespace Onyx::Transform
 		
 	public:
 		T length() const;
+		T lengthSquare() const;
+		Vec3 normalized() const;
 		static Vec3 zero();
 		static Vec3 one();
 		static Vec3 up();
