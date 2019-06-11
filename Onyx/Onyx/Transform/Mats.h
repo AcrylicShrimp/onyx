@@ -4,7 +4,7 @@
 	Created by AcrylicShrimp.
 */
 
-#include "Vecs.h"
+#include "./Vecs.h"
 
 #include "./Mat22.h"
 #include "./Mat23.h"
@@ -26,4 +26,4 @@
 #include "./Mat43.hpp"
 #include "./Mat44.hpp"
 
-#include "MatMul.h"
+#include "./MatMul.h"
