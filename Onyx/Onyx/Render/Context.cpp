@@ -6,6 +6,8 @@
 
 #include "Context.h"
 
+#include "Object.h"
+
 #ifdef min
 #undef min
 #endif
@@ -124,7 +126,7 @@ namespace Onyx::Render
 		vkDeviceWaitIdle(this->sDevice.vulkanDevice());
 	}
 
-	void Context::render(const Material &sMaterial)
+	void Context::render(const Object &sObject)
 	{
 		auto sSynchronizationObject{this->sSynchronizer.sync()};
 		auto sGraphicsCommandBuffer{std::get<0>(sSynchronizationObject)};
@@ -195,7 +197,7 @@ namespace Onyx::Render
 				1, &vkGraphicsImageMemoryBarrier);
 		}
 
-		this->pRenderingMgr->render(nImageIndex, sGraphicsCommandBuffer, sMaterial);
+		this->pRenderingMgr->render(nImageIndex, sGraphicsCommandBuffer, sObject);
 
 		{
 			VkImageMemoryBarrier vkGraphicsImageMemoryBarrier

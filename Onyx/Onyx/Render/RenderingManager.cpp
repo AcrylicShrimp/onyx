@@ -7,7 +7,7 @@
 #include "RenderingManager.h"
 
 #include "./Context.h"
-#include "./Material.h"
+#include "./Object.h"
 
 namespace Onyx::Render
 {
@@ -97,7 +97,7 @@ namespace Onyx::Render
 		vkDestroyRenderPass(this->pContext->device().vulkanDevice(), this->vkRenderPass, nullptr);
 	}
 
-	void RenderingManager::render(std::uint32_t nImageIndex, VkCommandBuffer vkCommandBuffer, const Material &sMaterial)
+	void RenderingManager::render(std::uint32_t nImageIndex, VkCommandBuffer vkCommandBuffer, const Object &sObject)
 	{
 		VkClearValue vkClearValue
 		{
@@ -117,13 +117,15 @@ namespace Onyx::Render
 		vkCmdBeginRenderPass(vkCommandBuffer, &vkRenderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 
 		vkCmdBindDescriptorSets(vkCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, this->pContext->uniformMgr().vulkanPipelineLayout(), 0, 1, &this->pContext->uniformMgr().vulkanDescriptorSetList()[nImageIndex], 0, nullptr);
-		vkCmdBindPipeline(vkCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, sMaterial.vulkanPipeline());
+		vkCmdBindPipeline(vkCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, sObject.material()->vulkanPipeline());
 
-		auto vkBuffer{sMaterial.pMesh->vulkanBuffer()};
+		auto vkMeshBuffer{sObject.material()->pMesh->vulkanBuffer()};
+		auto vkMatrixBuffer{sObject.buffer()};
 		VkDeviceSize nOffset{0};
 
-		vkCmdBindVertexBuffers(vkCommandBuffer, 0, 1, &vkBuffer, &nOffset);
-		vkCmdDraw(vkCommandBuffer, sMaterial.pMesh->length(), 1, 0, 0);
+		vkCmdBindVertexBuffers(vkCommandBuffer, 0, 1, &vkMeshBuffer, &nOffset);
+		vkCmdBindVertexBuffers(vkCommandBuffer, 1, 1, &vkMatrixBuffer, &nOffset);
+		vkCmdDraw(vkCommandBuffer, sObject.material()->pMesh->length(), 1, 0, 0);
 
 		vkCmdEndRenderPass(vkCommandBuffer);
 	}

@@ -146,6 +146,7 @@
     <ClInclude Include="Onyx\Render\MaterialManager.h" />
     <ClInclude Include="Onyx\Render\Mesh.h" />
     <ClInclude Include="Onyx\Render\MeshManager.h" />
+    <ClInclude Include="Onyx\Render\Object.h" />
     <ClInclude Include="Onyx\Render\Renderer.h" />
     <ClInclude Include="Onyx\Render\RenderingManager.h" />
     <ClInclude Include="Onyx\Render\Shader.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="Onyx\Render\MaterialManager.cpp" />
     <ClCompile Include="Onyx\Render\Mesh.cpp" />
     <ClCompile Include="Onyx\Render\MeshManager.cpp" />
+    <ClCompile Include="Onyx\Render\Object.cpp" />
     <ClCompile Include="Onyx\Render\Renderer.cpp" />
     <ClCompile Include="Onyx\Render\RenderingManager.cpp" />
     <ClCompile Include="Onyx\Render\Shader.cpp" />

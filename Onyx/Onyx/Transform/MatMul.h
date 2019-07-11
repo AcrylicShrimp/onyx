@@ -4,6 +4,10 @@
 	Created by AcrylicShrimp.
 */
 
+#ifndef _ONYX_TRANSFORM_MATMUL_H
+
+#define _ONYX_TRANSFORM_MATMUL_H
+
 namespace Onyx::Transform
 {
 	template<class T> Mat22<T> operator%(const Mat22<T> &tLeft, const Mat22<T> &tRight)
@@ -492,3 +496,5 @@ namespace Onyx::Transform
 		};
 	}
 }
+
+#endif

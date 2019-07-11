@@ -17,13 +17,20 @@ namespace Onyx::Render
 		assert(this->pMesh);
 		assert(this->pShader);
 
-		VkVertexInputBindingDescription vkBindingDescription
+		VkVertexInputBindingDescription vBindingDescription[]
 		{
-			0,
-			this->pMesh->stride(),
-			VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
+			{
+				0,
+				this->pMesh->stride(),
+				VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
+			},
+			{
+				1,
+				sizeof(float) * 16,
+				VkVertexInputRate::VK_VERTEX_INPUT_RATE_INSTANCE
+			}
 		};
-		VkVertexInputAttributeDescription vVertexInputAttributeDescription[3]
+		VkVertexInputAttributeDescription vVertexInputAttributeDescription[]
 		{
 			{
 				0,
@@ -42,6 +49,30 @@ namespace Onyx::Render
 				0,
 				(*this->pMesh)["normal"]->vkFormat,
 				(*this->pMesh)["normal"]->vkOffset
+			},
+			{
+				3,
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 0
+			},
+			{
+				4,
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 4
+			},
+			{
+				5,
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 8
+			},
+			{
+				6,
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 12
 			}
 		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
@@ -49,9 +80,9 @@ namespace Onyx::Render
 			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 			nullptr,
 			0,
-			1,
-			&vkBindingDescription,
-			3,
+			2,
+			vBindingDescription,
+			7,
 			vVertexInputAttributeDescription
 		};
 		VkPipelineInputAssemblyStateCreateInfo vkInputAssemblyStateCreateInfo
@@ -93,7 +124,7 @@ namespace Onyx::Render
 			0,
 			VK_FALSE,
 			VK_FALSE,
-			VkPolygonMode::VK_POLYGON_MODE_LINE,
+			VkPolygonMode::VK_POLYGON_MODE_FILL,
 			VkCullModeFlagBits::VK_CULL_MODE_NONE,
 			VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE,
 			VK_FALSE,

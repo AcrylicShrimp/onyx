@@ -11,7 +11,6 @@
 #include "../Vulkan.h"
 #include "../Display/Window.h"
 #include "./Device.h"
-#include "./Material.h"
 #include "./MeshManager.h"
 #include "./Surface.h"
 #include "./Synchronizer.h"
@@ -38,6 +37,7 @@
 namespace Onyx::Render
 {
 	class ContextManager;
+	class Object;
 
 	class Context final
 	{
@@ -75,7 +75,7 @@ namespace Onyx::Render
 		inline ShaderManager &shaderMgr() const;
 		inline RenderingManager &renderingMgr() const;
 		inline MeshManager &meshMgr() const;
-		void render(const Material &sMaterial);
+		void render(const Object &sObject);
 	};
 
 	inline const Device &Context::device() const
