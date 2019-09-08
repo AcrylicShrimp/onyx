@@ -145,12 +145,15 @@
     </ClInclude>
     <ClInclude Include="Onyx\Render\MaterialManager.h" />
     <ClInclude Include="Onyx\Render\Mesh.h" />
+    <ClInclude Include="Onyx\Render\MeshLayout.h" />
     <ClInclude Include="Onyx\Render\MeshManager.h" />
     <ClInclude Include="Onyx\Render\Object.h" />
     <ClInclude Include="Onyx\Render\Renderer.h" />
     <ClInclude Include="Onyx\Render\RenderingManager.h" />
     <ClInclude Include="Onyx\Render\Shader.h" />
+    <ClInclude Include="Onyx\Render\ShaderBuilder.h" />
     <ClInclude Include="Onyx\Render\ShaderManager.h" />
+    <ClInclude Include="Onyx\Render\SPIRV.h" />
     <ClInclude Include="Onyx\Render\SubContextManager.h" />
     <ClInclude Include="Onyx\Render\Surface.h" />
     <ClInclude Include="Onyx\Render\Swapchain.h" />
@@ -215,12 +218,15 @@
     </ClCompile>
     <ClCompile Include="Onyx\Render\MaterialManager.cpp" />
     <ClCompile Include="Onyx\Render\Mesh.cpp" />
+    <ClCompile Include="Onyx\Render\MeshLayout.cpp" />
     <ClCompile Include="Onyx\Render\MeshManager.cpp" />
     <ClCompile Include="Onyx\Render\Object.cpp" />
     <ClCompile Include="Onyx\Render\Renderer.cpp" />
     <ClCompile Include="Onyx\Render\RenderingManager.cpp" />
     <ClCompile Include="Onyx\Render\Shader.cpp" />
+    <ClCompile Include="Onyx\Render\ShaderBuilder.cpp" />
     <ClCompile Include="Onyx\Render\ShaderManager.cpp" />
+    <ClCompile Include="Onyx\Render\SPIRV.cpp" />
     <ClCompile Include="Onyx\Render\SubContextManager.cpp" />
     <ClCompile Include="Onyx\Render\Surface.cpp" />
     <ClCompile Include="Onyx\Render\Swapchain.cpp" />

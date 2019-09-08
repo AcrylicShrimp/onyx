@@ -7,6 +7,7 @@
 #include "Onyx.h"
 
 #include "./Render/Object.h"
+#include "./Render/ShaderBuilder.h"
 #include "./Transform/Vecs.h"
 #include "./Transform/Mats.h"
 #include "./Transform/Transform.h"
@@ -35,19 +36,22 @@ int main()
 
 		auto sMeshBinary{fReadBinary("cube_tri.obj")};
 
+		std::ifstream sVertexShaderCodeStream{"vert.spv", std::ios_base::binary};
+		std::ifstream sVertexShaderCodeStream{"frag.spv", std::ios_base::binary};
+
 		auto pMesh{pContext->meshMgr().loadMeshOBJ(std::string{sMeshBinary.cbegin(), sMeshBinary.cend()})};
-		auto pShader{pContext->shaderMgr().createShader("color_forward")};
-
-		auto sVertexShaderBinary{fReadBinary("vert.spv")};
-		auto sFragmentShaderBinary{fReadBinary("frag.spv")};
-
-		pShader->attachStage(Onyx::Render::Shader::Stage::Vertex, sVertexShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data()));
-		pShader->attachStage(Onyx::Render::Shader::Stage::Fragment, sFragmentShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data()));
+		auto sShader
+		{
+			Onyx::Render::ShaderBuilder{pContext.get()}
+			.stage(Onyx::Render::Shader::Stage::Vertex, sVertexShaderCodeStream)
+			.stage(Onyx::Render::Shader::Stage::Fragment, sVertexShaderCodeStream)
+			.build()
+		};
 
 		Onyx::Transform::Transform sTransform;
 		sTransform.sMatrix = Onyx::Transform::Transform::scale(.2f);
 
-		Onyx::Render::Object sObject{pContext.get(), pMesh.get(), pShader, sTransform.sMatrix};
+		Onyx::Render::Object sObject{pContext.get(), pMesh.get(), &sShader, sTransform.sMatrix};
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::VisibleDefault);
 

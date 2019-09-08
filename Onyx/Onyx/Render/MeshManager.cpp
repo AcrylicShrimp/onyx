@@ -21,9 +21,9 @@ namespace Onyx::Render
 
 	std::unique_ptr<Mesh> MeshManager::createMesh()
 	{
-		std::vector<std::tuple<std::string, Mesh::Data>> sMeshDataList
+		std::vector<std::pair<std::uint32_t, VkFormat>> sOffsetList
 		{
-			std::make_tuple(std::string{"position"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, 0})
+			std::make_pair(0, VkFormat::VK_FORMAT_R32G32B32_SFLOAT)
 		};
 
 		std::vector<float> sBufferDataList
@@ -33,7 +33,7 @@ namespace Onyx::Render
 			-0.079459f, - 0.000000f, 0.862372f, .0f
 		};
 
-		return std::make_unique<Mesh>(this, sizeof(float) * 4, 3, sMeshDataList, static_cast<std::uint32_t>(sizeof(float) * sBufferDataList.size()), sBufferDataList.data());
+		return std::make_unique<Mesh>(this, MeshLayout{static_cast<std::uint32_t>(sizeof(float) * 4), sOffsetList}, static_cast<std::uint32_t>(sizeof(float) * sBufferDataList.size()), sBufferDataList.data());
 	}
 
 	std::unique_ptr<Mesh> MeshManager::loadMeshOBJ(const std::string &sContent)
@@ -235,17 +235,17 @@ namespace Onyx::Render
 			}
 		}
 
-		std::vector<std::tuple<std::string, Mesh::Data>> sMeshDataList
+		std::vector<std::pair<std::uint32_t, VkFormat>> sOffsetList
 		{
-			std::make_tuple(std::string{"position"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, 0})
+			std::make_pair(0, VkFormat::VK_FORMAT_R32G32B32_SFLOAT)
 		};
 
 		if (sUVList.size())
-			sMeshDataList.emplace_back(std::string{"uv"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32_SFLOAT, sizeof(float) * 4 * sMeshDataList.size()});
+			sOffsetList.emplace_back(sizeof(float) * 4 * sOffsetList.size(), VkFormat::VK_FORMAT_R32G32_SFLOAT);
 
 		if (sNormalList.size())
-			sMeshDataList.emplace_back(std::string{"normal"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 4 * sMeshDataList.size()});
+			sOffsetList.emplace_back(sizeof(float) * 4 * sOffsetList.size(), VkFormat::VK_FORMAT_R32G32B32_SFLOAT);
 
-		return std::make_unique<Mesh>(this, static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshDataList.size()), static_cast<std::uint32_t>(nVertexCount), sMeshDataList, static_cast<std::uint32_t>(sizeof(float) * sDataList.size()), sDataList.data());
+		return std::make_unique<Mesh>(this, MeshLayout{static_cast<std::uint32_t>(sizeof(float) * 4 * sOffsetList.size()), sOffsetList}, static_cast<std::uint32_t>(nVertexCount), static_cast<std::uint32_t>(sizeof(float) * sDataList.size()), sDataList.data());
 	}
 }

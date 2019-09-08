@@ -8,71 +8,72 @@
 
 namespace Onyx::Render
 {
-	Material::Material(Context *pContext, Mesh *pMesh, Shader *pShader) :
+	Material::Material(Context *pContext, MeshLayout *pMeshLayout, Shader *pShader) :
 		pContext{pContext},
-		pMesh{pMesh},
+		pMeshLayout{pMeshLayout},
 		pShader{pShader}
 	{
 		assert(this->pContext);
-		assert(this->pMesh);
+		assert(this->pMeshLayout);
 		assert(this->pShader);
+
+		std::vector<VkVertexInputAttributeDescription> sVertexInputAttributeDescriptionList;
+		sVertexInputAttributeDescriptionList.reserve(this->pMeshLayout->sAttributeList.size() + 4);
+
+		for (const auto &sAttribute : this->pMeshLayout->sAttributeList)
+			sVertexInputAttributeDescriptionList.emplace_back(
+				VkVertexInputAttributeDescription
+				{
+					static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
+					0,
+					sAttribute.vkFormat,
+					sAttribute.vkOffset
+				});
+
+		sVertexInputAttributeDescriptionList.emplace_back(
+			VkVertexInputAttributeDescription
+			{
+				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 0
+			});
+		sVertexInputAttributeDescriptionList.emplace_back(
+			VkVertexInputAttributeDescription
+			{
+				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 4
+			});
+		sVertexInputAttributeDescriptionList.emplace_back(
+			VkVertexInputAttributeDescription
+			{
+				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 8
+			});
+		sVertexInputAttributeDescriptionList.emplace_back(
+			VkVertexInputAttributeDescription
+			{
+				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
+				1,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 12
+			});
 
 		VkVertexInputBindingDescription vBindingDescription[]
 		{
 			{
 				0,
-				this->pMesh->stride(),
+				this->pMeshLayout->nStride,
 				VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
 			},
 			{
 				1,
 				sizeof(float) * 16,
 				VkVertexInputRate::VK_VERTEX_INPUT_RATE_INSTANCE
-			}
-		};
-		VkVertexInputAttributeDescription vVertexInputAttributeDescription[]
-		{
-			{
-				0,
-				0,
-				(*this->pMesh)["position"]->vkFormat,
-				(*this->pMesh)["position"]->vkOffset
-			},
-			{
-				1,
-				0,
-				(*this->pMesh)["uv"]->vkFormat,
-				(*this->pMesh)["uv"]->vkOffset
-			},
-			{
-				2,
-				0,
-				(*this->pMesh)["normal"]->vkFormat,
-				(*this->pMesh)["normal"]->vkOffset
-			},
-			{
-				3,
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 0
-			},
-			{
-				4,
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 4
-			},
-			{
-				5,
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 8
-			},
-			{
-				6,
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 12
 			}
 		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
@@ -82,8 +83,8 @@ namespace Onyx::Render
 			0,
 			2,
 			vBindingDescription,
-			7,
-			vVertexInputAttributeDescription
+			static_cast<std::uint32_t>(sVertexInputAttributeDescriptionList.size()),
+			sVertexInputAttributeDescriptionList.data()
 		};
 		VkPipelineInputAssemblyStateCreateInfo vkInputAssemblyStateCreateInfo
 		{

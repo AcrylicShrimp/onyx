@@ -180,6 +180,15 @@
     <ClInclude Include="Onyx\Render\Object.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Onyx\Render\MeshLayout.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\ShaderBuilder.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\SPIRV.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Onyx\Render\Context.cpp">
@@ -259,6 +268,15 @@
       <Filter>Onyx\Transform</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\Object.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\MeshLayout.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\ShaderBuilder.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\SPIRV.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
   </ItemGroup>

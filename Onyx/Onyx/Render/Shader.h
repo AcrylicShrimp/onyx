@@ -14,9 +14,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
-#include <string>
-#include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace Onyx::Render
@@ -34,22 +33,17 @@ namespace Onyx::Render
 
 	public:
 		Context *const pContext;
-		const std::string sName;
-
-	private:
-		std::unordered_map<Stage, VkPipelineShaderStageCreateInfo> sStageMap;
+		const std::unordered_map<Stage, VkShaderModule> sStageModuleMap;
 
 	public:
-		Shader(Context *pContext, std::string_view sName);
+		Shader(Context *pContext, std::unordered_map<Stage, VkShaderModule> &&sStageModuleMap);
 		Shader(const Shader &sSrc) = delete;
+		Shader(Shader &&sSrc) = default;
 		~Shader() noexcept;
 		
 	public:
 		Shader &operator=(const Shader &sSrc) = delete;
-		
-	public:
-		void attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode);
-		std::vector<VkPipelineShaderStageCreateInfo> generateShaderStageCreateInfoList() const;
+		Shader &operator=(Shader &&sSrc) = default;
 	};
 }
 

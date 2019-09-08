@@ -11,15 +11,12 @@
 
 namespace Onyx::Render
 {
-	Mesh::Mesh(MeshManager *pMeshManager, std::uint32_t nStride, std::uint32_t nLength, const std::vector<std::tuple<std::string, Data>> &sDataList, VkDeviceSize nSize, void *pData) :
+	Mesh::Mesh(MeshManager *pMeshManager, MeshLayout &&sMeshLayout, std::uint32_t nLength, VkDeviceSize nSize, void *pData) :
 		pMeshManager{pMeshManager},
-		nStride{nStride},
+		sMeshLayout{std::move(sMeshLayout)},
 		nLength{nLength}
 	{
 		assert(this->pMeshManager);
-
-		for (const auto &sData : sDataList)
-			this->sDataMap[std::get<0>(sData)] = std::get<1>(sData);
 
 		VkBufferCreateInfo vkBufferCreateInfo
 		{
@@ -79,25 +76,5 @@ namespace Onyx::Render
 	{
 		vkDestroyBuffer(this->pMeshManager->pContext->device().vulkanDevice(), this->vkBuffer, nullptr);
 		vkFreeMemory(this->pMeshManager->pContext->device().vulkanDevice(), this->vkDeviceMemory, nullptr);
-	}
-	
-	Mesh::Data *Mesh::operator[](const std::string &sDataName)
-	{
-		auto iIndex{this->sDataMap.find(sDataName)};
-
-		if (iIndex == this->sDataMap.cend())
-			return nullptr;
-
-		return &iIndex->second;
-	}
-
-	const Mesh::Data *Mesh::operator[](const std::string &sDataName) const
-	{
-		auto iIndex{this->sDataMap.find(sDataName)};
-
-		if (iIndex == this->sDataMap.cend())
-			return nullptr;
-
-		return &iIndex->second;
 	}
 }

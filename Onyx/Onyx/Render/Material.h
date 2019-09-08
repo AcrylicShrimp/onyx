@@ -9,7 +9,7 @@
 #define _CLASS_ONYX_RENDER_MATERIAL_H
 
 #include "./Context.h"
-#include "./Mesh.h"
+#include "./MeshLayout.h"
 #include "./Shader.h"
 
 #include <cassert>
@@ -22,14 +22,14 @@ namespace Onyx::Render
 	{
 	public:
 		Context *const pContext;
-		Mesh *const pMesh;
+		MeshLayout *const pMeshLayout;
 		Shader *const pShader;
 
 	private:
 		VkPipeline vkPipeline;
 
 	public:
-		Material(Context *pContext, Mesh *pMesh, Shader *pShader);
+		Material(Context *pContext, MeshLayout *pMeshLayout, Shader *pShader);
 		Material(const Material &sSrc) = delete;
 		~Material();
 		
