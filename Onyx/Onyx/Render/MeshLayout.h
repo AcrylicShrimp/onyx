@@ -17,10 +17,10 @@
 
 namespace Onyx::Render
 {
-	class MeshLayout
+	class MeshLayout final
 	{
 	private:
-		std::unordered_map<std::uint32_t, VkFormat> sFormatMap;
+		std::unordered_map<std::uint32_t, VkFormat> sLayoutMap;
 		
 	public:
 		MeshLayout() = default;
@@ -33,7 +33,8 @@ namespace Onyx::Render
 		MeshLayout &operator=(MeshLayout &&sSrc) noexcept = default;
 		
 	public:
-		void specifyFormat(std::uint32_t nOffset, VkFormat vkFormat, std::size_t nCount = 1);
+		inline const std::unordered_map<std::uint32_t, VkFormat> &layoutMap() const noexcept;
+		void specifyLayout(std::uint32_t nOffset, VkFormat vkFormat);
 		std::uint32_t calcOffset() const;
 		std::uint32_t calcStride() const;
 
@@ -41,6 +42,11 @@ namespace Onyx::Render
 		static bool isSubsetOf(const MeshLayout &sMeshLayout, const MeshLayout &sMeshLayoutSubset);
 		static std::uint32_t formatSize(VkFormat vkFormat) noexcept;
 	};
+
+	inline const std::unordered_map<std::uint32_t, VkFormat> &MeshLayout::layoutMap() const noexcept
+	{
+		return this->sLayoutMap;
+	}
 }
 
 #endif

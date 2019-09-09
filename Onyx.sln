@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Onyx", "Onyx\Onyx.vcxproj", "{180980EC-76D3-4ACA-AA55-797DBB62865F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95} = {4C543A72-60C1-4CF0-9CEC-8971A3D12F95}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SPIRV-Reflect", "SPIRV-Reflect\SPIRV-Reflect.vcxproj", "{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,14 @@ Global
 		{180980EC-76D3-4ACA-AA55-797DBB62865F}.Release|x64.Build.0 = Release|x64
 		{180980EC-76D3-4ACA-AA55-797DBB62865F}.Release|x86.ActiveCfg = Release|Win32
 		{180980EC-76D3-4ACA-AA55-797DBB62865F}.Release|x86.Build.0 = Release|Win32
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Debug|x64.ActiveCfg = Debug|x64
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Debug|x64.Build.0 = Debug|x64
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Debug|x86.ActiveCfg = Debug|Win32
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Debug|x86.Build.0 = Debug|Win32
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Release|x64.ActiveCfg = Release|x64
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Release|x64.Build.0 = Release|x64
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Release|x86.ActiveCfg = Release|Win32
+		{4C543A72-60C1-4CF0-9CEC-8971A3D12F95}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

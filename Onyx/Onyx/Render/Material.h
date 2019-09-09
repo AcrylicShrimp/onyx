@@ -24,14 +24,13 @@ namespace Onyx::Render
 	{
 	public:
 		Context *const pContext;
-		Mesh *const pMesh;
 		Shader *const pShader;
 
 	private:
 		VkPipeline vkPipeline;
 
 	public:
-		Material(Context *pContext, Mesh *pMesh, MeshLayout *pMeshLayout, Shader *pShader);
+		Material(Context *pContext, Shader *pShader);
 		Material(const Material &sSrc) = delete;
 		~Material();
 		

@@ -10,14 +10,16 @@
 
 #include "../Vulkan.h"
 
+#include "./ShaderLayout.h"
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <unordered_map>
-#include <vector>
 
 namespace Onyx::Render
 {
@@ -37,7 +39,8 @@ namespace Onyx::Render
 		const std::string sName;
 
 	private:
-		std::unordered_map<Stage, VkPipelineShaderStageCreateInfo> sStageMap;
+		ShaderLayout sShaderLayout;
+		std::unordered_map<Stage, std::tuple<VkShaderModule, std::string>> sStageMap;
 
 	public:
 		Shader(Context *pContext, std::string_view sName);
@@ -48,9 +51,20 @@ namespace Onyx::Render
 		Shader &operator=(const Shader &sSrc) = delete;
 		
 	public:
-		void attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode);
-		std::vector<VkPipelineShaderStageCreateInfo> generateShaderStageCreateInfoList() const;
+		inline const ShaderLayout &shaderLayout() const;
+		inline const std::unordered_map<Stage, std::tuple<VkShaderModule, std::string>> &stageMap() const;
+		void attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode, const std::string &sStageName);
 	};
+
+	inline const ShaderLayout &Shader::shaderLayout() const
+	{
+		return this->sShaderLayout;
+	}
+
+	inline const std::unordered_map<Shader::Stage, std::tuple<VkShaderModule, std::string>> &Shader::stageMap() const
+	{
+		return this->sStageMap;
+	}
 }
 
 #endif

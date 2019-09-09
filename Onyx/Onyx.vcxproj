@@ -58,21 +58,25 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x86.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x86.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x64.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x64.props" />
   </ImportGroup>
@@ -182,7 +186,6 @@
     <ClInclude Include="Onyx\Transform\Mat44.hpp" />
     <ClInclude Include="Onyx\Transform\MatMul.h" />
     <ClInclude Include="Onyx\Transform\Mats.h" />
-    <ClInclude Include="Onyx\Transform\Transform.h" />
     <ClInclude Include="Onyx\Transform\Vec2.h" />
     <ClInclude Include="Onyx\Transform\Vec2.hpp" />
     <ClInclude Include="Onyx\Transform\Vec3.h" />
@@ -233,7 +236,6 @@
     </ClCompile>
     <ClCompile Include="Onyx\Render\UniformManager.cpp" />
     <ClCompile Include="Onyx\Run.cpp" />
-    <ClCompile Include="Onyx\Transform\Transform.cpp" />
     <ClCompile Include="Onyx\Version.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

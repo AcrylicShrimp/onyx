@@ -6,11 +6,12 @@
 
 #include "Material.h"
 
+#include "Context.h"
+
 namespace Onyx::Render
 {
-	Material::Material(Context *pContext, Mesh *pMesh, MeshLayout *pMeshLayout, Shader *pShader) :
+	Material::Material(Context *pContext, Shader *pShader) :
 		pContext{pContext},
-		pMesh{pMesh},
 		pShader{pShader}
 	{
 		assert(this->pContext);

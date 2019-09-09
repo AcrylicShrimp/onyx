@@ -174,9 +174,6 @@
     <ClInclude Include="Onyx\Transform\Mat44.hpp">
       <Filter>Onyx\Transform</Filter>
     </ClInclude>
-    <ClInclude Include="Onyx\Transform\Transform.h">
-      <Filter>Onyx\Transform</Filter>
-    </ClInclude>
     <ClInclude Include="Onyx\Render\MeshLayout.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
@@ -254,9 +251,6 @@
     </ClCompile>
     <ClCompile Include="Onyx\Render\UniformManager.cpp">
       <Filter>Onyx\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Onyx\Transform\Transform.cpp">
-      <Filter>Onyx\Transform</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\MeshLayout.cpp">
       <Filter>Onyx\Render</Filter>

@@ -8,23 +8,20 @@
 
 namespace Onyx::Render
 {
-	void MeshLayout::specifyFormat(std::uint32_t nOffset, VkFormat vkFormat, std::size_t nCount)
+	void MeshLayout::specifyLayout(std::uint32_t nOffset, VkFormat vkFormat)
 	{
-		const auto nSize{MeshLayout::formatSize(vkFormat)};
+		if (this->sLayoutMap.contains(nOffset))
+			throw std::runtime_error{"already specified layout offset"};
 
-		if (!nSize)
-			throw std::runtime_error{"unexpected format"};
-
-		for (std::size_t nIndex{0}; nIndex < nCount; ++nIndex, nOffset += nSize)
-			this->sFormatMap[nOffset] = vkFormat;
+		this->sLayoutMap.emplace(nOffset, vkFormat);
 	}
 
 	std::uint32_t MeshLayout::calcOffset() const
 	{
-		if (!this->sFormatMap.size())
+		if (!this->sLayoutMap.size())
 			return 0;
 
-		return std::min_element(this->sFormatMap.cbegin(), this->sFormatMap.cend(),
+		return std::min_element(this->sLayoutMap.cbegin(), this->sLayoutMap.cend(),
 			[](const auto &sLeft, const auto &sRight)
 			{
 				return sLeft.first < sRight.first;
@@ -33,30 +30,25 @@ namespace Onyx::Render
 
 	std::uint32_t MeshLayout::calcStride() const
 	{
-		if (!this->sFormatMap.size())
+		if (!this->sLayoutMap.size())
 			return 0;
-		
-		const auto sMin{std::min_element(this->sFormatMap.cbegin(), this->sFormatMap.cend(),
-			[](const auto &sLeft, const auto &sRight)
-			{
-				return sLeft.first < sRight.first;
-			})};
-		const auto sMax{std::max_element(this->sFormatMap.cbegin(), this->sFormatMap.cend(),
+
+		const auto sMax{std::max_element(this->sLayoutMap.cbegin(), this->sLayoutMap.cend(),
 			[](const auto &sLeft, const auto &sRight)
 			{
 				return sLeft.first + MeshLayout::formatSize(sLeft.second) < sRight.first + MeshLayout::formatSize(sRight.second);
 			})};
 
-		return sMax->first + MeshLayout::formatSize(sMax->second) - sMin->first;
+		return sMax->first + MeshLayout::formatSize(sMax->second) - this->calcOffset();
 	}
 
 	bool MeshLayout::isSubsetOf(const MeshLayout &sMeshLayout, const MeshLayout &sMeshLayoutSubset)
 	{
-		const auto iEnd{sMeshLayout.sFormatMap.cend()};
+		const auto iEnd{sMeshLayout.sLayoutMap.cend()};
 
-		for (const auto &sPair : sMeshLayoutSubset.sFormatMap)
+		for (const auto &sPair : sMeshLayoutSubset.sLayoutMap)
 		{
-			const auto iIndex{sMeshLayout.sFormatMap.find(sPair.first)};
+			const auto iIndex{sMeshLayout.sLayoutMap.find(sPair.first)};
 
 			if (iIndex == iEnd)
 				return false;
