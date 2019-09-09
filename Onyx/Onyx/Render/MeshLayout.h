@@ -10,6 +10,7 @@
 
 #include "../Vulkan.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <stdexcept>
 #include <unordered_map>
@@ -22,7 +23,7 @@ namespace Onyx::Render
 		std::unordered_map<std::uint32_t, VkFormat> sFormatMap;
 		
 	public:
-		MeshLayout();
+		MeshLayout() = default;
 		MeshLayout(const MeshLayout &sSrc) = default;
 		MeshLayout(MeshLayout &&sSrc) noexcept = default;
 		~MeshLayout() noexcept = default;
@@ -33,9 +34,12 @@ namespace Onyx::Render
 		
 	public:
 		void specifyFormat(std::uint32_t nOffset, VkFormat vkFormat, std::size_t nCount = 1);
+		std::uint32_t calcOffset() const;
+		std::uint32_t calcStride() const;
 
 	public:
-		static std::uint32_t size(VkFormat vkFormat) noexcept;
+		static bool isSubsetOf(const MeshLayout &sMeshLayout, const MeshLayout &sMeshLayoutSubset);
+		static std::uint32_t formatSize(VkFormat vkFormat) noexcept;
 	};
 }
 

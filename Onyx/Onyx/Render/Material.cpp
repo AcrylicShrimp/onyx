@@ -8,7 +8,7 @@
 
 namespace Onyx::Render
 {
-	Material::Material(Context *pContext, Mesh *pMesh, Shader *pShader) :
+	Material::Material(Context *pContext, Mesh *pMesh, MeshLayout *pMeshLayout, Shader *pShader) :
 		pContext{pContext},
 		pMesh{pMesh},
 		pShader{pShader}
@@ -20,7 +20,7 @@ namespace Onyx::Render
 		VkVertexInputBindingDescription vkBindingDescription
 		{
 			0,
-			this->pMesh->stride(),
+			pMeshLayout->calcStride(),
 			VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
 		};
 		VkVertexInputAttributeDescription vVertexInputAttributeDescription[3]

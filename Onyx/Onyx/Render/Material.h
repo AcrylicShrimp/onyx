@@ -8,8 +8,8 @@
 
 #define _CLASS_ONYX_RENDER_MATERIAL_H
 
-#include "./Context.h"
 #include "./Mesh.h"
+#include "./MeshLayout.h"
 #include "./Shader.h"
 
 #include <cassert>
@@ -18,6 +18,8 @@
 
 namespace Onyx::Render
 {
+	class Context;
+
 	class Material final
 	{
 	public:
@@ -29,7 +31,7 @@ namespace Onyx::Render
 		VkPipeline vkPipeline;
 
 	public:
-		Material(Context *pContext, Mesh *pMesh, Shader *pShader);
+		Material(Context *pContext, Mesh *pMesh, MeshLayout *pMeshLayout, Shader *pShader);
 		Material(const Material &sSrc) = delete;
 		~Material();
 		

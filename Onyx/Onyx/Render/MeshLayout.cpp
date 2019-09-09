@@ -10,10 +10,65 @@ namespace Onyx::Render
 {
 	void MeshLayout::specifyFormat(std::uint32_t nOffset, VkFormat vkFormat, std::size_t nCount)
 	{
+		const auto nSize{MeshLayout::formatSize(vkFormat)};
 
+		if (!nSize)
+			throw std::runtime_error{"unexpected format"};
+
+		for (std::size_t nIndex{0}; nIndex < nCount; ++nIndex, nOffset += nSize)
+			this->sFormatMap[nOffset] = vkFormat;
 	}
 
-	std::uint32_t MeshLayout::size(VkFormat vkFormat) noexcept
+	std::uint32_t MeshLayout::calcOffset() const
+	{
+		if (!this->sFormatMap.size())
+			return 0;
+
+		return std::min_element(this->sFormatMap.cbegin(), this->sFormatMap.cend(),
+			[](const auto &sLeft, const auto &sRight)
+			{
+				return sLeft.first < sRight.first;
+			})->first;
+	}
+
+	std::uint32_t MeshLayout::calcStride() const
+	{
+		if (!this->sFormatMap.size())
+			return 0;
+		
+		const auto sMin{std::min_element(this->sFormatMap.cbegin(), this->sFormatMap.cend(),
+			[](const auto &sLeft, const auto &sRight)
+			{
+				return sLeft.first < sRight.first;
+			})};
+		const auto sMax{std::max_element(this->sFormatMap.cbegin(), this->sFormatMap.cend(),
+			[](const auto &sLeft, const auto &sRight)
+			{
+				return sLeft.first + MeshLayout::formatSize(sLeft.second) < sRight.first + MeshLayout::formatSize(sRight.second);
+			})};
+
+		return sMax->first + MeshLayout::formatSize(sMax->second) - sMin->first;
+	}
+
+	bool MeshLayout::isSubsetOf(const MeshLayout &sMeshLayout, const MeshLayout &sMeshLayoutSubset)
+	{
+		const auto iEnd{sMeshLayout.sFormatMap.cend()};
+
+		for (const auto &sPair : sMeshLayoutSubset.sFormatMap)
+		{
+			const auto iIndex{sMeshLayout.sFormatMap.find(sPair.first)};
+
+			if (iIndex == iEnd)
+				return false;
+
+			if (iIndex->second != sPair.second)
+				return false;
+		}
+
+		return true;
+	}
+
+	std::uint32_t MeshLayout::formatSize(VkFormat vkFormat) noexcept
 	{
 		switch (vkFormat)
 		{
