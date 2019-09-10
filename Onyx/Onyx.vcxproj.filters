@@ -177,6 +177,9 @@
     <ClInclude Include="Onyx\Render\MeshLayout.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Onyx\Render\ShaderLayout.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Onyx\Render\Context.cpp">
@@ -253,6 +256,9 @@
       <Filter>Onyx\Render</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\MeshLayout.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\ShaderLayout.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
   </ItemGroup>

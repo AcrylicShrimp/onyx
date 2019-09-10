@@ -119,11 +119,11 @@ namespace Onyx::Render
 		vkCmdBindDescriptorSets(vkCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, this->pContext->uniformMgr().vulkanPipelineLayout(), 0, 1, &this->pContext->uniformMgr().vulkanDescriptorSetList()[nImageIndex], 0, nullptr);
 		vkCmdBindPipeline(vkCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, sMaterial.vulkanPipeline());
 
-		auto vkBuffer{sMaterial.pMesh->vulkanBuffer()};
-		VkDeviceSize nOffset{0};
+		//auto vkBuffer{sMaterial.pMesh->vulkanBuffer()};
+		//VkDeviceSize nOffset{0};
 
-		vkCmdBindVertexBuffers(vkCommandBuffer, 0, 1, &vkBuffer, &nOffset);
-		vkCmdDraw(vkCommandBuffer, sMaterial.pMesh->length(), 1, 0, 0);
+		//vkCmdBindVertexBuffers(vkCommandBuffer, 0, 1, &vkBuffer, &nOffset);
+		//vkCmdDraw(vkCommandBuffer, sMaterial.pMesh->length(), 1, 0, 0);
 
 		vkCmdEndRenderPass(vkCommandBuffer);
 	}

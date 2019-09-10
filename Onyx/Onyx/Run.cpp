@@ -42,23 +42,19 @@ int main()
 			return sResult;
 		}};
 
-		auto sMeshBinary{fReadBinary("cube_tri.obj")};
-
-		auto pMesh{pContext->meshMgr().loadMeshOBJ(std::string{sMeshBinary.cbegin(), sMeshBinary.cend()})};
 		auto pShader{pContext->shaderMgr().createShader("color_forward")};
 
 		auto sVertexShaderBinary{fReadBinary("vert.spv")};
 		auto sFragmentShaderBinary{fReadBinary("frag.spv")};
 
-		pShader->attachStage(Onyx::Render::Shader::Stage::Vertex, sVertexShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data()));
-		pShader->attachStage(Onyx::Render::Shader::Stage::Fragment, sFragmentShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data()));
-
-		Onyx::Render::Material sMaterial{pContext.get(), pMesh.get(), pShader};
+		pShader->attachStage(Onyx::Render::Shader::Stage::Vertex, sVertexShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data()), "main");
+		pShader->attachStage(Onyx::Render::Shader::Stage::Fragment, sFragmentShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data()), "main");
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::VisibleDefault);
 
 		while (pWindow->loopEventAvailable())
-			pContext->render(sMaterial);
+			//pContext->render(sMaterial)
+			;
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::Invisible);
 	}

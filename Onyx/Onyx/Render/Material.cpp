@@ -10,40 +10,51 @@
 
 namespace Onyx::Render
 {
-	Material::Material(Context *pContext, Shader *pShader) :
+	Material::Material(Context *pContext, Shader *pShader, MeshLayout *pMeshLayout, const std::unordered_map<std::uint32_t, std::uint32_t> &sLocationOffsetMapping) :
 		pContext{pContext},
-		pShader{pShader}
+		pShader{pShader},
+		pMeshLayout{pMeshLayout}
 	{
 		assert(this->pContext);
-		assert(this->pMesh);
 		assert(this->pShader);
+		assert(this->pMeshLayout);
+
+		std::vector<VkVertexInputAttributeDescription> sVertexInputAttributeDescriptionList(pMeshLayout->layoutMap().size());
+
+		auto iMeshLayoutMapEnd{this->pMeshLayout->layoutMap().cend()};
+		auto iLocationOffsetMappingEnd{sLocationOffsetMapping.cend()};
+
+		for (const auto &sPair : this->pShader->layout().layoutMap())
+		{
+			auto iLocationOffsetMappingIndex{sLocationOffsetMapping.find(sPair.first)};
+
+			if (iLocationOffsetMappingIndex == iLocationOffsetMappingEnd)
+				throw std::runtime_error{"invalid location-offset mapping"};
+
+			auto iMeshLayoutMapIndex{this->pMeshLayout->layoutMap().find(iLocationOffsetMappingIndex->second)};
+
+			if (iMeshLayoutMapIndex == iMeshLayoutMapEnd)
+				throw std::runtime_error{"invalid location-offset mapping"};
+
+			if (iMeshLayoutMapIndex->second != sPair.second)
+				throw std::runtime_error{"incompatible mesh layout"};
+
+			sVertexInputAttributeDescriptionList.emplace_back(
+				VkVertexInputAttributeDescription
+				{
+					sPair.first,
+					0,
+					sPair.second,
+					iLocationOffsetMappingIndex->second
+				}
+			);
+		}
 
 		VkVertexInputBindingDescription vkBindingDescription
 		{
 			0,
 			pMeshLayout->calcStride(),
 			VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
-		};
-		VkVertexInputAttributeDescription vVertexInputAttributeDescription[3]
-		{
-			{
-				0,
-				0,
-				(*this->pMesh)["position"]->vkFormat,
-				(*this->pMesh)["position"]->vkOffset
-			},
-			{
-				1,
-				0,
-				(*this->pMesh)["uv"]->vkFormat,
-				(*this->pMesh)["uv"]->vkOffset
-			},
-			{
-				2,
-				0,
-				(*this->pMesh)["normal"]->vkFormat,
-				(*this->pMesh)["normal"]->vkOffset
-			}
 		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
 		{
@@ -52,8 +63,8 @@ namespace Onyx::Render
 			0,
 			1,
 			&vkBindingDescription,
-			3,
-			vVertexInputAttributeDescription
+			static_cast<std::uint32_t>(sVertexInputAttributeDescriptionList.size()),
+			sVertexInputAttributeDescriptionList.data()
 		};
 		VkPipelineInputAssemblyStateCreateInfo vkInputAssemblyStateCreateInfo
 		{
@@ -141,7 +152,21 @@ namespace Onyx::Render
 			{.0f, .0f, .0f, .0f}
 		};
 
-		auto sShaderStageCreateInfoList{pShader->generateShaderStageCreateInfoList()};
+		std::vector<VkPipelineShaderStageCreateInfo> sShaderStageCreateInfoList;
+
+		for (const auto &sPair : pShader->stageMap())
+			sShaderStageCreateInfoList.emplace_back(
+				VkPipelineShaderStageCreateInfo
+				{
+					VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+					nullptr,
+					0,
+					sPair.first == Shader::Stage::Vertex ? VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT : VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT,
+					std::get<0>(sPair.second),
+					std::get<1>(sPair.second).c_str(),
+					nullptr
+				}
+			);
 
 		VkGraphicsPipelineCreateInfo vkPipelineCreateInfo
 		{

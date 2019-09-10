@@ -20,6 +20,7 @@
 #include <string_view>
 #include <tuple>
 #include <unordered_map>
+#include <vector>
 
 namespace Onyx::Render
 {
@@ -51,12 +52,12 @@ namespace Onyx::Render
 		Shader &operator=(const Shader &sSrc) = delete;
 		
 	public:
-		inline const ShaderLayout &shaderLayout() const;
+		inline const ShaderLayout &layout() const;
 		inline const std::unordered_map<Stage, std::tuple<VkShaderModule, std::string>> &stageMap() const;
-		void attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode, const std::string &sStageName);
+		void attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode, const std::string &sEntryPointName);
 	};
 
-	inline const ShaderLayout &Shader::shaderLayout() const
+	inline const ShaderLayout &Shader::layout() const
 	{
 		return this->sShaderLayout;
 	}

@@ -10,9 +10,9 @@ namespace Onyx::Render
 {
 	void ShaderLayout::specifyLayout(std::uint32_t nLocation, VkFormat vkFormat)
 	{
-		if (this->sLayoutMap.contains(nOffset))
-			throw std::runtime_error{"already specified layout offset"};
+		if (this->sLayoutMap.contains(nLocation))
+			throw std::runtime_error{"already specified location"};
 
-		this->sLayoutMap.emplace(nOffset, vkFormat);
+		this->sLayoutMap.emplace(nLocation, vkFormat);
 	}
 }

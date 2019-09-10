@@ -6,7 +6,9 @@
 
 #include "Shader.h"
 
-#include "Context.h"
+#include "./Context.h"
+
+#include <SPIRV-Reflect/spirv_reflect.h>
 
 namespace Onyx::Render
 {
@@ -23,7 +25,7 @@ namespace Onyx::Render
 			vkDestroyShaderModule(this->pContext->device().vulkanDevice(), std::get<0>(sPair.second), nullptr);
 	}
 
-	void Shader::attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode, const std::string &sStageName)
+	void Shader::attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode, const std::string &sEntryPointName)
 	{
 		assert(pCode);
 
@@ -49,6 +51,31 @@ namespace Onyx::Render
 		if (vkCreateShaderModule(this->pContext->device().vulkanDevice(), &vkShaderModuleCreateInfo, nullptr, &vkShaderModule) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create shader module"};
 
-		this->sStageMap.emplace(eStage, std::make_tuple(vkShaderModule, sStageName));
+		this->sStageMap.emplace(eStage, std::make_tuple(vkShaderModule, sEntryPointName));
+
+		if (eStage == Stage::Vertex)
+		{
+			SpvReflectShaderModule sReflectShaderModule;
+
+			if (spvReflectCreateShaderModule(nCodeSize, pCode, &sReflectShaderModule) != SpvReflectResult::SPV_REFLECT_RESULT_SUCCESS)
+				throw std::runtime_error{"unable to create reflect shader module"};
+
+			std::uint32_t nShaderInputCount;
+
+			if (spvReflectEnumerateEntryPointInputVariables(&sReflectShaderModule, sEntryPointName.c_str(), &nShaderInputCount, nullptr) != SpvReflectResult::SPV_REFLECT_RESULT_SUCCESS)
+				throw std::runtime_error{"unable to fetch shader input variable count"};
+
+			std::vector<SpvReflectInterfaceVariable *> sShaderInputList(nShaderInputCount);
+
+			if (spvReflectEnumerateEntryPointInputVariables(&sReflectShaderModule, sEntryPointName.c_str(), &nShaderInputCount, sShaderInputList.data()) != SpvReflectResult::SPV_REFLECT_RESULT_SUCCESS)
+				throw std::runtime_error{"unable to get shader input variable list"};
+
+			for (const auto *pInput : sShaderInputList)
+			{
+				this->sShaderLayout.specifyLayout(pInput->location, VK_FORMAT_R32_UINT);
+			}
+
+			spvReflectDestroyShaderModule(&sReflectShaderModule);
+		}
 	}
 }

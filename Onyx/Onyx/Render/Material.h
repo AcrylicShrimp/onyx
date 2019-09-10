@@ -13,7 +13,9 @@
 #include "./Shader.h"
 
 #include <cassert>
+#include <cstdint>
 #include <stdexcept>
+#include <unordered_map>
 #include <vector>
 
 namespace Onyx::Render
@@ -25,12 +27,13 @@ namespace Onyx::Render
 	public:
 		Context *const pContext;
 		Shader *const pShader;
+		MeshLayout *const pMeshLayout;
 
 	private:
 		VkPipeline vkPipeline;
 
 	public:
-		Material(Context *pContext, Shader *pShader);
+		Material(Context *pContext, Shader *pShader, MeshLayout *pMeshLayout, const std::unordered_map<std::uint32_t, std::uint32_t> &sLocationOffsetMapping);
 		Material(const Material &sSrc) = delete;
 		~Material();
 		
