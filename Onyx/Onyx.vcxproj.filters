@@ -261,5 +261,8 @@
     <ClCompile Include="Onyx\Render\ShaderLayout.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Onyx\Transform\Transform.cpp">
+      <Filter>Onyx\Transform</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

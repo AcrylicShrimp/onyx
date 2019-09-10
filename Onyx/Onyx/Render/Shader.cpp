@@ -8,8 +8,6 @@
 
 #include "./Context.h"
 
-#include <SPIRV-Reflect/spirv_reflect.h>
-
 namespace Onyx::Render
 {
 	Shader::Shader(Context *pContext, std::string_view sName) :
@@ -71,11 +69,16 @@ namespace Onyx::Render
 				throw std::runtime_error{"unable to get shader input variable list"};
 
 			for (const auto *pInput : sShaderInputList)
-			{
-				this->sShaderLayout.specifyLayout(pInput->location, VK_FORMAT_R32_UINT);
-			}
+				this->sShaderLayout.specifyLayout(pInput->location, Shader::obtainFormat(pInput));
 
 			spvReflectDestroyShaderModule(&sReflectShaderModule);
 		}
+	}
+
+	VkFormat Shader::obtainFormat(const SpvReflectInterfaceVariable *pReflectShaderInputVariable)
+	{
+		//switch (pReflectShaderInputVariable)
+
+		return VkFormat::VK_FORMAT_UNDEFINED;
 	}
 }

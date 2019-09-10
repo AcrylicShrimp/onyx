@@ -12,6 +12,8 @@
 
 #include "./ShaderLayout.h"
 
+#include <SPIRV-Reflect/spirv_reflect.h>
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -55,6 +57,9 @@ namespace Onyx::Render
 		inline const ShaderLayout &layout() const;
 		inline const std::unordered_map<Stage, std::tuple<VkShaderModule, std::string>> &stageMap() const;
 		void attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode, const std::string &sEntryPointName);
+
+	public:
+		static VkFormat obtainFormat(const SpvReflectInterfaceVariable *pReflectShaderInputVariable);
 	};
 
 	inline const ShaderLayout &Shader::layout() const

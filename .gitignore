@@ -352,3 +352,6 @@ MidOutput/
 
 # Onyx outputs
 Output/
+
+#VS Code
+.vscode/
