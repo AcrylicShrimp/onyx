@@ -21,9 +21,9 @@ namespace Onyx::Render
 
 	std::unique_ptr<Mesh> MeshManager::createMesh()
 	{
-		std::vector<std::pair<std::uint32_t, VkFormat>> sOffsetList
+		std::vector<std::tuple<std::string, Mesh::Data>> sMeshDataList
 		{
-			std::make_pair(0, VkFormat::VK_FORMAT_R32G32B32_SFLOAT)
+			std::make_tuple(std::string{"position"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, 0})
 		};
 
 		std::vector<float> sBufferDataList
@@ -33,7 +33,7 @@ namespace Onyx::Render
 			-0.079459f, - 0.000000f, 0.862372f, .0f
 		};
 
-		return std::make_unique<Mesh>(this, MeshLayout{static_cast<std::uint32_t>(sizeof(float) * 4), sOffsetList}, static_cast<std::uint32_t>(sizeof(float) * sBufferDataList.size()), sBufferDataList.data());
+		return std::make_unique<Mesh>(this, static_cast<std::uint32_t>(sizeof(float) * 4), 3, sMeshDataList, static_cast<std::uint32_t>(sizeof(float) * sBufferDataList.size()), sBufferDataList.data());
 	}
 
 	std::unique_ptr<Mesh> MeshManager::loadMeshOBJ(const std::string &sContent)
@@ -162,7 +162,7 @@ namespace Onyx::Render
 
 						if (nVertexIndex < 0)
 						{
-							if (sVertexList.size() < -nVertexIndex * 3)
+							if (sVertexList.size() < static_cast<std::size_t>(-nVertexIndex * 3))
 								throw std::runtime_error{"wrong format"};
 
 							sDataList.emplace_back(sVertexList[(sVertexList.size() + static_cast<std::size_t>(nVertexIndex) * 3) + 0]);
@@ -172,7 +172,7 @@ namespace Onyx::Render
 						}
 						else if (nVertexIndex > 0)
 						{
-							if (sVertexList.size() <= (nVertexIndex - 1) * 3)
+							if (sVertexList.size() <= static_cast<std::size_t>((nVertexIndex - 1) * 3))
 								throw std::runtime_error{"wrong format"};
 
 							sDataList.emplace_back(sVertexList[static_cast<std::size_t>(nVertexIndex - 1) * 3 + 0]);
@@ -185,7 +185,7 @@ namespace Onyx::Render
 
 						if (nUVIndex < 0)
 						{
-							if (sUVList.size() < -nUVIndex * 2)
+							if (sUVList.size() < static_cast<std::size_t>(-nUVIndex * 2))
 								throw std::runtime_error{"wrong format"};
 
 							sDataList.emplace_back(sUVList[(sUVList.size() + static_cast<std::size_t>(nUVIndex) * 2) + 0]);
@@ -195,7 +195,7 @@ namespace Onyx::Render
 						}
 						else if (nUVIndex > 0)
 						{
-							if (sUVList.size() <= (nUVIndex - 1) * 2)
+							if (sUVList.size() <= static_cast<std::size_t>((nUVIndex - 1) * 2))
 								throw std::runtime_error{"wrong format"};
 
 							sDataList.emplace_back(sUVList[static_cast<std::size_t>(nUVIndex - 1) * 2 + 0]);
@@ -206,7 +206,7 @@ namespace Onyx::Render
 
 						if (nNormalIndex < 0)
 						{
-							if (sNormalList.size() < -nNormalIndex * 3)
+							if (sNormalList.size() < static_cast<std::size_t>(-nNormalIndex * 3))
 								throw std::runtime_error{"wrong format"};
 
 							sDataList.emplace_back(sNormalList[(sNormalList.size() + static_cast<std::size_t>(nNormalIndex) * 3) + 0]);
@@ -216,7 +216,7 @@ namespace Onyx::Render
 						}
 						else if (nNormalIndex > 0)
 						{
-							if (sNormalList.size() <= (nNormalIndex - 1) * 3)
+							if (sNormalList.size() <= static_cast<std::size_t>((nNormalIndex - 1) * 3))
 								throw std::runtime_error{"wrong format"};
 
 							sDataList.emplace_back(sNormalList[static_cast<std::size_t>(nNormalIndex - 1) * 3 + 0]);
@@ -235,17 +235,17 @@ namespace Onyx::Render
 			}
 		}
 
-		std::vector<std::pair<std::uint32_t, VkFormat>> sOffsetList
+		std::vector<std::tuple<std::string, Mesh::Data>> sMeshDataList
 		{
-			std::make_pair(0, VkFormat::VK_FORMAT_R32G32B32_SFLOAT)
+			std::make_tuple(std::string{"position"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, 0})
 		};
 
 		if (sUVList.size())
-			sOffsetList.emplace_back(sizeof(float) * 4 * sOffsetList.size(), VkFormat::VK_FORMAT_R32G32_SFLOAT);
+			sMeshDataList.emplace_back(std::string{"uv"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32_SFLOAT, static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshDataList.size())});
 
 		if (sNormalList.size())
-			sOffsetList.emplace_back(sizeof(float) * 4 * sOffsetList.size(), VkFormat::VK_FORMAT_R32G32B32_SFLOAT);
+			sMeshDataList.emplace_back(std::string{"normal"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshDataList.size())});
 
-		return std::make_unique<Mesh>(this, MeshLayout{static_cast<std::uint32_t>(sizeof(float) * 4 * sOffsetList.size()), sOffsetList}, static_cast<std::uint32_t>(nVertexCount), static_cast<std::uint32_t>(sizeof(float) * sDataList.size()), sDataList.data());
+		return std::make_unique<Mesh>(this, static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshDataList.size()), static_cast<std::uint32_t>(nVertexCount), sMeshDataList, static_cast<std::uint32_t>(sizeof(float) * sDataList.size()), sDataList.data());
 	}
 }

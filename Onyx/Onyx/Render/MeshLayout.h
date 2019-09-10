@@ -1,6 +1,6 @@
 
 /*
-	2019.07.13
+	2019.08.27
 	Created by AcrylicShrimp.
 */
 
@@ -10,21 +10,20 @@
 
 #include "../Vulkan.h"
 
+#include <algorithm>
 #include <cstdint>
-#include <map>
-#include <vector>
-#include <utility>
+#include <stdexcept>
+#include <unordered_map>
 
 namespace Onyx::Render
 {
-	class MeshLayout
+	class MeshLayout final
 	{
-	public:
-		const std::uint32_t nStride;
-		const std::map<std::uint32_t, VkFormat> sOffsetMap;
+	private:
+		std::unordered_map<std::uint32_t, VkFormat> sLayoutMap;
 		
 	public:
-		MeshLayout(std::uint32_t nStride, const std::vector<std::pair<std::uint32_t, VkFormat>> &sOffsetList);
+		MeshLayout() = default;
 		MeshLayout(const MeshLayout &sSrc) = default;
 		MeshLayout(MeshLayout &&sSrc) noexcept = default;
 		~MeshLayout() noexcept = default;
@@ -32,10 +31,22 @@ namespace Onyx::Render
 	public:
 		MeshLayout &operator=(const MeshLayout &sSrc) = default;
 		MeshLayout &operator=(MeshLayout &&sSrc) noexcept = default;
+		
+	public:
+		inline const std::unordered_map<std::uint32_t, VkFormat> &layoutMap() const noexcept;
+		void specifyLayout(std::uint32_t nOffset, VkFormat vkFormat);
+		std::uint32_t calcOffset() const;
+		std::uint32_t calcStride() const;
 
 	public:
-		static bool isSubLayout(const MeshLayout &sLayout, const MeshLayout &sSubLayout);
+		static bool isSubsetOf(const MeshLayout &sMeshLayout, const MeshLayout &sMeshLayoutSubset);
+		static std::uint32_t formatSize(VkFormat vkFormat) noexcept;
 	};
+
+	inline const std::unordered_map<std::uint32_t, VkFormat> &MeshLayout::layoutMap() const noexcept
+	{
+		return this->sLayoutMap;
+	}
 }
 
 #endif

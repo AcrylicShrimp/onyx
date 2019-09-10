@@ -6,17 +6,25 @@
 
 #include "Onyx.h"
 
-#include "./Render/Object.h"
-#include "./Render/ShaderBuilder.h"
+#include "./Render/Material.h"
 #include "./Transform/Vecs.h"
 #include "./Transform/Mats.h"
-#include "./Transform/Transform.h"
 
 #include <fstream>
 #include <string>
 
 int main()
 {
+	using namespace Onyx::Transform;
+
+	auto sVector{Vec2f::one() * Vec2f::down() + 10.f};
+	auto sTestVec{static_cast<Vec2i>(sVector)};
+
+	auto sTestMat{Mat42f{1.f, 1.f, 2.f, 2.f, 3.f, 3.f, 4.f, 4.f}};
+	auto sTestTestMat{sTestMat.transposed()};
+
+	auto sTestResult{sTestMat % sVector};
+
 	Onyx::Onyx sInstance{Onyx::Version{"test", 0, 0, 0}};
 
 	auto pWindow{sInstance.displayMgr().createWindow("main")};
@@ -34,29 +42,19 @@ int main()
 			return sResult;
 		}};
 
-		auto sMeshBinary{fReadBinary("cube_tri.obj")};
+		auto pShader{pContext->shaderMgr().createShader("color_forward")};
 
-		std::ifstream sVertexShaderCodeStream{"vert.spv", std::ios_base::binary};
-		std::ifstream sVertexShaderCodeStream{"frag.spv", std::ios_base::binary};
+		auto sVertexShaderBinary{fReadBinary("vert.spv")};
+		auto sFragmentShaderBinary{fReadBinary("frag.spv")};
 
-		auto pMesh{pContext->meshMgr().loadMeshOBJ(std::string{sMeshBinary.cbegin(), sMeshBinary.cend()})};
-		auto sShader
-		{
-			Onyx::Render::ShaderBuilder{pContext.get()}
-			.stage(Onyx::Render::Shader::Stage::Vertex, sVertexShaderCodeStream)
-			.stage(Onyx::Render::Shader::Stage::Fragment, sVertexShaderCodeStream)
-			.build()
-		};
-
-		Onyx::Transform::Transform sTransform;
-		sTransform.sMatrix = Onyx::Transform::Transform::scale(.2f);
-
-		Onyx::Render::Object sObject{pContext.get(), pMesh.get(), &sShader, sTransform.sMatrix};
+		pShader->attachStage(Onyx::Render::Shader::Stage::Vertex, sVertexShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data()), "main");
+		pShader->attachStage(Onyx::Render::Shader::Stage::Fragment, sFragmentShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data()), "main");
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::VisibleDefault);
 
 		while (pWindow->loopEventAvailable())
-			pContext->render(sObject);
+			//pContext->render(sMaterial)
+			;
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::Invisible);
 	}

@@ -9,7 +9,6 @@
 #define _CLASS_ONYX_RENDER_MESHMANAGER_H
 
 #include "./Mesh.h"
-#include "./MeshLayout.h"
 #include "./SubContextManager.h"
 
 #include "../Vulkan.h"
@@ -24,8 +23,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
 namespace Onyx::Render
@@ -33,7 +32,7 @@ namespace Onyx::Render
 	class MeshManager final : public SubContextManager
 	{
 	private:
-		std::unordered_map<std::string, VkDeviceMemory> sMeshMap;
+		std::unordered_map<std::string, std::tuple<VkDeviceMemory>> sMeshMap;
 		
 	public:
 		MeshManager(Context *pContext);

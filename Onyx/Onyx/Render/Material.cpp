@@ -6,83 +6,63 @@
 
 #include "Material.h"
 
+#include "Context.h"
+
 namespace Onyx::Render
 {
-	Material::Material(Context *pContext, MeshLayout *pMeshLayout, Shader *pShader) :
+	Material::Material(Context *pContext, Shader *pShader, MeshLayout *pMeshLayout, const std::unordered_map<std::uint32_t, std::uint32_t> &sLocationOffsetMapping) :
 		pContext{pContext},
-		pMeshLayout{pMeshLayout},
-		pShader{pShader}
+		pShader{pShader},
+		pMeshLayout{pMeshLayout}
 	{
 		assert(this->pContext);
-		assert(this->pMeshLayout);
 		assert(this->pShader);
+		assert(this->pMeshLayout);
 
-		std::vector<VkVertexInputAttributeDescription> sVertexInputAttributeDescriptionList;
-		sVertexInputAttributeDescriptionList.reserve(this->pMeshLayout->sAttributeList.size() + 4);
+		std::vector<VkVertexInputAttributeDescription> sVertexInputAttributeDescriptionList(pMeshLayout->layoutMap().size());
 
-		for (const auto &sAttribute : this->pMeshLayout->sAttributeList)
+		auto iMeshLayoutMapEnd{this->pMeshLayout->layoutMap().cend()};
+		auto iLocationOffsetMappingEnd{sLocationOffsetMapping.cend()};
+
+		for (const auto &sPair : this->pShader->layout().layoutMap())
+		{
+			auto iLocationOffsetMappingIndex{sLocationOffsetMapping.find(sPair.first)};
+
+			if (iLocationOffsetMappingIndex == iLocationOffsetMappingEnd)
+				throw std::runtime_error{"invalid location-offset mapping"};
+
+			auto iMeshLayoutMapIndex{this->pMeshLayout->layoutMap().find(iLocationOffsetMappingIndex->second)};
+
+			if (iMeshLayoutMapIndex == iMeshLayoutMapEnd)
+				throw std::runtime_error{"invalid location-offset mapping"};
+
+			if (iMeshLayoutMapIndex->second != sPair.second)
+				throw std::runtime_error{"incompatible mesh layout"};
+
 			sVertexInputAttributeDescriptionList.emplace_back(
 				VkVertexInputAttributeDescription
 				{
-					static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
+					sPair.first,
 					0,
-					sAttribute.vkFormat,
-					sAttribute.vkOffset
-				});
+					sPair.second,
+					iLocationOffsetMappingIndex->second
+				}
+			);
+		}
 
-		sVertexInputAttributeDescriptionList.emplace_back(
-			VkVertexInputAttributeDescription
-			{
-				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 0
-			});
-		sVertexInputAttributeDescriptionList.emplace_back(
-			VkVertexInputAttributeDescription
-			{
-				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 4
-			});
-		sVertexInputAttributeDescriptionList.emplace_back(
-			VkVertexInputAttributeDescription
-			{
-				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 8
-			});
-		sVertexInputAttributeDescriptionList.emplace_back(
-			VkVertexInputAttributeDescription
-			{
-				static_cast<uint32_t>(sVertexInputAttributeDescriptionList.size()),
-				1,
-				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
-				sizeof(float) * 12
-			});
-
-		VkVertexInputBindingDescription vBindingDescription[]
+		VkVertexInputBindingDescription vkBindingDescription
 		{
-			{
-				0,
-				this->pMeshLayout->nStride,
-				VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
-			},
-			{
-				1,
-				sizeof(float) * 16,
-				VkVertexInputRate::VK_VERTEX_INPUT_RATE_INSTANCE
-			}
+			0,
+			pMeshLayout->calcStride(),
+			VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
 		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 			nullptr,
 			0,
-			2,
-			vBindingDescription,
+			1,
+			&vkBindingDescription,
 			static_cast<std::uint32_t>(sVertexInputAttributeDescriptionList.size()),
 			sVertexInputAttributeDescriptionList.data()
 		};
@@ -125,7 +105,7 @@ namespace Onyx::Render
 			0,
 			VK_FALSE,
 			VK_FALSE,
-			VkPolygonMode::VK_POLYGON_MODE_FILL,
+			VkPolygonMode::VK_POLYGON_MODE_LINE,
 			VkCullModeFlagBits::VK_CULL_MODE_NONE,
 			VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE,
 			VK_FALSE,
@@ -172,7 +152,21 @@ namespace Onyx::Render
 			{.0f, .0f, .0f, .0f}
 		};
 
-		auto sShaderStageCreateInfoList{pShader->generateShaderStageCreateInfoList()};
+		std::vector<VkPipelineShaderStageCreateInfo> sShaderStageCreateInfoList;
+
+		for (const auto &sPair : pShader->stageMap())
+			sShaderStageCreateInfoList.emplace_back(
+				VkPipelineShaderStageCreateInfo
+				{
+					VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+					nullptr,
+					0,
+					sPair.first == Shader::Stage::Vertex ? VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT : VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT,
+					std::get<0>(sPair.second),
+					std::get<1>(sPair.second).c_str(),
+					nullptr
+				}
+			);
 
 		VkGraphicsPipelineCreateInfo vkPipelineCreateInfo
 		{

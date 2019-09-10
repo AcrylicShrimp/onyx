@@ -355,10 +355,10 @@ namespace Onyx::Transform
 	{
 		return
 		{
-			Vec4<T>{static_cast<T>(1), static_cast<T>(0), static_cast<T>(0), static_cast<T>(0)},
-			Vec4<T>{static_cast<T>(0), static_cast<T>(1), static_cast<T>(0), static_cast<T>(0)},
-			Vec4<T>{static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0)},
-			Vec4<T>{static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)}
+			Vec3<T>{static_cast<T>(1), static_cast<T>(0), static_cast<T>(0), static_cast<T>(0)},
+			Vec3<T>{static_cast<T>(0), static_cast<T>(1), static_cast<T>(0), static_cast<T>(0)},
+			Vec3<T>{static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0)},
+			Vec3<T>{static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)}
 		};
 	}
 

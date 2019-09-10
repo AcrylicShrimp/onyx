@@ -174,19 +174,10 @@
     <ClInclude Include="Onyx\Transform\Mat44.hpp">
       <Filter>Onyx\Transform</Filter>
     </ClInclude>
-    <ClInclude Include="Onyx\Transform\Transform.h">
-      <Filter>Onyx\Transform</Filter>
-    </ClInclude>
-    <ClInclude Include="Onyx\Render\Object.h">
-      <Filter>Onyx\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Onyx\Render\MeshLayout.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Onyx\Render\ShaderBuilder.h">
-      <Filter>Onyx\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Onyx\Render\SPIRV.h">
+    <ClInclude Include="Onyx\Render\ShaderLayout.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
   </ItemGroup>
@@ -264,19 +255,10 @@
     <ClCompile Include="Onyx\Render\UniformManager.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Onyx\Transform\Transform.cpp">
-      <Filter>Onyx\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="Onyx\Render\Object.cpp">
-      <Filter>Onyx\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Onyx\Render\MeshLayout.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Onyx\Render\ShaderBuilder.cpp">
-      <Filter>Onyx\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Onyx\Render\SPIRV.cpp">
+    <ClCompile Include="Onyx\Render\ShaderLayout.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
   </ItemGroup>

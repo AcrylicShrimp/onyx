@@ -58,23 +58,31 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x86.props" />
+    <Import Project="..\SPIRV-Reflect Import.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x86.props" />
+    <Import Project="..\SPIRV-Reflect Import.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x64.props" />
+    <Import Project="..\SPIRV-Reflect Import.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ProjectPath.props" />
     <Import Project="..\Onyx.props" />
     <Import Project="..\VulkanSDK x64.props" />
+    <Import Project="..\SPIRV-Reflect Import.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -85,6 +93,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -93,6 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -147,13 +157,11 @@
     <ClInclude Include="Onyx\Render\Mesh.h" />
     <ClInclude Include="Onyx\Render\MeshLayout.h" />
     <ClInclude Include="Onyx\Render\MeshManager.h" />
-    <ClInclude Include="Onyx\Render\Object.h" />
     <ClInclude Include="Onyx\Render\Renderer.h" />
     <ClInclude Include="Onyx\Render\RenderingManager.h" />
     <ClInclude Include="Onyx\Render\Shader.h" />
-    <ClInclude Include="Onyx\Render\ShaderBuilder.h" />
+    <ClInclude Include="Onyx\Render\ShaderLayout.h" />
     <ClInclude Include="Onyx\Render\ShaderManager.h" />
-    <ClInclude Include="Onyx\Render\SPIRV.h" />
     <ClInclude Include="Onyx\Render\SubContextManager.h" />
     <ClInclude Include="Onyx\Render\Surface.h" />
     <ClInclude Include="Onyx\Render\Swapchain.h" />
@@ -185,7 +193,6 @@
     <ClInclude Include="Onyx\Transform\Mat44.hpp" />
     <ClInclude Include="Onyx\Transform\MatMul.h" />
     <ClInclude Include="Onyx\Transform\Mats.h" />
-    <ClInclude Include="Onyx\Transform\Transform.h" />
     <ClInclude Include="Onyx\Transform\Vec2.h" />
     <ClInclude Include="Onyx\Transform\Vec2.hpp" />
     <ClInclude Include="Onyx\Transform\Vec3.h" />
@@ -220,13 +227,11 @@
     <ClCompile Include="Onyx\Render\Mesh.cpp" />
     <ClCompile Include="Onyx\Render\MeshLayout.cpp" />
     <ClCompile Include="Onyx\Render\MeshManager.cpp" />
-    <ClCompile Include="Onyx\Render\Object.cpp" />
     <ClCompile Include="Onyx\Render\Renderer.cpp" />
     <ClCompile Include="Onyx\Render\RenderingManager.cpp" />
     <ClCompile Include="Onyx\Render\Shader.cpp" />
-    <ClCompile Include="Onyx\Render\ShaderBuilder.cpp" />
+    <ClCompile Include="Onyx\Render\ShaderLayout.cpp" />
     <ClCompile Include="Onyx\Render\ShaderManager.cpp" />
-    <ClCompile Include="Onyx\Render\SPIRV.cpp" />
     <ClCompile Include="Onyx\Render\SubContextManager.cpp" />
     <ClCompile Include="Onyx\Render\Surface.cpp" />
     <ClCompile Include="Onyx\Render\Swapchain.cpp" />

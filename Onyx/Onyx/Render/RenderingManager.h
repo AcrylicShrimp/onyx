@@ -17,7 +17,7 @@
 
 namespace Onyx::Render
 {
-	class Object;
+	class Material;
 
 	class RenderingManager final : public SubContextManager
 	{
@@ -41,7 +41,7 @@ namespace Onyx::Render
 
 	public:
 		inline VkRenderPass vulkanRenderPass() const;
-		void render(std::uint32_t nImageIndex, VkCommandBuffer vkCommandBuffer, const Object &sObject);
+		void render(std::uint32_t nImageIndex, VkCommandBuffer vkCommandBuffer, const Material &sMaterial);
 	};
 
 	inline VkRenderPass RenderingManager::vulkanRenderPass() const
