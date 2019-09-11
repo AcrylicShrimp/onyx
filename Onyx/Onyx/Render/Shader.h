@@ -14,6 +14,7 @@
 
 #include <SPIRV-Reflect/spirv_reflect.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -59,7 +60,7 @@ namespace Onyx::Render
 		void attachStage(Stage eStage, std::size_t nCodeSize, const std::uint32_t *pCode, const std::string &sEntryPointName);
 
 	public:
-		static VkFormat obtainFormat(const SpvReflectInterfaceVariable *pReflectShaderInputVariable);
+		static void specifyLayout(ShaderLayout &sShaderLayout, const SpvReflectInterfaceVariable *pReflectShaderInputVariable);
 	};
 
 	inline const ShaderLayout &Shader::layout() const

@@ -180,6 +180,9 @@
     <ClInclude Include="Onyx\Render\ShaderLayout.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Onyx\Transform\Transform.h">
+      <Filter>Onyx\Transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Onyx\Render\Context.cpp">

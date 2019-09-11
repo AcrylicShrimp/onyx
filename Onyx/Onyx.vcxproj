@@ -193,6 +193,7 @@
     <ClInclude Include="Onyx\Transform\Mat44.hpp" />
     <ClInclude Include="Onyx\Transform\MatMul.h" />
     <ClInclude Include="Onyx\Transform\Mats.h" />
+    <ClInclude Include="Onyx\Transform\Transform.h" />
     <ClInclude Include="Onyx\Transform\Vec2.h" />
     <ClInclude Include="Onyx\Transform\Vec2.hpp" />
     <ClInclude Include="Onyx\Transform\Vec3.h" />

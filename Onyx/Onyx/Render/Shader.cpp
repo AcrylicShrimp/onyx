@@ -4,6 +4,8 @@
 	Created by AcrylicShrimp.
 */
 
+#define NOMINMAX 1
+
 #include "Shader.h"
 
 #include "./Context.h"
@@ -69,16 +71,59 @@ namespace Onyx::Render
 				throw std::runtime_error{"unable to get shader input variable list"};
 
 			for (const auto *pInput : sShaderInputList)
-				this->sShaderLayout.specifyLayout(pInput->location, Shader::obtainFormat(pInput));
+				Shader::specifyLayout(this->sShaderLayout, pInput);
 
 			spvReflectDestroyShaderModule(&sReflectShaderModule);
 		}
 	}
 
-	VkFormat Shader::obtainFormat(const SpvReflectInterfaceVariable *pReflectShaderInputVariable)
+	void Shader::specifyLayout(ShaderLayout &sShaderLayout, const SpvReflectInterfaceVariable *pReflectShaderInputVariable)
 	{
-		//switch (pReflectShaderInputVariable)
+		auto vkFormat{static_cast<VkFormat>(pReflectShaderInputVariable->format)};
 
-		return VkFormat::VK_FORMAT_UNDEFINED;
+		switch (vkFormat)
+		{
+		case VkFormat::VK_FORMAT_R32_SFLOAT:
+		{
+			if (pReflectShaderInputVariable->numeric.scalar.width == 16)
+				vkFormat = VkFormat::VK_FORMAT_R16_SFLOAT;
+			else if (pReflectShaderInputVariable->numeric.scalar.width == 64)
+				vkFormat = VkFormat::VK_FORMAT_R64_SFLOAT;
+		}
+		break;
+		case VkFormat::VK_FORMAT_R32G32_SFLOAT:
+		{
+			if (pReflectShaderInputVariable->numeric.scalar.width == 16)
+				vkFormat = VkFormat::VK_FORMAT_R16G16_SFLOAT;
+			else if (pReflectShaderInputVariable->numeric.scalar.width == 64)
+				vkFormat = VkFormat::VK_FORMAT_R64G64_SFLOAT;
+		}
+		break;
+		case VkFormat::VK_FORMAT_R32G32B32_SFLOAT:
+		{
+			if (pReflectShaderInputVariable->numeric.scalar.width == 16)
+				vkFormat = VkFormat::VK_FORMAT_R16G16B16_SFLOAT;
+			else if (pReflectShaderInputVariable->numeric.scalar.width == 64)
+				vkFormat = VkFormat::VK_FORMAT_R64G64B64_SFLOAT;
+		}
+		break;
+		case VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT:
+		{
+			if (pReflectShaderInputVariable->numeric.scalar.width == 16)
+				vkFormat = VkFormat::VK_FORMAT_R16G16B16A16_SFLOAT;
+			else if (pReflectShaderInputVariable->numeric.scalar.width == 64)
+				vkFormat = VkFormat::VK_FORMAT_R64G64B64A64_SFLOAT;
+		}
+		break;
+		}
+
+		auto nLocation{pReflectShaderInputVariable->location};
+
+		for (std::uint32_t nRow{0}, nMaxRow{std::min(1, pReflectShaderInputVariable->numeric.matrix.row_count)}; nRow < nMaxRow; ++nRow, ++nLocation)
+			sShaderLayout.specifyLayout(nLocation, vkFormat);
+
+		//FIXME
+		for (std::uint32_t nArrayDimIndex{0}, nMaxArrayDimIndex{std::min(1, pReflectShaderInputVariable->array.dims_count)}; nRow < nMaxRow; ++nRow, ++nLocation)
+			sShaderLayout.specifyLayout(nLocation, vkFormat);
 	}
 }
