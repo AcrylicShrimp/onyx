@@ -36,7 +36,7 @@ namespace Onyx::Render
 		std::optional<std::uint32_t> sMemoryTypeIndex;
 		const auto &vkMemoryProperty{this->pContext->device().physicalDeviceAttribute().vkMemoryProperty};
 
-		VkMemoryPropertyFlags vkMemoryPropertyFlag{VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT};
+		VkMemoryPropertyFlags vkMemoryPropertyFlag{VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
 
 		for (std::uint32_t nIndex{0}; nIndex < vkMemoryProperty.memoryTypeCount; ++nIndex)
 			if (vkBufferMemoryReq.memoryTypeBits & (1 << nIndex) && (vkMemoryProperty.memoryTypes[nIndex].propertyFlags & vkMemoryPropertyFlag) == vkMemoryPropertyFlag)
@@ -121,18 +121,5 @@ namespace Onyx::Render
 		fMapFunction(pData);
 
 		vkUnmapMemory(this->pContext->device().vulkanDevice(), this->vkDeviceMemory);
-
-		VkMappedMemoryRange vkMappedMemoryRange
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
-			nullptr,
-			this->vkDeviceMemory,
-			0,
-			this->nAllocationSize
-		};
-
-		if (vkFlushMappedMemoryRanges(this->pContext->device().vulkanDevice(), 1, &vkMappedMemoryRange) != VkResult::VK_SUCCESS ||
-			vkInvalidateMappedMemoryRanges(this->pContext->device().vulkanDevice(), 1, &vkMappedMemoryRange) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to flush memory"};
 	}
 }

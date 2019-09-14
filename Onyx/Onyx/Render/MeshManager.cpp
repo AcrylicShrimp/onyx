@@ -19,23 +19,6 @@ namespace Onyx::Render
 
 	}
 
-	std::unique_ptr<Mesh> MeshManager::createMesh()
-	{
-		std::vector<std::tuple<std::string, Mesh::Data>> sMeshDataList
-		{
-			std::make_tuple(std::string{"position"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, 0})
-		};
-
-		std::vector<float> sBufferDataList
-		{
-			0.433013f, 0.707107f, - 0.250000f, .0f,
-			-0.433013f, 0.707107f, 0.250000f, .0f,
-			-0.079459f, - 0.000000f, 0.862372f, .0f
-		};
-
-		return std::make_unique<Mesh>(this, static_cast<std::uint32_t>(sizeof(float) * 4), 3, sMeshDataList, static_cast<std::uint32_t>(sizeof(float) * sBufferDataList.size()), sBufferDataList.data());
-	}
-
 	std::unique_ptr<Mesh> MeshManager::loadMeshOBJ(const std::string &sContent)
 	{
 		std::istringstream sStringStream{sContent};
@@ -235,17 +218,11 @@ namespace Onyx::Render
 			}
 		}
 
-		std::vector<std::tuple<std::string, Mesh::Data>> sMeshDataList
-		{
-			std::make_tuple(std::string{"position"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, 0})
-		};
+		MeshLayout sMeshLayout;
+		sMeshLayout.specifyLayout(0, VkFormat::VK_FORMAT_R32G32B32_SFLOAT);
+		sMeshLayout.specifyLayout(static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshLayout.layoutMap().size()), VkFormat::VK_FORMAT_R32G32_SFLOAT);
+		sMeshLayout.specifyLayout(static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshLayout.layoutMap().size()), VkFormat::VK_FORMAT_R32G32B32_SFLOAT);
 
-		if (sUVList.size())
-			sMeshDataList.emplace_back(std::string{"uv"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32_SFLOAT, static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshDataList.size())});
-
-		if (sNormalList.size())
-			sMeshDataList.emplace_back(std::string{"normal"}, Mesh::Data{VkFormat::VK_FORMAT_R32G32B32_SFLOAT, static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshDataList.size())});
-
-		return std::make_unique<Mesh>(this, static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshDataList.size()), static_cast<std::uint32_t>(nVertexCount), sMeshDataList, static_cast<std::uint32_t>(sizeof(float) * sDataList.size()), sDataList.data());
+		return std::make_unique<Mesh>(this->pContext, sMeshLayout, sizeof(float) * sDataList.size(), sDataList.data());
 	}
 }

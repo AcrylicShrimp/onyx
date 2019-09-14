@@ -4,8 +4,6 @@
 	Created by AcrylicShrimp.
 */
 
-#define NOMINMAX 1
-
 #include "Shader.h"
 
 #include "./Context.h"
@@ -119,11 +117,24 @@ namespace Onyx::Render
 
 		auto nLocation{pReflectShaderInputVariable->location};
 
-		for (std::uint32_t nRow{0}, nMaxRow{std::min(1, pReflectShaderInputVariable->numeric.matrix.row_count)}; nRow < nMaxRow; ++nRow, ++nLocation)
-			sShaderLayout.specifyLayout(nLocation, vkFormat);
+		auto fSpecifyLayoutNext{[&sShaderLayout, pReflectShaderInputVariable, vkFormat, &nLocation]()
+		{
+			for (std::uint32_t nRow{0}, nMaxRow{std::max(1u, pReflectShaderInputVariable->numeric.matrix.row_count)}; nRow < nMaxRow; ++nRow, ++nLocation)
+				sShaderLayout.specifyLayout(nLocation, vkFormat);
+		}};
 
-		//FIXME
-		for (std::uint32_t nArrayDimIndex{0}, nMaxArrayDimIndex{std::min(1, pReflectShaderInputVariable->array.dims_count)}; nRow < nMaxRow; ++nRow, ++nLocation)
-			sShaderLayout.specifyLayout(nLocation, vkFormat);
+		if (!pReflectShaderInputVariable->array.dims_count)
+		{
+			fSpecifyLayoutNext();
+			return;
+		}
+
+		std::uint32_t nLayoutCount{1};
+
+		for (std::uint32_t nArrayDimIndex{0}, nMaxArrayDimIndex{std::max(1u, pReflectShaderInputVariable->array.dims_count)}; nArrayDimIndex < nMaxArrayDimIndex; ++nArrayDimIndex)
+			nLayoutCount *= pReflectShaderInputVariable->array.dims[nArrayDimIndex];
+
+		for (std::uint32_t nLayout{0}; nLayout < nLayoutCount; ++nLayout)
+			fSpecifyLayoutNext();
 	}
 }

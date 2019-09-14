@@ -8,10 +8,11 @@
 
 #define _CLASS_ONYX_RENDER_MESHMANAGER_H
 
-#include "./Mesh.h"
-#include "./SubContextManager.h"
-
 #include "../Vulkan.h"
+
+#include "./Mesh.h"
+#include "./MeshLayout.h"
+#include "./SubContextManager.h"
 
 #include <algorithm>
 #include <cmath>
@@ -43,7 +44,6 @@ namespace Onyx::Render
 		MeshManager &operator=(const MeshManager &sSrc) = delete;
 		
 	public:
-		std::unique_ptr<Mesh> createMesh();
 		std::unique_ptr<Mesh> loadMeshOBJ(const std::string &sContent);
 	};
 }
