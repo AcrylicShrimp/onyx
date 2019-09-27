@@ -192,7 +192,7 @@ namespace Onyx::Render
 		};
 
 		if (vkCreateGraphicsPipelines(this->pContext->device().vulkanDevice(), VK_NULL_HANDLE, 1, &vkPipelineCreateInfo, nullptr, &this->vkPipeline) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to create render pass"};
+			throw std::runtime_error{"unable to create pipeline"};
 	}
 
 	Material::~Material()

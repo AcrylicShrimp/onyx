@@ -42,7 +42,7 @@ namespace Onyx::Render
 
 	inline const Buffer &Mesh::buffer() const
 	{
-
+		return this->sBuffer;
 	}
 }
 
