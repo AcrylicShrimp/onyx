@@ -75,9 +75,6 @@
     <ClInclude Include="Onyx\Render\Mesh.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Onyx\Render\Renderer.h">
-      <Filter>Onyx\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Onyx\Render\Material.h">
       <Filter>Onyx\Render</Filter>
     </ClInclude>
@@ -238,9 +235,6 @@
       <Filter>Onyx\Render</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\Mesh.cpp">
-      <Filter>Onyx\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Onyx\Render\Renderer.cpp">
       <Filter>Onyx\Render</Filter>
     </ClCompile>
     <ClCompile Include="Onyx\Render\Material.cpp">

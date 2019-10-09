@@ -26,14 +26,14 @@ namespace Onyx::Render
 	{
 	public:
 		Context *const pContext;
-		Shader *const pShader;
-		MeshLayout *const pMeshLayout;
+		const Shader *const pShader;
+		const MeshLayout *const pMeshLayout;
 
 	private:
 		VkPipeline vkPipeline;
 
 	public:
-		Material(Context *pContext, Shader *pShader, MeshLayout *pMeshLayout, const std::unordered_map<std::uint32_t, std::uint32_t> &sLocationOffsetMapping);
+		Material(Context *pContext, const Shader *pShader, const MeshLayout *pMeshLayout, const std::unordered_map<std::uint32_t, std::uint32_t> &sLocationOffsetMapping);
 		Material(const Material &sSrc) = delete;
 		~Material();
 		

@@ -30,6 +30,7 @@ namespace Onyx::Render
 
 	public:
 		Context *const pContext;
+		const Usage eUsage;
 
 	private:
 		VkBuffer vkBuffer;
@@ -40,17 +41,24 @@ namespace Onyx::Render
 	public:
 		Buffer(Context *pContext, Usage eUsage, VkDeviceSize nSize);
 		Buffer(const Buffer &sSrc) = delete;
-		Buffer(Buffer &&sSrc) = delete;
+		Buffer(Buffer &&sSrc);
 		~Buffer() noexcept;
 		
 	public:
 		Buffer &operator=(const Buffer &sSrc) = delete;
-		Buffer &operator=(Buffer &&sSrc) = delete;
+		Buffer &operator=(Buffer &&sSrc);
 		
 	public:
+		inline VkDeviceSize size() const;
 		inline VkBuffer vulkanBuffer() const;
 		void map(std::function<void(void *)> fMapFunction);
+		void resize(VkDeviceSize nSize);
 	};
+
+	inline VkDeviceSize Buffer::size() const
+	{
+		return this->nSize;
+	}
 
 	inline VkBuffer Buffer::vulkanBuffer() const
 	{

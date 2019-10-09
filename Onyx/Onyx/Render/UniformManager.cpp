@@ -92,7 +92,7 @@ namespace Onyx::Render
 				VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 				nullptr,
 				0,
-				sizeof(Time) + sizeof(Transform) + sizeof(float) * 2,
+				sizeof(Time),
 				VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 				VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
 				0,
@@ -216,13 +216,9 @@ namespace Onyx::Render
 		float vData[]
 		{
 			nTotal,
-			1.f / nTotal,
+			1.f / std::max(1e-6f, nTotal),
 			nDelta,
-			1.f / nDelta,
-			0.1f,
-			0.1f,
-			.0f,
-			.0f
+			1.f / std::max(1e-6f, nDelta)
 		};
 		std::memcpy(pBufferData, vData, sizeof(vData));
 

@@ -33,6 +33,15 @@ namespace Onyx::Render
 		for (auto vkImageView : this->sImageViewList)
 			vkDestroyImageView(this->pDevice->vulkanDevice(), vkImageView, nullptr);
 
+		for (auto vkImageView : this->sDepthImageViewList)
+			vkDestroyImageView(this->pDevice->vulkanDevice(), vkImageView, nullptr);
+
+		for (auto vkImage : this->sDepthImageList)
+			vkDestroyImage(this->pDevice->vulkanDevice(), vkImage, nullptr);
+
+		for (auto vkDeviceMemory : this->sDepthImageMemoryList)
+			vkFreeMemory(this->pDevice->vulkanDevice(), vkDeviceMemory, nullptr);
+
 		vkDestroySwapchainKHR(this->pDevice->vulkanDevice(), this->vkSwapchain, nullptr);
 	}
 
@@ -142,9 +151,9 @@ namespace Onyx::Render
 				VkComponentMapping
 				{
 					VK_COMPONENT_SWIZZLE_IDENTITY,
-						VK_COMPONENT_SWIZZLE_IDENTITY,
-						VK_COMPONENT_SWIZZLE_IDENTITY,
-						VK_COMPONENT_SWIZZLE_IDENTITY
+					VK_COMPONENT_SWIZZLE_IDENTITY,
+					VK_COMPONENT_SWIZZLE_IDENTITY,
+					VK_COMPONENT_SWIZZLE_IDENTITY
 				},
 				VkImageSubresourceRange
 				{
@@ -162,6 +171,106 @@ namespace Onyx::Render
 				throw std::runtime_error("unable to create image view");
 
 			this->sImageViewList.emplace_back(vkImageView);
+		}
+
+		this->sDepthImageList.resize(nImageCount);
+
+		for (auto &vkImage : this->sDepthImageList)
+		{
+			VkImageCreateInfo vkImageCreateInfo
+			{
+				VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+				nullptr,
+				0,
+				VkImageType::VK_IMAGE_TYPE_2D,
+				VkFormat::VK_FORMAT_D32_SFLOAT,
+				VkExtent3D
+				{
+					this->vkExtent.width,
+					this->vkExtent.height,
+					1
+				},
+				1,
+				1,
+				VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT,
+				VkImageTiling::VK_IMAGE_TILING_OPTIMAL,
+				VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+				VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
+				0,
+				nullptr,
+				VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED
+			};
+
+			if (vkCreateImage(this->pDevice->vulkanDevice(), &vkImageCreateInfo, nullptr, &vkImage) != VkResult::VK_SUCCESS)
+				throw std::runtime_error("unable to create image");
+
+			VkMemoryRequirements vkImageMemoryReq;
+			vkGetImageMemoryRequirements(this->pDevice->vulkanDevice(), vkImage, &vkImageMemoryReq);
+
+			std::optional<std::uint32_t> sMemoryTypeIndex;
+			const auto &vkMemoryProperty{this->pDevice->physicalDeviceAttribute().vkMemoryProperty};
+
+			VkMemoryPropertyFlags vkMemoryPropertyFlag{VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
+
+			for (std::uint32_t nIndex{0}; nIndex < vkMemoryProperty.memoryTypeCount; ++nIndex)
+				if (vkImageMemoryReq.memoryTypeBits & (1 << nIndex) && (vkMemoryProperty.memoryTypes[nIndex].propertyFlags & vkMemoryPropertyFlag) == vkMemoryPropertyFlag)
+					sMemoryTypeIndex = nIndex;
+
+			if (!sMemoryTypeIndex)
+				throw std::runtime_error{"unable to find suitable memory type"};
+
+			VkMemoryAllocateInfo vkMemoryAllocateInfo
+			{
+				VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+				nullptr,
+				vkImageMemoryReq.size,
+				*sMemoryTypeIndex
+			};
+
+			this->sDepthImageMemoryList.emplace_back();
+
+			if (vkAllocateMemory(this->pDevice->vulkanDevice(), &vkMemoryAllocateInfo, nullptr, &this->sDepthImageMemoryList.back()) != VkResult::VK_SUCCESS)
+				throw std::runtime_error{"unable to allocate memory"};
+
+			if (vkBindImageMemory(this->pDevice->vulkanDevice(), vkImage, this->sDepthImageMemoryList.back(), 0) != VkResult::VK_SUCCESS)
+				throw std::runtime_error{"unable to bind image memory"};
+		}
+
+		this->sDepthImageViewList.reserve(nImageCount);
+
+		for (auto vkImage : this->sDepthImageList)
+		{
+			VkImageViewCreateInfo vkImageViewCreateInfo
+			{
+				VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+				nullptr,
+				0,
+				vkImage,
+				VkImageViewType::VK_IMAGE_VIEW_TYPE_2D,
+				VkFormat::VK_FORMAT_D32_SFLOAT,
+				VkComponentMapping
+				{
+					VK_COMPONENT_SWIZZLE_IDENTITY,
+					VK_COMPONENT_SWIZZLE_IDENTITY,
+					VK_COMPONENT_SWIZZLE_IDENTITY,
+					VK_COMPONENT_SWIZZLE_IDENTITY
+				},
+				VkImageSubresourceRange
+				{
+					VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT,
+					0,
+					1,
+					0,
+					1
+				}
+			};
+
+			VkImageView vkImageView;
+
+			if (vkCreateImageView(this->pDevice->vulkanDevice(), &vkImageViewCreateInfo, nullptr, &vkImageView) != VkResult::VK_SUCCESS)
+				throw std::runtime_error("unable to create image view");
+
+			this->sDepthImageViewList.emplace_back(vkImageView);
 		}
 	}
 }

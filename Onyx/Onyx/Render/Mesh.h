@@ -13,6 +13,7 @@
 #include "./Buffer.h"
 #include "./MeshLayout.h"
 
+#include <cstdint>
 #include <cstring>
 
 namespace Onyx::Render
@@ -24,12 +25,13 @@ namespace Onyx::Render
 	public:
 		Context *const pContext;
 		const MeshLayout sMeshLayout;
+		const std::uint32_t nVertexCount;
 
 	private:
 		Buffer sBuffer;
 		
 	public:
-		Mesh(Context *pContext, const MeshLayout &sMeshLayout, VkDeviceSize nSize, const void *pData);
+		Mesh(Context *pContext, const MeshLayout &sMeshLayout, std::uint32_t nVertexCount, VkDeviceSize nSize, const void *pData);
 		Mesh(const Mesh &sSrc) = delete;
 		~Mesh() noexcept = default;
 		

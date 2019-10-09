@@ -145,8 +145,8 @@ namespace Onyx::Transform
 		{
 			n2FarPerHeight / nAspect, .0f, .0f, .0f,
 			.0f, -n2FarPerHeight, .0f, .0f,
-			.0f, .0f, nFar * nNearMinusFarInv, nNear * nFar * nNearMinusFarInv,
-			.0f, .0f, -1.f, .0f
+			.0f, .0f, nFar * nNearMinusFarInv, -1.f,
+			.0f, .0f, nNear * nFar * nNearMinusFarInv, .0f
 		};
 	}
 }

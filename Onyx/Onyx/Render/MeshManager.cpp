@@ -151,7 +151,6 @@ namespace Onyx::Render
 							sDataList.emplace_back(sVertexList[(sVertexList.size() + static_cast<std::size_t>(nVertexIndex) * 3) + 0]);
 							sDataList.emplace_back(sVertexList[(sVertexList.size() + static_cast<std::size_t>(nVertexIndex) * 3) + 1]);
 							sDataList.emplace_back(sVertexList[(sVertexList.size() + static_cast<std::size_t>(nVertexIndex) * 3) + 2]);
-							sDataList.emplace_back(.0f);
 						}
 						else if (nVertexIndex > 0)
 						{
@@ -161,7 +160,6 @@ namespace Onyx::Render
 							sDataList.emplace_back(sVertexList[static_cast<std::size_t>(nVertexIndex - 1) * 3 + 0]);
 							sDataList.emplace_back(sVertexList[static_cast<std::size_t>(nVertexIndex - 1) * 3 + 1]);
 							sDataList.emplace_back(sVertexList[static_cast<std::size_t>(nVertexIndex - 1) * 3 + 2]);
-							sDataList.emplace_back(.0f);
 						}
 						else
 							throw std::runtime_error{"wrong format"};
@@ -173,8 +171,6 @@ namespace Onyx::Render
 
 							sDataList.emplace_back(sUVList[(sUVList.size() + static_cast<std::size_t>(nUVIndex) * 2) + 0]);
 							sDataList.emplace_back(sUVList[(sUVList.size() + static_cast<std::size_t>(nUVIndex) * 2) + 1]);
-							sDataList.emplace_back(.0f);
-							sDataList.emplace_back(.0f);
 						}
 						else if (nUVIndex > 0)
 						{
@@ -183,8 +179,6 @@ namespace Onyx::Render
 
 							sDataList.emplace_back(sUVList[static_cast<std::size_t>(nUVIndex - 1) * 2 + 0]);
 							sDataList.emplace_back(sUVList[static_cast<std::size_t>(nUVIndex - 1) * 2 + 1]);
-							sDataList.emplace_back(.0f);
-							sDataList.emplace_back(.0f);
 						}
 
 						if (nNormalIndex < 0)
@@ -195,7 +189,6 @@ namespace Onyx::Render
 							sDataList.emplace_back(sNormalList[(sNormalList.size() + static_cast<std::size_t>(nNormalIndex) * 3) + 0]);
 							sDataList.emplace_back(sNormalList[(sNormalList.size() + static_cast<std::size_t>(nNormalIndex) * 3) + 1]);
 							sDataList.emplace_back(sNormalList[(sNormalList.size() + static_cast<std::size_t>(nNormalIndex) * 3) + 2]);
-							sDataList.emplace_back(.0f);
 						}
 						else if (nNormalIndex > 0)
 						{
@@ -205,7 +198,6 @@ namespace Onyx::Render
 							sDataList.emplace_back(sNormalList[static_cast<std::size_t>(nNormalIndex - 1) * 3 + 0]);
 							sDataList.emplace_back(sNormalList[static_cast<std::size_t>(nNormalIndex - 1) * 3 + 1]);
 							sDataList.emplace_back(sNormalList[static_cast<std::size_t>(nNormalIndex - 1) * 3 + 2]);
-							sDataList.emplace_back(.0f);
 						}
 					}};
 
@@ -220,9 +212,9 @@ namespace Onyx::Render
 
 		MeshLayout sMeshLayout;
 		sMeshLayout.specifyLayout(0, VkFormat::VK_FORMAT_R32G32B32_SFLOAT);
-		sMeshLayout.specifyLayout(static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshLayout.layoutMap().size()), VkFormat::VK_FORMAT_R32G32_SFLOAT);
-		sMeshLayout.specifyLayout(static_cast<std::uint32_t>(sizeof(float) * 4 * sMeshLayout.layoutMap().size()), VkFormat::VK_FORMAT_R32G32B32_SFLOAT);
+		sMeshLayout.specifyLayout(sMeshLayout.calcStride(), VkFormat::VK_FORMAT_R32G32_SFLOAT);
+		sMeshLayout.specifyLayout(sMeshLayout.calcStride(), VkFormat::VK_FORMAT_R32G32B32_SFLOAT);
 
-		return std::make_unique<Mesh>(this->pContext, sMeshLayout, sizeof(float) * sDataList.size(), sDataList.data());
+		return std::make_unique<Mesh>(this->pContext, sMeshLayout, static_cast<std::uint32_t>(nVertexCount), sizeof(float) * sDataList.size(), sDataList.data());
 	}
 }

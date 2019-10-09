@@ -124,7 +124,9 @@ namespace Onyx::Render
 		vkDeviceWaitIdle(this->sDevice.vulkanDevice());
 	}
 
-	void Context::render(const Material &sMaterial)
+	void Context::render(
+		const std::vector<Transform::Mat44<float>> &sTransformList,
+		const std::vector<std::tuple<Material *, Mesh *>> &sRenderableList)
 	{
 		auto sSynchronizationObject{this->sSynchronizer.sync()};
 		auto sGraphicsCommandBuffer{std::get<0>(sSynchronizationObject)};
@@ -195,7 +197,7 @@ namespace Onyx::Render
 				1, &vkGraphicsImageMemoryBarrier);
 		}
 
-		this->pRenderingMgr->render(nImageIndex, sGraphicsCommandBuffer, sMaterial);
+		this->pRenderingMgr->render(nImageIndex, sGraphicsCommandBuffer, sTransformList, sRenderableList);
 
 		{
 			VkImageMemoryBarrier vkGraphicsImageMemoryBarrier

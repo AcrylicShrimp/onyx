@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <optional>
 #include <stdexcept>
 #include <vector>
 
@@ -34,6 +35,9 @@ namespace Onyx::Render
 		VkPresentModeKHR vkPresentMode;
 		std::vector<VkImage> sImageList;
 		std::vector<VkImageView> sImageViewList;
+		std::vector<VkImage> sDepthImageList;
+		std::vector<VkImageView> sDepthImageViewList;
+		std::vector<VkDeviceMemory> sDepthImageMemoryList;
 
 	public:
 		Swapchain(Device *pDevice, Surface *pSurface);
@@ -49,6 +53,7 @@ namespace Onyx::Render
 		inline VkPresentModeKHR vulkanPresentMode() const noexcept;
 		inline const std::vector<VkImage> &vulkanImageList() const noexcept;
 		inline const std::vector<VkImageView> &vulkanImageViewList() const noexcept;
+		inline const std::vector<VkImageView> &vulkanDepthImageViewList() const noexcept;
 		bool isCompatiblePhysicalDevice(VkPhysicalDevice vkPhysicalDevice);
 		void createSwapchainInstance();
 	};
@@ -76,6 +81,11 @@ namespace Onyx::Render
 	inline const std::vector<VkImageView> &Swapchain::vulkanImageViewList() const noexcept
 	{
 		return this->sImageViewList;
+	}
+
+	inline const std::vector<VkImageView> &Swapchain::vulkanDepthImageViewList() const noexcept
+	{
+		return this->sDepthImageViewList;
 	}
 }
 

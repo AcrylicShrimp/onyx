@@ -11,6 +11,8 @@ namespace Onyx::Render
 	Synchronizer::Synchronizer(Device *pDevice, std::size_t nMaxConcurrentFrameCount) :
 		pDevice{pDevice},
 		nFrameIndex{0},
+		vkGraphicsCommandPool{VK_NULL_HANDLE},
+		vkPresentCommandPool{VK_NULL_HANDLE},
 		nMaxConcurrentFrameCount{nMaxConcurrentFrameCount}
 	{
 		assert(this->pDevice);

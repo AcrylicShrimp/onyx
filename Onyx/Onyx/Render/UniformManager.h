@@ -12,6 +12,7 @@
 
 #include "../Vulkan.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -30,11 +31,6 @@ namespace Onyx::Render
 			float nTotalInv;
 			float nDelta;
 			float nDeltaInv;
-		};
-		struct alignas(32) Transform
-		{
-			float nX;
-			float nY;
 		};
 
 	private:

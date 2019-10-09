@@ -7,23 +7,20 @@
 #include "Onyx.h"
 
 #include "./Render/Material.h"
+#include "./Render/Mesh.h"
+#include "./Render/MeshManager.h"
 #include "./Transform/Vecs.h"
 #include "./Transform/Mats.h"
+#include "./Transform/Transform.h"
 
 #include <fstream>
 #include <string>
+#include <tuple>
+#include <unordered_map>
 
 int main()
 {
 	using namespace Onyx::Transform;
-
-	auto sVector{Vec2f::one() * Vec2f::down() + 10.f};
-	auto sTestVec{static_cast<Vec2i>(sVector)};
-
-	auto sTestMat{Mat42f{1.f, 1.f, 2.f, 2.f, 3.f, 3.f, 4.f, 4.f}};
-	auto sTestTestMat{sTestMat.transposed()};
-
-	auto sTestResult{sTestMat % sVector};
 
 	Onyx::Onyx sInstance{Onyx::Version{"test", 0, 0, 0}};
 
@@ -50,11 +47,35 @@ int main()
 		pShader->attachStage(Onyx::Render::Shader::Stage::Vertex, sVertexShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sVertexShaderBinary.data()), "main");
 		pShader->attachStage(Onyx::Render::Shader::Stage::Fragment, sFragmentShaderBinary.size(), reinterpret_cast<std::uint32_t *>(sFragmentShaderBinary.data()), "main");
 
+		auto sCubeMeshBinary{fReadBinary("cube.obj")};
+		auto sConeMeshBinary{fReadBinary("cone.obj")};
+
+		std::unordered_map<std::uint32_t, std::uint32_t> sLocationOffsetMap;
+		sLocationOffsetMap[4] = sizeof(float) * 0;
+		sLocationOffsetMap[5] = sizeof(float) * 3;
+		sLocationOffsetMap[6] = sizeof(float) * 5;
+
+		auto pCubeMesh{pContext->meshMgr().loadMeshOBJ(std::string{sCubeMeshBinary.cbegin(), sCubeMeshBinary.cend()})};
+		auto pConeMesh{pContext->meshMgr().loadMeshOBJ(std::string{sConeMeshBinary.cbegin(), sConeMeshBinary.cend()})};
+		Onyx::Render::Material sMaterial{pContext.get(), pShader, &pCubeMesh->sMeshLayout, sLocationOffsetMap};
+
+		std::vector<Mat44<float>> sTranformList
+		{
+			Onyx::Transform::Transform::translate(.0f, .0f, -4.f) % Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f),
+			Onyx::Transform::Transform::translate(1.f, .0f, -4.f) % Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f),
+			Onyx::Transform::Transform::translate(2.f, .0f, -4.f) % Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f)
+		};
+		std::vector<std::tuple<Onyx::Render::Material *, Onyx::Render::Mesh *>> sRenderableList
+		{
+			std::make_tuple(&sMaterial, pCubeMesh.get()),
+			std::make_tuple(&sMaterial, pConeMesh.get()),
+			std::make_tuple(&sMaterial, pCubeMesh.get())
+		};
+
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::VisibleDefault);
 
 		while (pWindow->loopEventAvailable())
-			//pContext->render(sMaterial)
-			;
+			pContext->render(sTranformList, sRenderableList);
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::Invisible);
 	}

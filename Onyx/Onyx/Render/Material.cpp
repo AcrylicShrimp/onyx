@@ -10,7 +10,7 @@
 
 namespace Onyx::Render
 {
-	Material::Material(Context *pContext, Shader *pShader, MeshLayout *pMeshLayout, const std::unordered_map<std::uint32_t, std::uint32_t> &sLocationOffsetMapping) :
+	Material::Material(Context *pContext, const Shader *pShader, const MeshLayout *pMeshLayout, const std::unordered_map<std::uint32_t, std::uint32_t> &sLocationOffsetMapping) :
 		pContext{pContext},
 		pShader{pShader},
 		pMeshLayout{pMeshLayout}
@@ -19,13 +19,46 @@ namespace Onyx::Render
 		assert(this->pShader);
 		assert(this->pMeshLayout);
 
-		std::vector<VkVertexInputAttributeDescription> sVertexInputAttributeDescriptionList(pMeshLayout->layoutMap().size());
+		std::vector<VkVertexInputAttributeDescription> sVertexInputAttributeDescriptionList
+		{
+			VkVertexInputAttributeDescription
+			{
+				0,
+				0,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 0
+			},
+			VkVertexInputAttributeDescription
+			{
+				1,
+				0,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 4
+			},
+			VkVertexInputAttributeDescription
+			{
+				2,
+				0,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 8
+			},
+			VkVertexInputAttributeDescription
+			{
+				3,
+				0,
+				VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT,
+				sizeof(float) * 12
+			}
+		};
 
 		auto iMeshLayoutMapEnd{this->pMeshLayout->layoutMap().cend()};
 		auto iLocationOffsetMappingEnd{sLocationOffsetMapping.cend()};
 
 		for (const auto &sPair : this->pShader->layout().layoutMap())
 		{
+			if (sPair.first >= 0 && sPair.first < 4)
+				continue;
+
 			auto iLocationOffsetMappingIndex{sLocationOffsetMapping.find(sPair.first)};
 
 			if (iLocationOffsetMappingIndex == iLocationOffsetMappingEnd)
@@ -43,26 +76,35 @@ namespace Onyx::Render
 				VkVertexInputAttributeDescription
 				{
 					sPair.first,
-					0,
+					1,
 					sPair.second,
 					iLocationOffsetMappingIndex->second
 				}
 			);
 		}
 
-		VkVertexInputBindingDescription vkBindingDescription
+		std::vector<VkVertexInputBindingDescription> sBindingDescriptionList
 		{
-			0,
-			pMeshLayout->calcStride(),
-			VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
+			VkVertexInputBindingDescription
+			{
+				0,
+				sizeof(float) * 16,
+				VkVertexInputRate::VK_VERTEX_INPUT_RATE_INSTANCE
+			},
+			VkVertexInputBindingDescription
+			{
+				1,
+				pMeshLayout->calcStride(),
+				VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX
+			}
 		};
 		VkPipelineVertexInputStateCreateInfo vkVertexInputStateCreateInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 			nullptr,
 			0,
-			1,
-			&vkBindingDescription,
+			static_cast<std::uint32_t>(sBindingDescriptionList.size()),
+			sBindingDescriptionList.data(),
 			static_cast<std::uint32_t>(sVertexInputAttributeDescriptionList.size()),
 			sVertexInputAttributeDescriptionList.data()
 		};
@@ -105,7 +147,7 @@ namespace Onyx::Render
 			0,
 			VK_FALSE,
 			VK_FALSE,
-			VkPolygonMode::VK_POLYGON_MODE_LINE,
+			VkPolygonMode::VK_POLYGON_MODE_FILL,
 			VkCullModeFlagBits::VK_CULL_MODE_NONE,
 			VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE,
 			VK_FALSE,
@@ -139,6 +181,21 @@ namespace Onyx::Render
 			VkColorComponentFlagBits::VK_COLOR_COMPONENT_G_BIT |
 			VkColorComponentFlagBits::VK_COLOR_COMPONENT_B_BIT |
 			VkColorComponentFlagBits::VK_COLOR_COMPONENT_A_BIT
+		};
+		VkPipelineDepthStencilStateCreateInfo vkDepthStencilStateCreateInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+			nullptr,
+			0,
+			VK_TRUE,
+			VK_TRUE,
+			VkCompareOp::VK_COMPARE_OP_LESS,
+			VK_FALSE,
+			VK_FALSE,
+			VkStencilOpState{},
+			VkStencilOpState{},
+			.0f,
+			1.f,
 		};
 		VkPipelineColorBlendStateCreateInfo vkColorBlendStateCreateInfo
 		{
@@ -181,7 +238,7 @@ namespace Onyx::Render
 			&vkViewportStateCreateInfo,
 			&vkRasterizationStateCreateInfo,
 			&vkMultisampleStateCreateInfo,
-			nullptr,
+			&vkDepthStencilStateCreateInfo,
 			&vkColorBlendStateCreateInfo,
 			nullptr,
 			this->pContext->uniformMgr().vulkanPipelineLayout(),

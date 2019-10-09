@@ -10,9 +10,10 @@
 
 namespace Onyx::Render
 {
-	Mesh::Mesh(Context *pContext, const MeshLayout &sMeshLayout, VkDeviceSize nSize, const void *pData) :
+	Mesh::Mesh(Context *pContext, const MeshLayout &sMeshLayout, std::uint32_t nVertexCount, VkDeviceSize nSize, const void *pData) :
 		pContext{pContext},
 		sMeshLayout{sMeshLayout},
+		nVertexCount{nVertexCount},
 		sBuffer{pContext, Buffer::Usage::VertexBuffer, nSize}
 	{
 		assert(this->pContext);

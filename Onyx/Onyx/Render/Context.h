@@ -12,6 +12,7 @@
 #include "../Display/Window.h"
 #include "./Device.h"
 #include "./Material.h"
+#include "./Mesh.h"
 #include "./MeshManager.h"
 #include "./Surface.h"
 #include "./Synchronizer.h"
@@ -19,6 +20,7 @@
 #include "./ShaderManager.h"
 #include "./RenderingManager.h"
 #include "./UniformManager.h"
+#include "../Transform/Mats.h"
 
 #include <algorithm>
 #include <cassert>
@@ -30,6 +32,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -71,11 +74,14 @@ namespace Onyx::Render
 		inline const Device &device() const;
 		inline const Surface &surface() const;
 		inline const Swapchain &swapchain() const;
+		inline const Synchronizer &synchronizer() const;
 		inline UniformManager &uniformMgr() const;
 		inline ShaderManager &shaderMgr() const;
 		inline RenderingManager &renderingMgr() const;
 		inline MeshManager &meshMgr() const;
-		void render(const Material &sMaterial);
+		void render(
+			const std::vector<Transform::Mat44<float>> &sTransformList,
+			const std::vector<std::tuple<Material *, Mesh *>> &sRenderableList);
 	};
 
 	inline const Device &Context::device() const
@@ -91,6 +97,11 @@ namespace Onyx::Render
 	inline const Swapchain &Context::swapchain() const
 	{
 		return this->sSwapchain;
+	}
+
+	inline const Synchronizer &Context::synchronizer() const
+	{
+		return this->sSynchronizer;
 	}
 
 	inline UniformManager &Context::uniformMgr() const
