@@ -9,15 +9,136 @@
 namespace Onyx::Transform
 {
 	Transform::Transform() :
-		sMatrix{Mat44f::identity()}
+		sPosition{Vec3f::zero()},
+		sRotation{Mat33f::identity()}
 	{
 		//Empty.
 	}
 
 	Transform::Transform(const Mat44f &sMatrix) :
-		sMatrix{sMatrix}
+		sPosition{sMatrix[3][0], sMatrix[3][1], sMatrix[3][2]},
+		sRotation{sMatrix[0][0], sMatrix[0][1], sMatrix[0][2], sMatrix[1][0], sMatrix[1][1], sMatrix[1][2], sMatrix[2][0], sMatrix[2][1], sMatrix[2][2]}
 	{
 		//Empty.
+	}
+
+	Mat44f Transform::matrix() const
+	{
+		return
+		{
+			this->sRotation[0][0], this->sRotation[0][1], this->sRotation[0][2], .0f,
+			this->sRotation[1][0], this->sRotation[1][1], this->sRotation[1][2], .0f,
+			this->sRotation[2][0], this->sRotation[2][1], this->sRotation[2][2], .0f,
+			this->sPosition[0], this->sPosition[1], this->sPosition[2], 1.f
+		};
+	}
+
+	Mat44f Transform::inverseMatrix() const
+	{
+		auto sTransposedMat{this->sRotation.transposed()};
+		auto sMultipliedVec{-this->sPosition % sTransposedMat};
+
+		return
+		{
+			sTransposedMat[0][0], sTransposedMat[0][1], sTransposedMat[0][2], .0f,
+			sTransposedMat[1][0], sTransposedMat[1][1], sTransposedMat[1][2], .0f,
+			sTransposedMat[2][0], sTransposedMat[2][1], sTransposedMat[2][2], .0f,
+			sMultipliedVec[0], sMultipliedVec[1], sMultipliedVec[2], 1.f
+		};
+	}
+
+	Vec3f Transform::forward() const
+	{
+		return this->sRotation % Vec3f::front();
+	}
+
+	Vec3f Transform::backward() const
+	{
+		return this->sRotation % Vec3f::back();
+	}
+
+	Vec3f Transform::upward() const
+	{
+		return this->sRotation % Vec3f::up();
+	}
+
+	Vec3f Transform::downward() const
+	{
+		return this->sRotation % Vec3f::down();
+	}
+
+	Vec3f Transform::leftward() const
+	{
+		return this->sRotation % Vec3f::left();
+	}
+
+	Vec3f Transform::rightward() const
+	{
+		return this->sRotation % Vec3f::right();
+	}
+
+	void Transform::translateX(float nDistance, Space eSpace)
+	{
+		if (eSpace == Space::World)
+			this->sPosition.tX += nDistance;
+		else
+			this->sPosition += nDistance * this->rightward();
+	}
+
+	void Transform::translateY(float nDistance, Space eSpace)
+	{
+		if (eSpace == Space::World)
+			this->sPosition.tY += nDistance;
+		else
+			this->sPosition += nDistance * this->upward();
+	}
+
+	void Transform::translateZ(float nDistance, Space eSpace)
+	{
+		if (eSpace == Space::World)
+			this->sPosition.tZ += nDistance;
+		else
+			this->sPosition += nDistance * this->forward();
+	}
+
+	void Transform::translate(float nDistanceX, float nDistanceY, float nDistanceZ, Space eSpace)
+	{
+		if (eSpace == Space::World)
+		{
+			this->sPosition.tX += nDistanceX;
+			this->sPosition.tY += nDistanceY;
+			this->sPosition.tZ += nDistanceZ;
+		}
+		else
+			this->sPosition += Vec3f{nDistanceX, nDistanceY, nDistanceZ} * this->rightward();
+	}
+
+	void Transform::rotateX(float nAngle, Space eSpace)
+	{
+		if (eSpace == Space::World)
+		{
+			const auto nSin{std::sin(nAngle)};
+			const auto nCos{std::cos(nAngle)};
+
+			this->sRotation % Mat33f{1.f, .0f, .0f, .0f, nCos, nSin, .0f, -nSin, nCos};
+		}
+		/*else
+*/
+	}
+
+	void Transform::rotateY(float nAngle, Space eSpace)
+	{
+
+	}
+
+	void Transform::rotateZ(float nAngle, Space eSpace)
+	{
+
+	}
+
+	void Transform::rotate(float nAngleX, float nAngleY, float nAngleZ, Space eSpace)
+	{
+
 	}
 
 	Mat44f Transform::scale(float nScale)
@@ -42,7 +163,7 @@ namespace Onyx::Transform
 		};
 	}
 
-	Mat44f Transform::rotate(float nAngle, const Vec3f &sAxis)
+	Mat44f Transform::rotation(float nAngle, const Vec3f &sAxis)
 	{
 		const auto nSin{std::sin(nAngle)};
 		const auto nCos{std::cos(nAngle)};
@@ -72,7 +193,7 @@ namespace Onyx::Transform
 		};
 	}
 
-	Mat44f Transform::rotateX(float nAngle)
+	Mat44f Transform::rotationX(float nAngle)
 	{
 		const auto nSin{std::sin(nAngle)};
 		const auto nCos{std::cos(nAngle)};
@@ -86,7 +207,7 @@ namespace Onyx::Transform
 		};
 	}
 
-	Mat44f Transform::rotateY(float nAngle)
+	Mat44f Transform::rotationY(float nAngle)
 	{
 		const auto nSin{std::sin(nAngle)};
 		const auto nCos{std::cos(nAngle)};
@@ -100,7 +221,7 @@ namespace Onyx::Transform
 		};
 	}
 
-	Mat44f Transform::rotateZ(float nAngle)
+	Mat44f Transform::rotationZ(float nAngle)
 	{
 		const auto nSin{std::sin(nAngle)};
 		const auto nCos{std::cos(nAngle)};
@@ -114,7 +235,7 @@ namespace Onyx::Transform
 		};
 	}
 
-	Mat44f Transform::translate(const Vec3f &sDistance)
+	Mat44f Transform::translation(const Vec3f &sDistance)
 	{
 		return
 		{
@@ -125,7 +246,7 @@ namespace Onyx::Transform
 		};
 	}
 
-	Mat44f Transform::translate(float nDistanceX, float nDistanceY, float nDistanceZ)
+	Mat44f Transform::translation(float nDistanceX, float nDistanceY, float nDistanceZ)
 	{
 		return
 		{

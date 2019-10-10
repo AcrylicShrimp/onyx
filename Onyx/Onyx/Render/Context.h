@@ -80,7 +80,9 @@ namespace Onyx::Render
 		inline RenderingManager &renderingMgr() const;
 		inline MeshManager &meshMgr() const;
 		void render(
-			const std::vector<Transform::Mat44<float>> &sTransformList,
+			const Transform::Mat44f &sViewTransform,
+			const Transform::Mat44f &sProjectionTransform,
+			const std::vector<Transform::Mat44f> &sTransformList,
 			const std::vector<std::tuple<Material *, Mesh *>> &sRenderableList);
 	};
 

@@ -125,7 +125,9 @@ namespace Onyx::Render
 	}
 
 	void Context::render(
-		const std::vector<Transform::Mat44<float>> &sTransformList,
+		const Transform::Mat44f &sViewTransform,
+		const Transform::Mat44f &sProjectionTransform,
+		const std::vector<Transform::Mat44f> &sTransformList,
 		const std::vector<std::tuple<Material *, Mesh *>> &sRenderableList)
 	{
 		auto sSynchronizationObject{this->sSynchronizer.sync()};
@@ -144,7 +146,7 @@ namespace Onyx::Render
 		if (vkAcquireNextImageKHR(this->sDevice.vulkanDevice(), this->sSwapchain.vulkanSwapchain(), std::numeric_limits<std::uint64_t>::max(), sAfterPresentationSemaphore, VK_NULL_HANDLE, &nImageIndex) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to acquire next image"};
 
-		this->pUniformMgr->updateUniform(nImageIndex);
+		this->pUniformMgr->updateUniform(nImageIndex, sViewTransform, sProjectionTransform);
 
 		VkCommandBufferBeginInfo vkGraphicsCommandBufferBeginInfo
 		{

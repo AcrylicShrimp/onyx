@@ -21,7 +21,7 @@ namespace Onyx::Render
 			VkShaderStageFlagBits::VK_SHADER_STAGE_ALL,
 			nullptr
 		};
-		VkDescriptorSetLayoutBinding vkTransformDescriptorSetLayoutBinding
+		VkDescriptorSetLayoutBinding vkGlobalTransformDescriptorSetLayoutBinding
 		{
 			1,
 			VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -33,7 +33,7 @@ namespace Onyx::Render
 		VkDescriptorSetLayoutBinding vDescriptorSetLayoutBindingArray[]
 		{
 			vkTimeDescriptorSetLayoutBinding,
-			vkTransformDescriptorSetLayoutBinding
+			vkGlobalTransformDescriptorSetLayoutBinding
 		};
 
 		VkDescriptorSetLayoutCreateInfo vkDescriptorSetLayoutCreateInfo
@@ -41,7 +41,7 @@ namespace Onyx::Render
 			VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 			nullptr,
 			0,
-			1,
+			2,
 			vDescriptorSetLayoutBindingArray
 		};
 
@@ -82,49 +82,10 @@ namespace Onyx::Render
 		if (vkCreateDescriptorPool(this->pContext->device().vulkanDevice(), &vkDescriptorPoolCreateInfo, nullptr, &this->vkDescriptorPool) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create descriptor pool"};
 
-		this->sBufferList.resize(nMaxIndex);
-		this->sDeviceMemoryList.resize(nMaxIndex);
-
 		for (std::size_t nIndex{0}; nIndex < nMaxIndex; ++nIndex)
 		{
-			VkBufferCreateInfo vkBufferCreateInfo
-			{
-				VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-				nullptr,
-				0,
-				sizeof(Time),
-				VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-				VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
-				0,
-				nullptr
-			};
-
-			if (vkCreateBuffer(this->pContext->device().vulkanDevice(), &vkBufferCreateInfo, nullptr, &this->sBufferList[nIndex]) != VkResult::VK_SUCCESS)
-				throw std::runtime_error{"unable to create buffer"};
-
-			VkMemoryRequirements vkBufferMemoryReq;
-			vkGetBufferMemoryRequirements(this->pContext->device().vulkanDevice(), this->sBufferList[nIndex], &vkBufferMemoryReq);
-			
-			auto sMemoryTypeIndex{this->pContext->device().findMemoryType(vkBufferMemoryReq.memoryTypeBits, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)};
-			
-			if (!sMemoryTypeIndex)
-				throw std::runtime_error{"unable to find suitable memory type"};
-
-			VkMemoryAllocateInfo vkMemoryAllocateInfo
-			{
-				VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-				nullptr,
-				vkBufferMemoryReq.size,
-				*sMemoryTypeIndex
-			};
-
-			if (vkAllocateMemory(this->pContext->device().vulkanDevice(), &vkMemoryAllocateInfo, nullptr, &this->sDeviceMemoryList[nIndex]) != VkResult::VK_SUCCESS)
-				throw std::runtime_error{"unable to allocate memory"};
-
-			if (vkBindBufferMemory(this->pContext->device().vulkanDevice(), this->sBufferList[nIndex], this->sDeviceMemoryList[nIndex], 0) != VkResult::VK_SUCCESS)
-				throw std::runtime_error{"unable to bind buffer memory"};
-
-			this->sDeviceMemorySizeList.emplace_back(vkBufferMemoryReq.size);
+			this->sTimeBufferList.emplace_back(this->pContext, Buffer::Usage::UniformBuffer, sizeof(Time));
+			this->sGlobalTransformBufferList.emplace_back(this->pContext, Buffer::Usage::UniformBuffer, sizeof(Transform::Mat44f) + sizeof(Transform::Mat44f));
 		}
 
 		std::vector<VkDescriptorSetLayout> sDescriptorSetLayout(nMaxIndex, this->vkDescriptorSetLayout);
@@ -147,22 +108,17 @@ namespace Onyx::Render
 		{
 			VkDescriptorBufferInfo vkTimeDescriptorBufferInfo
 			{
-				this->sBufferList[nIndex],
+				this->sTimeBufferList[nIndex].vulkanBuffer(),
 				0,
-				static_cast<VkDeviceSize>(sizeof(float) * 4)
+				VK_WHOLE_SIZE
 			};
-			VkDescriptorBufferInfo vkTransformDescriptorBufferInfo
+			VkDescriptorBufferInfo vkGlobalTransformDescriptorBufferInfo
 			{
-				this->sBufferList[nIndex],
-				static_cast<VkDeviceSize>(sizeof(float) * 4),
-				static_cast<VkDeviceSize>(sizeof(float) * 4)
+				this->sGlobalTransformBufferList[nIndex].vulkanBuffer(),
+				0,
+				VK_WHOLE_SIZE
 			};
-			VkDescriptorBufferInfo vDescriptorBufferInfoArray[]
-			{
-				vkTimeDescriptorBufferInfo,
-				vkTransformDescriptorBufferInfo
-			};
-			VkWriteDescriptorSet vkWriteDescriptorSet
+			VkWriteDescriptorSet vkTimeWriteDescriptorSet
 			{
 				VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 				nullptr,
@@ -172,58 +128,76 @@ namespace Onyx::Render
 				1,
 				VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				nullptr,
-				vDescriptorBufferInfoArray,
+				&vkTimeDescriptorBufferInfo,
 				nullptr
 			};
+			VkWriteDescriptorSet vkGlobalTransformWriteDescriptorSet
+			{
+				VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				nullptr,
+				this->sDescriptorSetList[nIndex],
+				1,
+				0,
+				1,
+				VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+				nullptr,
+				&vkGlobalTransformDescriptorBufferInfo,
+				nullptr
+			};
+			VkWriteDescriptorSet vWriteDescriptorSetArray[]
+			{
+				vkTimeWriteDescriptorSet,
+				vkGlobalTransformWriteDescriptorSet
+			};
 
-			vkUpdateDescriptorSets(this->pContext->device().vulkanDevice(), 1, &vkWriteDescriptorSet, 0, nullptr);
+			vkUpdateDescriptorSets(this->pContext->device().vulkanDevice(), 2, vWriteDescriptorSetArray, 0, nullptr);
 		}
 	}
 	
 	UniformManager::~UniformManager() noexcept
 	{
-		for (auto vkBuffer : this->sBufferList)
-			vkDestroyBuffer(this->pContext->device().vulkanDevice(), vkBuffer, nullptr);
-
-		for (auto vkDeviceMemory : this->sDeviceMemoryList)
-			vkFreeMemory(this->pContext->device().vulkanDevice(), vkDeviceMemory, nullptr);
-
 		vkDestroyDescriptorPool(this->pContext->device().vulkanDevice(), this->vkDescriptorPool, nullptr);
 		vkDestroyPipelineLayout(this->pContext->device().vulkanDevice(), this->vkPipelineLayout, nullptr);
 		vkDestroyDescriptorSetLayout(this->pContext->device().vulkanDevice(), this->vkDescriptorSetLayout, nullptr);
 	}
 
-	void UniformManager::updateUniform(std::uint32_t nImageIndex)
+	void UniformManager::updateUniform(
+		std::uint32_t nImageIndex,
+		const Transform::Mat44f &sViewTransform,
+		const Transform::Mat44f &sProjectionTransform)
 	{
-		std::chrono::system_clock::time_point sNow{std::chrono::system_clock::now()};
+		this->sTimeBufferList[nImageIndex].map([this](void *pTimeBuffer)
+			{
+				std::chrono::system_clock::time_point sNow{std::chrono::system_clock::now()};
 
-		if (!this->sFirstTimepoint)
-		{
-			this->sFirstTimepoint = sNow;
-			this->sLastTimepoint = sNow;
-		}
+				if (!this->sFirstTimepoint)
+				{
+					this->sFirstTimepoint = sNow;
+					this->sLastTimepoint = sNow;
+				}
 
-		void *pBufferData;
+				using fseconds = std::chrono::duration<float>;
 
-		if (vkMapMemory(this->pContext->device().vulkanDevice(), this->sDeviceMemoryList[nImageIndex], 0, this->sDeviceMemorySizeList[nImageIndex], 0, &pBufferData) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to map buffer"};
-		
-		using fseconds = std::chrono::duration<float>;
+				auto nTotal = std::chrono::duration_cast<fseconds>(sNow - *this->sFirstTimepoint).count();
+				auto nDelta = std::chrono::duration_cast<fseconds>(sNow - *this->sLastTimepoint).count();
 
-		auto nTotal = std::chrono::duration_cast<fseconds>(sNow - *this->sFirstTimepoint).count();
-		auto nDelta = std::chrono::duration_cast<fseconds>(sNow - *this->sLastTimepoint).count();
+				float vData[]
+				{
+					nTotal,
+					1.f / std::max(1e-6f, nTotal),
+					nDelta,
+					1.f / std::max(1e-6f, nDelta),
+				};
 
-		float vData[]
-		{
-			nTotal,
-			1.f / std::max(1e-6f, nTotal),
-			nDelta,
-			1.f / std::max(1e-6f, nDelta)
-		};
-		std::memcpy(pBufferData, vData, sizeof(vData));
+				std::memcpy(pTimeBuffer, vData, sizeof(vData));
 
-		vkUnmapMemory(this->pContext->device().vulkanDevice(), this->sDeviceMemoryList[nImageIndex]);
+				this->sLastTimepoint = sNow;
+			});
 
-		this->sLastTimepoint = sNow;
+		this->sGlobalTransformBufferList[nImageIndex].map([this, &sViewTransform, &sProjectionTransform](void *pGlobalTransformBuffer)
+			{
+				std::memcpy(pGlobalTransformBuffer, &sViewTransform, sizeof(Transform::Mat44f));
+				std::memcpy(reinterpret_cast<std::uint8_t *>(pGlobalTransformBuffer) + sizeof(Transform::Mat44f), &sProjectionTransform, sizeof(Transform::Mat44f));
+			});
 	}
 }

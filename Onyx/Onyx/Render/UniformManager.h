@@ -8,9 +8,11 @@
 
 #define _CLASS_ONYX_RENDER_UNIFORMMANAGER_H
 
-#include "./SubContextManager.h"
-
 #include "../Vulkan.h"
+
+#include "./Buffer.h"
+#include "./SubContextManager.h"
+#include "../Transform/Mats.h"
 
 #include <algorithm>
 #include <chrono>
@@ -37,10 +39,9 @@ namespace Onyx::Render
 		VkDescriptorSetLayout vkDescriptorSetLayout;
 		VkPipelineLayout vkPipelineLayout;
 		VkDescriptorPool vkDescriptorPool;
+		std::vector<Buffer> sTimeBufferList;
+		std::vector<Buffer> sGlobalTransformBufferList;
 		std::vector<VkDescriptorSet> sDescriptorSetList;
-		std::vector<VkBuffer> sBufferList;
-		std::vector<VkDeviceMemory> sDeviceMemoryList;
-		std::vector<VkDeviceSize> sDeviceMemorySizeList;
 		std::optional<std::chrono::system_clock::time_point> sFirstTimepoint;
 		std::optional<std::chrono::system_clock::time_point> sLastTimepoint;
 		
@@ -55,7 +56,10 @@ namespace Onyx::Render
 	public:
 		inline VkPipelineLayout vulkanPipelineLayout() const;
 		inline const std::vector<VkDescriptorSet> &vulkanDescriptorSetList() const;
-		void updateUniform(std::uint32_t nImageIndex);
+		void updateUniform(
+			std::uint32_t nImageIndex,
+			const Transform::Mat44f &sViewTransform,
+			const Transform::Mat44f &sProjectionTransform);
 	};
 
 	inline VkPipelineLayout UniformManager::vulkanPipelineLayout() const

@@ -18,7 +18,15 @@ namespace Onyx::Transform
 	class Transform final
 	{
 	public:
-		Mat44f sMatrix;
+		enum Space
+		{
+			Local,
+			World
+		};
+
+	public:
+		Vec3f sPosition;
+		Mat33f sRotation;
 		
 	public:
 		Transform();
@@ -30,14 +38,32 @@ namespace Onyx::Transform
 		Transform &operator=(const Transform &sSrc) = default;
 		
 	public:
+		Mat44f matrix() const;
+		Mat44f inverseMatrix() const;
+		Vec3f forward() const;
+		Vec3f backward() const;
+		Vec3f upward() const;
+		Vec3f downward() const;
+		Vec3f leftward() const;
+		Vec3f rightward() const;
+		void translateX(float nDistance, Space eSpace);
+		void translateY(float nDistance, Space eSpace);
+		void translateZ(float nDistance, Space eSpace);
+		void translate(float nDistanceX, float nDistanceY, float nDistanceZ, Space eSpace);
+		void rotateX(float nAngle, Space eSpace);
+		void rotateY(float nAngle, Space eSpace);
+		void rotateZ(float nAngle, Space eSpace);
+		void rotate(float nAngleX, float nAngleY, float nAngleZ, Space eSpace);
+
+	public:
 		static Mat44f scale(float nScale);
 		static Mat44f scale(float nScaleX, float nScaleY, float nScaleZ);
-		static Mat44f rotate(float nAngle, const Vec3f &sAxis);
-		static Mat44f rotateX(float nAngle);
-		static Mat44f rotateY(float nAngle);
-		static Mat44f rotateZ(float nAngle);
-		static Mat44f translate(const Vec3f &sDistance);
-		static Mat44f translate(float nDistanceX, float nDistanceY, float nDistanceZ);
+		static Mat44f rotation(float nAngle, const Vec3f &sAxis);
+		static Mat44f rotationX(float nAngle);
+		static Mat44f rotationY(float nAngle);
+		static Mat44f rotationZ(float nAngle);
+		static Mat44f translation(const Vec3f &sDistance);
+		static Mat44f translation(float nDistanceX, float nDistanceY, float nDistanceZ);
 		static Mat44f perspective(float nAspect, float nFoV, float nNear, float nFar);
 	};
 }

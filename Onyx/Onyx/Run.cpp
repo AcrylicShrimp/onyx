@@ -61,9 +61,9 @@ int main()
 
 		std::vector<Mat44<float>> sTranformList
 		{
-			Onyx::Transform::Transform::translate(.0f, .0f, -4.f) % Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f),
-			Onyx::Transform::Transform::translate(1.f, .0f, -4.f) % Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f),
-			Onyx::Transform::Transform::translate(2.f, .0f, -4.f) % Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f)
+			Onyx::Transform::Transform::translation(.0f, .0f, -4.f),
+			Onyx::Transform::Transform::translation(1.f, .0f, -4.f),
+			Onyx::Transform::Transform::translation(2.f, .0f, -4.f)
 		};
 		std::vector<std::tuple<Onyx::Render::Material *, Onyx::Render::Mesh *>> sRenderableList
 		{
@@ -71,11 +71,15 @@ int main()
 			std::make_tuple(&sMaterial, pConeMesh.get()),
 			std::make_tuple(&sMaterial, pCubeMesh.get())
 		};
+		Onyx::Transform::Transform sViewTransform;
+		Onyx::Transform::Mat44f sProjectionTransform{Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f)};
+
+		sViewTransform.sPosition.tZ = 10.f;
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::VisibleDefault);
 
 		while (pWindow->loopEventAvailable())
-			pContext->render(sTranformList, sRenderableList);
+			pContext->render(sViewTransform.inverseMatrix(), sProjectionTransform, sTranformList, sRenderableList);
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::Invisible);
 	}

@@ -25,7 +25,8 @@ namespace Onyx::Render
 	public:
 		enum Usage
 		{
-			VertexBuffer = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+			VertexBuffer = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+			UniformBuffer = VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 		};
 
 	public:
