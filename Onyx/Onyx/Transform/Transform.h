@@ -15,22 +15,28 @@
 
 namespace Onyx::Transform
 {
+	/*
+		This class represents transformation for cameras;
+		It means below sMatrix and sInverseMatrix matrices are:
+
+		sInverseMatrix: World -> View
+		sMatrix: View -> World
+	*/
 	class Transform final
 	{
 	public:
-		enum Space
+		enum class Space
 		{
 			Local,
 			World
 		};
 
 	public:
-		Vec3f sPosition;
-		Mat33f sRotation;
+		Mat44f sMatrix;
+		Mat44f sInverseMatrix;
 		
 	public:
 		Transform();
-		Transform(const Mat44f &sMatrix);
 		Transform(const Transform &sSrc) = default;
 		~Transform() = default;
 		
@@ -38,14 +44,14 @@ namespace Onyx::Transform
 		Transform &operator=(const Transform &sSrc) = default;
 		
 	public:
-		Mat44f matrix() const;
-		Mat44f inverseMatrix() const;
-		Vec3f forward() const;
-		Vec3f backward() const;
-		Vec3f upward() const;
-		Vec3f downward() const;
-		Vec3f leftward() const;
-		Vec3f rightward() const;
+		inline const Mat44f &matrix() const;
+		inline const Mat44f &inverseMatrix() const;
+		Vec4f forward() const;
+		Vec4f backward() const;
+		Vec4f upward() const;
+		Vec4f downward() const;
+		Vec4f leftward() const;
+		Vec4f rightward() const;
 		void translateX(float nDistance, Space eSpace);
 		void translateY(float nDistance, Space eSpace);
 		void translateZ(float nDistance, Space eSpace);
@@ -66,6 +72,16 @@ namespace Onyx::Transform
 		static Mat44f translation(float nDistanceX, float nDistanceY, float nDistanceZ);
 		static Mat44f perspective(float nAspect, float nFoV, float nNear, float nFar);
 	};
+
+	inline const Mat44f &Transform::matrix() const
+	{
+		return this->sMatrix;
+	}
+
+	inline const Mat44f &Transform::inverseMatrix() const
+	{
+		return this->sInverseMatrix;
+	}
 }
 
 #endif

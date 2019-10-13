@@ -10,9 +10,11 @@ namespace Onyx::Render
 {
 	Synchronizer::Synchronizer(Device *pDevice, std::size_t nMaxConcurrentFrameCount) :
 		pDevice{pDevice},
+		vkGraphicsQueue{VK_NULL_HANDLE},
 		nFrameIndex{0},
 		vkGraphicsCommandPool{VK_NULL_HANDLE},
 		vkPresentCommandPool{VK_NULL_HANDLE},
+		vkOnetimeCommandPool{VK_NULL_HANDLE},
 		nMaxConcurrentFrameCount{nMaxConcurrentFrameCount}
 	{
 		assert(this->pDevice);
@@ -23,6 +25,7 @@ namespace Onyx::Render
 	{
 		vkDestroyCommandPool(this->pDevice->vulkanDevice(), this->vkGraphicsCommandPool, nullptr);
 		vkDestroyCommandPool(this->pDevice->vulkanDevice(), this->vkPresentCommandPool, nullptr);
+		vkDestroyCommandPool(this->pDevice->vulkanDevice(), this->vkOnetimeCommandPool, nullptr);
 
 		for (std::size_t nIndex{0}; nIndex < this->nMaxConcurrentFrameCount; ++nIndex)
 		{
@@ -33,13 +36,68 @@ namespace Onyx::Render
 		}
 	}
 
-	void Synchronizer::createSynchronizationObject(std::uint32_t nGraphicsFamily, std::uint32_t nPresentFamily)
+	void Synchronizer::executeOnetimeCommand(std::function<void(VkCommandBuffer)> fCommandFunction) const
 	{
+		VkCommandBuffer vkCommandBuffer;
+
+		VkCommandBufferAllocateInfo vkCommandBufferAllocateInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+			nullptr,
+			this->vkOnetimeCommandPool,
+			VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+			1
+		};
+
+		if (vkAllocateCommandBuffers(this->pDevice->vulkanDevice(), &vkCommandBufferAllocateInfo, &vkCommandBuffer) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to allocate command buffer"};
+
+		VkCommandBufferBeginInfo vkCommandBufferBeginInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+			nullptr,
+			VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+			nullptr
+		};
+
+		if (vkBeginCommandBuffer(vkCommandBuffer, &vkCommandBufferBeginInfo) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to begin command buffer"};
+
+		fCommandFunction(vkCommandBuffer);
+
+		if (vkEndCommandBuffer(vkCommandBuffer) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to end command buffer"};
+
+		VkSubmitInfo vkSubmitInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO,
+			nullptr,
+			0,
+			nullptr,
+			nullptr,
+			1,
+			&vkCommandBuffer,
+			0,
+			nullptr
+		};
+
+		if (vkQueueSubmit(this->vkGraphicsQueue, 1, &vkSubmitInfo, VK_NULL_HANDLE) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to submit command buffer"};
+
+		if (vkQueueWaitIdle(this->vkGraphicsQueue) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to wait queue for idle"};
+
+		vkFreeCommandBuffers(this->pDevice->vulkanDevice(), this->vkOnetimeCommandPool, 1, &vkCommandBuffer);
+	}
+
+	void Synchronizer::createSynchronizationObject(VkQueue vkGraphicsQueue, std::uint32_t nGraphicsFamily, std::uint32_t nPresentFamily)
+	{
+		this->vkGraphicsQueue = vkGraphicsQueue;
+
 		VkCommandPoolCreateInfo vkGraphicsCommandPoolCreateInfo
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 			nullptr,
-			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
 			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 			nGraphicsFamily
 		};
@@ -47,13 +105,21 @@ namespace Onyx::Render
 		{
 			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 			nullptr,
-			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
 			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 			nPresentFamily
 		};
+		VkCommandPoolCreateInfo vkOnetimeCommandPoolCreateInfo
+		{
+			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+			nullptr,
+			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
+			VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+			nGraphicsFamily
+		};
 
 		if (vkCreateCommandPool(this->pDevice->vulkanDevice(), &vkGraphicsCommandPoolCreateInfo, nullptr, &this->vkGraphicsCommandPool) != VkResult::VK_SUCCESS ||
-			vkCreateCommandPool(this->pDevice->vulkanDevice(), &vkPresentCommandPoolCreateInfo, nullptr, &this->vkPresentCommandPool) != VkResult::VK_SUCCESS)
+			vkCreateCommandPool(this->pDevice->vulkanDevice(), &vkPresentCommandPoolCreateInfo, nullptr, &this->vkPresentCommandPool) != VkResult::VK_SUCCESS ||
+			vkCreateCommandPool(this->pDevice->vulkanDevice(), &vkOnetimeCommandPoolCreateInfo, nullptr, &this->vkOnetimeCommandPool) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create command pool"};
 
 		this->sGraphicsCommandBufferList.resize(this->nMaxConcurrentFrameCount);

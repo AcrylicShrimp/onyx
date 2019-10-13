@@ -136,6 +136,7 @@
     <ClInclude Include="Onyx\Display\DisplayManager.h" />
     <ClInclude Include="Onyx\Display\Window.h" />
     <ClInclude Include="Onyx\Display\Window__Windows.h" />
+    <ClInclude Include="Onyx\IO\ResourceManager.h" />
     <ClInclude Include="Onyx\Manager.h" />
     <ClInclude Include="Onyx\Onyx.h" />
     <ClInclude Include="Onyx\Platform.h" />
@@ -154,6 +155,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Onyx\Render\MaterialManager.h" />
+    <ClInclude Include="Onyx\Render\MemoryManager.h" />
     <ClInclude Include="Onyx\Render\Mesh.h" />
     <ClInclude Include="Onyx\Render\MeshLayout.h" />
     <ClInclude Include="Onyx\Render\MeshManager.h" />
@@ -171,6 +173,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Onyx\Render\Texture.h" />
     <ClInclude Include="Onyx\Render\UniformManager.h" />
     <ClInclude Include="Onyx\Transform\Mat22.h" />
     <ClInclude Include="Onyx\Transform\Mat22.hpp" />
@@ -207,6 +210,7 @@
     <ClCompile Include="Onyx\Display\DisplayManager.cpp" />
     <ClCompile Include="Onyx\Display\Window.cpp" />
     <ClCompile Include="Onyx\Display\Window__Windows.cpp" />
+    <ClCompile Include="Onyx\IO\ResourceManager.cpp" />
     <ClCompile Include="Onyx\Manager.cpp" />
     <ClCompile Include="Onyx\Onyx.cpp" />
     <ClCompile Include="Onyx\Render\Buffer.cpp" />
@@ -224,6 +228,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Onyx\Render\MaterialManager.cpp" />
+    <ClCompile Include="Onyx\Render\MemoryManager.cpp" />
     <ClCompile Include="Onyx\Render\Mesh.cpp" />
     <ClCompile Include="Onyx\Render\MeshLayout.cpp" />
     <ClCompile Include="Onyx\Render\MeshManager.cpp" />
@@ -241,6 +246,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Onyx\Render\Texture.cpp" />
     <ClCompile Include="Onyx\Render\UniformManager.cpp" />
     <ClCompile Include="Onyx\Run.cpp" />
     <ClCompile Include="Onyx\Transform\Transform.cpp" />

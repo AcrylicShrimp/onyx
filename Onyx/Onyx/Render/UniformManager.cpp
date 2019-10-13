@@ -13,6 +13,9 @@ namespace Onyx::Render
 	UniformManager::UniformManager(Context *pContext) :
 		SubContextManager{pContext}
 	{
+		std::ifstream sTextureInput{"AcrylicShrimp_dot.png", std::ios_base::binary};
+		this->pTexture = std::make_unique<Texture>(pContext, sTextureInput);
+
 		VkDescriptorSetLayoutBinding vkTimeDescriptorSetLayoutBinding
 		{
 			0,
@@ -29,11 +32,20 @@ namespace Onyx::Render
 			VkShaderStageFlagBits::VK_SHADER_STAGE_ALL,
 			nullptr
 		};
+		VkDescriptorSetLayoutBinding vkTextureDescriptorSetLayoutBinding
+		{
+			2,
+			VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			1,
+			VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT,
+			nullptr
+		};
 
 		VkDescriptorSetLayoutBinding vDescriptorSetLayoutBindingArray[]
 		{
 			vkTimeDescriptorSetLayoutBinding,
-			vkGlobalTransformDescriptorSetLayoutBinding
+			vkGlobalTransformDescriptorSetLayoutBinding,
+			vkTextureDescriptorSetLayoutBinding
 		};
 
 		VkDescriptorSetLayoutCreateInfo vkDescriptorSetLayoutCreateInfo
@@ -41,7 +53,7 @@ namespace Onyx::Render
 			VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 			nullptr,
 			0,
-			2,
+			3,
 			vDescriptorSetLayoutBindingArray
 		};
 
@@ -118,6 +130,12 @@ namespace Onyx::Render
 				0,
 				VK_WHOLE_SIZE
 			};
+			VkDescriptorImageInfo vkTextureDescriptorImageInfo
+			{
+				this->pTexture->vulkanSampler(),
+				this->pTexture->vulkanImageView(),
+				VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+			};
 			VkWriteDescriptorSet vkTimeWriteDescriptorSet
 			{
 				VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
@@ -144,13 +162,27 @@ namespace Onyx::Render
 				&vkGlobalTransformDescriptorBufferInfo,
 				nullptr
 			};
+			VkWriteDescriptorSet vkTextureWriteDescriptorSet
+			{
+				VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				nullptr,
+				this->sDescriptorSetList[nIndex],
+				2,
+				0,
+				1,
+				VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+				&vkTextureDescriptorImageInfo,
+				nullptr,
+				nullptr
+			};
 			VkWriteDescriptorSet vWriteDescriptorSetArray[]
 			{
 				vkTimeWriteDescriptorSet,
-				vkGlobalTransformWriteDescriptorSet
+				vkGlobalTransformWriteDescriptorSet,
+				vkTextureWriteDescriptorSet
 			};
 
-			vkUpdateDescriptorSets(this->pContext->device().vulkanDevice(), 2, vWriteDescriptorSetArray, 0, nullptr);
+			vkUpdateDescriptorSets(this->pContext->device().vulkanDevice(), 3, vWriteDescriptorSetArray, 0, nullptr);
 		}
 	}
 	

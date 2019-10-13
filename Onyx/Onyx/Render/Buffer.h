@@ -26,7 +26,8 @@ namespace Onyx::Render
 		enum Usage
 		{
 			VertexBuffer = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-			UniformBuffer = VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
+			UniformBuffer = VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			TransformSrc = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT
 		};
 
 	public:
@@ -37,7 +38,6 @@ namespace Onyx::Render
 		VkBuffer vkBuffer;
 		VkDeviceMemory vkDeviceMemory;
 		VkDeviceSize nSize;
-		VkDeviceSize nAllocationSize;
 		
 	public:
 		Buffer(Context *pContext, Usage eUsage, VkDeviceSize nSize);
@@ -50,20 +50,20 @@ namespace Onyx::Render
 		Buffer &operator=(Buffer &&sSrc);
 		
 	public:
-		inline VkDeviceSize size() const;
 		inline VkBuffer vulkanBuffer() const;
+		inline VkDeviceSize size() const;
 		void map(std::function<void(void *)> fMapFunction);
 		void resize(VkDeviceSize nSize);
 	};
 
-	inline VkDeviceSize Buffer::size() const
-	{
-		return this->nSize;
-	}
-
 	inline VkBuffer Buffer::vulkanBuffer() const
 	{
 		return this->vkBuffer;
+	}
+
+	inline VkDeviceSize Buffer::size() const
+	{
+		return this->nSize;
 	}
 }
 

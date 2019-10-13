@@ -270,12 +270,12 @@ namespace Onyx::Transform
 
 	template<class T> Vec3<T> Vec3<T>::front()
 	{
-		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)};
+		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(-1)};
 	}
 
 	template<class T> Vec3<T> Vec3<T>::back()
 	{
-		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(-1)};
+		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)};
 	}
 
 	template<class T> T Vec3<T>::dot(const Vec3<T> &tLeft, const Vec3<T> &tRight)

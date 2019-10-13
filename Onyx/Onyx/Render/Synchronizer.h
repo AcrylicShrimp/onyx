@@ -13,6 +13,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <functional>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
@@ -25,10 +26,12 @@ namespace Onyx::Render
 		Device *const pDevice;
 
 	private:
+		VkQueue vkGraphicsQueue;	//For Onetime command buffer;
 		std::size_t nFrameIndex;
 		std::size_t nMaxConcurrentFrameCount;
 		VkCommandPool vkGraphicsCommandPool;
 		VkCommandPool vkPresentCommandPool;
+		VkCommandPool vkOnetimeCommandPool;
 		std::vector<VkCommandBuffer> sGraphicsCommandBufferList;
 		std::vector<VkCommandBuffer> sPresentCommandBufferList;
 		std::vector<VkSemaphore> sAfterRenderingSemaphoreList;
@@ -45,7 +48,8 @@ namespace Onyx::Render
 		Synchronizer &operator=(const Synchronizer &sSrc) = delete;
 		
 	public:
-		void createSynchronizationObject(std::uint32_t nGraphicsFamily, std::uint32_t nPresentFamily);
+		void executeOnetimeCommand(std::function<void(VkCommandBuffer)> fCommandFunction) const;
+		void createSynchronizationObject(VkQueue vkGraphicsQueue, std::uint32_t nGraphicsFamily, std::uint32_t nPresentFamily);
 		std::tuple<VkCommandBuffer, VkCommandBuffer, VkSemaphore, VkSemaphore, VkSemaphore, VkFence> sync();
 	};
 }

@@ -1,3 +1,6 @@
 [submodule "Deps/SPIRV-Reflect"]
 	path = Deps/SPIRV-Reflect
-	url = https://github.com/chaoticbob/SPIRV-Reflect
+	url = https://github.com/chaoticbob/SPIRV-Reflect.git
+[submodule "Deps/stb"]
+	path = Deps/stb
+	url = https://github.com/nothings/stb.git

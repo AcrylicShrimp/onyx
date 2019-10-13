@@ -10,8 +10,10 @@
 
 #include "../Vulkan.h"
 #include "../Display/Window.h"
+#include "../IO/ResourceManager.h"
 #include "./Device.h"
 #include "./Material.h"
+#include "./MemoryManager.h"
 #include "./Mesh.h"
 #include "./MeshManager.h"
 #include "./Surface.h"
@@ -57,9 +59,11 @@ namespace Onyx::Render
 		VkQueue vkPresentQueue;
 		std::uint32_t nGraphicsFamily;
 		std::uint32_t nPresentFamily;
+		std::unique_ptr<MemoryManager> pMemoryMgr;
 		std::unique_ptr<UniformManager> pUniformMgr;
 		std::unique_ptr<ShaderManager> pShaderMgr;
 		std::unique_ptr<RenderingManager> pRenderingMgr;
+		std::unique_ptr<IO::ResourceManager> pResourceMgr;
 		std::unique_ptr<MeshManager> pMeshMgr;
 
 	public:
@@ -75,9 +79,11 @@ namespace Onyx::Render
 		inline const Surface &surface() const;
 		inline const Swapchain &swapchain() const;
 		inline const Synchronizer &synchronizer() const;
+		inline MemoryManager &memoryMgr() const;
 		inline UniformManager &uniformMgr() const;
 		inline ShaderManager &shaderMgr() const;
 		inline RenderingManager &renderingMgr() const;
+		inline IO::ResourceManager &resourceMgr() const;
 		inline MeshManager &meshMgr() const;
 		void render(
 			const Transform::Mat44f &sViewTransform,
@@ -106,6 +112,11 @@ namespace Onyx::Render
 		return this->sSynchronizer;
 	}
 
+	inline MemoryManager &Context::memoryMgr() const
+	{
+		return *this->pMemoryMgr;
+	}
+
 	inline UniformManager &Context::uniformMgr() const
 	{
 		return *this->pUniformMgr;
@@ -119,6 +130,11 @@ namespace Onyx::Render
 	inline RenderingManager &Context::renderingMgr() const
 	{
 		return *this->pRenderingMgr;
+	}
+
+	inline IO::ResourceManager &Context::resourceMgr() const
+	{
+		return *this->pResourceMgr;
 	}
 
 	inline MeshManager &Context::meshMgr() const

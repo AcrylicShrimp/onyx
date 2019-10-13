@@ -107,15 +107,18 @@ namespace Onyx::Render
 			this->nGraphicsFamily,
 			this->nPresentFamily
 		});
-		this->sSwapchain.createSwapchainInstance();
-		this->sSynchronizer.createSynchronizationObject(this->nGraphicsFamily, this->nPresentFamily);
 
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nGraphicsFamily, 0, &this->vkGraphicsQueue);
 		vkGetDeviceQueue(this->sDevice.vulkanDevice(), this->nPresentFamily, 0, &this->vkPresentQueue);
 
+		this->sSwapchain.createSwapchainInstance();
+		this->sSynchronizer.createSynchronizationObject(this->vkGraphicsQueue, this->nGraphicsFamily, this->nPresentFamily);
+
+		this->pMemoryMgr = std::make_unique<MemoryManager>(this);
 		this->pUniformMgr = std::make_unique<UniformManager>(this);
 		this->pShaderMgr = std::make_unique<ShaderManager>(this);
 		this->pRenderingMgr = std::make_unique<RenderingManager>(this);
+		this->pResourceMgr = std::make_unique<IO::ResourceManager>(this);
 		this->pMeshMgr = std::make_unique<MeshManager>(this);
 	}
 

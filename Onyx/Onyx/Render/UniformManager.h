@@ -12,6 +12,7 @@
 
 #include "./Buffer.h"
 #include "./SubContextManager.h"
+#include "./Texture.h"
 #include "../Transform/Mats.h"
 
 #include <algorithm>
@@ -19,6 +20,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <fstream>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -44,6 +47,7 @@ namespace Onyx::Render
 		std::vector<VkDescriptorSet> sDescriptorSetList;
 		std::optional<std::chrono::system_clock::time_point> sFirstTimepoint;
 		std::optional<std::chrono::system_clock::time_point> sLastTimepoint;
+		std::unique_ptr<Texture> pTexture;
 		
 	public:
 		UniformManager(Context *pContext);

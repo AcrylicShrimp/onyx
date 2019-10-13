@@ -9,136 +9,171 @@
 namespace Onyx::Transform
 {
 	Transform::Transform() :
-		sPosition{Vec3f::zero()},
-		sRotation{Mat33f::identity()}
+		sMatrix{Mat44f::identity()},
+		sInverseMatrix{Mat44f::identity()}
 	{
 		//Empty.
 	}
 
-	Transform::Transform(const Mat44f &sMatrix) :
-		sPosition{sMatrix[3][0], sMatrix[3][1], sMatrix[3][2]},
-		sRotation{sMatrix[0][0], sMatrix[0][1], sMatrix[0][2], sMatrix[1][0], sMatrix[1][1], sMatrix[1][2], sMatrix[2][0], sMatrix[2][1], sMatrix[2][2]}
+	Vec4f Transform::forward() const
 	{
-		//Empty.
+		return Vec4f::front() % this->sInverseMatrix;
 	}
 
-	Mat44f Transform::matrix() const
+	Vec4f Transform::backward() const
 	{
-		return
-		{
-			this->sRotation[0][0], this->sRotation[0][1], this->sRotation[0][2], .0f,
-			this->sRotation[1][0], this->sRotation[1][1], this->sRotation[1][2], .0f,
-			this->sRotation[2][0], this->sRotation[2][1], this->sRotation[2][2], .0f,
-			this->sPosition[0], this->sPosition[1], this->sPosition[2], 1.f
-		};
+		return Vec4f::back() % this->sInverseMatrix;
 	}
 
-	Mat44f Transform::inverseMatrix() const
+	Vec4f Transform::upward() const
 	{
-		auto sTransposedMat{this->sRotation.transposed()};
-		auto sMultipliedVec{-this->sPosition % sTransposedMat};
-
-		return
-		{
-			sTransposedMat[0][0], sTransposedMat[0][1], sTransposedMat[0][2], .0f,
-			sTransposedMat[1][0], sTransposedMat[1][1], sTransposedMat[1][2], .0f,
-			sTransposedMat[2][0], sTransposedMat[2][1], sTransposedMat[2][2], .0f,
-			sMultipliedVec[0], sMultipliedVec[1], sMultipliedVec[2], 1.f
-		};
+		return Vec4f::up() % this->sInverseMatrix;
 	}
 
-	Vec3f Transform::forward() const
+	Vec4f Transform::downward() const
 	{
-		return this->sRotation % Vec3f::front();
+		return Vec4f::down() % this->sInverseMatrix;
 	}
 
-	Vec3f Transform::backward() const
+	Vec4f Transform::leftward() const
 	{
-		return this->sRotation % Vec3f::back();
+		return Vec4f::left() % this->sInverseMatrix;
 	}
 
-	Vec3f Transform::upward() const
+	Vec4f Transform::rightward() const
 	{
-		return this->sRotation % Vec3f::up();
-	}
-
-	Vec3f Transform::downward() const
-	{
-		return this->sRotation % Vec3f::down();
-	}
-
-	Vec3f Transform::leftward() const
-	{
-		return this->sRotation % Vec3f::left();
-	}
-
-	Vec3f Transform::rightward() const
-	{
-		return this->sRotation % Vec3f::right();
+		return Vec4f::right() % this->sInverseMatrix;
 	}
 
 	void Transform::translateX(float nDistance, Space eSpace)
 	{
-		if (eSpace == Space::World)
-			this->sPosition.tX += nDistance;
+		if (eSpace == Space::Local)
+		{
+			this->sMatrix = this->sMatrix % Transform::translation(nDistance, .0f, .0f);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(-nDistance, .0f, .0f);
+		}
 		else
-			this->sPosition += nDistance * this->rightward();
+		{
+			const auto sAxis{this->rightward() * nDistance};
+
+			this->sMatrix = this->sMatrix % Transform::translation(sAxis.tX, sAxis.tY, sAxis.tZ);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(-sAxis.tX, -sAxis.tY, -sAxis.tZ);
+		}
 	}
 
 	void Transform::translateY(float nDistance, Space eSpace)
 	{
-		if (eSpace == Space::World)
-			this->sPosition.tY += nDistance;
+		if (eSpace == Space::Local)
+		{
+			this->sMatrix = this->sMatrix % Transform::translation(.0f, nDistance, .0f);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(.0f, -nDistance, .0f);
+		}
 		else
-			this->sPosition += nDistance * this->upward();
+		{
+			const auto sAxis{this->upward() * nDistance};
+
+			this->sMatrix = this->sMatrix % Transform::translation(sAxis.tX, sAxis.tY, sAxis.tZ);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(-sAxis.tX, -sAxis.tY, -sAxis.tZ);
+		}
 	}
 
 	void Transform::translateZ(float nDistance, Space eSpace)
 	{
-		if (eSpace == Space::World)
-			this->sPosition.tZ += nDistance;
+		if (eSpace == Space::Local)
+		{
+			this->sMatrix = this->sMatrix % Transform::translation(.0f, .0f, nDistance);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(.0f, .0f, -nDistance);
+		}
 		else
-			this->sPosition += nDistance * this->forward();
+		{
+			const auto sAxis{this->forward() * nDistance};
+
+			this->sMatrix = this->sMatrix % Transform::translation(sAxis.tX, sAxis.tY, sAxis.tZ);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(-sAxis.tX, -sAxis.tY, -sAxis.tZ);
+		}
 	}
 
 	void Transform::translate(float nDistanceX, float nDistanceY, float nDistanceZ, Space eSpace)
 	{
-		if (eSpace == Space::World)
+		if (eSpace == Space::Local)
 		{
-			this->sPosition.tX += nDistanceX;
-			this->sPosition.tY += nDistanceY;
-			this->sPosition.tZ += nDistanceZ;
+			this->sMatrix = this->sMatrix % Transform::translation(nDistanceX, nDistanceY, nDistanceZ);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(-nDistanceX, -nDistanceY, -nDistanceZ);
 		}
 		else
-			this->sPosition += Vec3f{nDistanceX, nDistanceY, nDistanceZ} * this->rightward();
+		{
+			const auto sAxisX{this->rightward()};
+			const auto sAxisY{this->upward()};
+			const auto sAxisZ{this->forward()};
+			const auto sDistance{sAxisX * nDistanceX + sAxisY * nDistanceY + sAxisZ * nDistanceZ};
+
+			this->sMatrix = this->sMatrix % Transform::translation(sDistance.tX, sDistance.tY, sDistance.tZ);
+			this->sInverseMatrix = this->sInverseMatrix % Transform::translation(-sDistance.tX, -sDistance.tY, -sDistance.tZ);
+		}
 	}
 
 	void Transform::rotateX(float nAngle, Space eSpace)
 	{
-		if (eSpace == Space::World)
+		if (eSpace == Space::Local)
 		{
-			const auto nSin{std::sin(nAngle)};
-			const auto nCos{std::cos(nAngle)};
+			const auto sRotation{Transform::rotationX(nAngle)};
 
-			this->sRotation % Mat33f{1.f, .0f, .0f, .0f, nCos, nSin, .0f, -nSin, nCos};
+			this->sMatrix = this->sMatrix % sRotation;
+			this->sInverseMatrix = this->sInverseMatrix % sRotation.transposed();
 		}
-		/*else
-*/
+		else
+		{
+			const auto sAxis{this->rightward()};
+			const auto sRotation{Transform::rotation(nAngle, {sAxis.tX, sAxis.tY, sAxis.tZ})};
+
+			this->sMatrix = this->sMatrix % sRotation;
+			this->sInverseMatrix = this->sInverseMatrix % sRotation.transposed();
+		}
 	}
 
 	void Transform::rotateY(float nAngle, Space eSpace)
 	{
+		if (eSpace == Space::Local)
+		{
+			const auto sRotation{Transform::rotationY(nAngle)};
 
+			this->sMatrix = this->sMatrix % sRotation;
+			this->sInverseMatrix = this->sInverseMatrix % sRotation.transposed();
+		}
+		else
+		{
+			const auto sAxis{this->upward()};
+			const auto sRotation{Transform::rotation(nAngle, {sAxis.tX, sAxis.tY, sAxis.tZ})};
+
+			this->sMatrix = this->sMatrix % sRotation;
+			this->sInverseMatrix = this->sInverseMatrix % sRotation.transposed();
+		}
 	}
 
 	void Transform::rotateZ(float nAngle, Space eSpace)
 	{
+		if (eSpace == Space::Local)
+		{
+			const auto sRotation{Transform::rotationZ(nAngle)};
 
+			this->sMatrix = this->sMatrix % sRotation;
+			this->sInverseMatrix = this->sInverseMatrix % sRotation.transposed();
+		}
+		else
+		{
+			const auto sAxis{this->forward()};
+			const auto sRotation{Transform::rotation(nAngle, {sAxis.tX, sAxis.tY, sAxis.tZ})};
+
+			this->sMatrix = this->sMatrix % sRotation;
+			this->sInverseMatrix = this->sInverseMatrix % sRotation.transposed();
+		}
 	}
 
 	void Transform::rotate(float nAngleX, float nAngleY, float nAngleZ, Space eSpace)
 	{
-
+		this->rotateY(nAngleY, eSpace);
+		this->rotateZ(nAngleY, eSpace);
+		this->rotateX(nAngleY, eSpace);
 	}
 
 	Mat44f Transform::scale(float nScale)
@@ -259,6 +294,9 @@ namespace Onyx::Transform
 
 	Mat44f Transform::perspective(float nAspect, float nFoV, float nNear, float nFar)
 	{
+		/*
+			TODO: Invert Z axis so +Z means toward.
+		*/
 		const auto n2FarPerHeight{1.f / std::tan(.5f * nFoV)};
 		const auto nNearMinusFarInv{1.f / (nNear - nFar)};
 

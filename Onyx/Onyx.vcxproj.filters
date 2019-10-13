@@ -13,6 +13,9 @@
     <Filter Include="Onyx\Transform">
       <UniqueIdentifier>{6cefdc4b-1afe-4027-9b30-82e9e5124e45}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Onyx\IO">
+      <UniqueIdentifier>{f9d1b7e0-9ca9-40d2-9aff-4890d0441f73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Onyx\Render\Context.h">
@@ -180,6 +183,15 @@
     <ClInclude Include="Onyx\Transform\Transform.h">
       <Filter>Onyx\Transform</Filter>
     </ClInclude>
+    <ClInclude Include="Onyx\IO\ResourceManager.h">
+      <Filter>Onyx\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\Texture.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Onyx\Render\MemoryManager.h">
+      <Filter>Onyx\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Onyx\Render\Context.cpp">
@@ -260,6 +272,15 @@
     </ClCompile>
     <ClCompile Include="Onyx\Transform\Transform.cpp">
       <Filter>Onyx\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\IO\ResourceManager.cpp">
+      <Filter>Onyx\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\Texture.cpp">
+      <Filter>Onyx\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Onyx\Render\MemoryManager.cpp">
+      <Filter>Onyx\Render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

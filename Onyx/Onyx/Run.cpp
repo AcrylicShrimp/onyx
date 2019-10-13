@@ -13,10 +13,12 @@
 #include "./Transform/Mats.h"
 #include "./Transform/Transform.h"
 
+#include <chrono>
 #include <fstream>
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <Windows.h>
 
 int main()
 {
@@ -26,6 +28,8 @@ int main()
 
 	auto pWindow{sInstance.displayMgr().createWindow("main")};
 	pWindow->create(Onyx::Display::Window::Style::Standard, L"Onyx test");
+
+	auto sNow{std::chrono::system_clock::now()};
 
 	auto pContext{sInstance.contextMgr().createContext(pWindow)};
 	{
@@ -61,9 +65,9 @@ int main()
 
 		std::vector<Mat44<float>> sTranformList
 		{
-			Onyx::Transform::Transform::translation(.0f, .0f, -4.f),
-			Onyx::Transform::Transform::translation(1.f, .0f, -4.f),
-			Onyx::Transform::Transform::translation(2.f, .0f, -4.f)
+			Onyx::Transform::Transform::translation(2.f, .0f, -5.f),
+			Onyx::Transform::Transform::translation(.0f, .0f, -5.f),
+			Onyx::Transform::Transform::translation(-2.f, .0f, -5.f)
 		};
 		std::vector<std::tuple<Onyx::Render::Material *, Onyx::Render::Mesh *>> sRenderableList
 		{
@@ -72,14 +76,45 @@ int main()
 			std::make_tuple(&sMaterial, pCubeMesh.get())
 		};
 		Onyx::Transform::Transform sViewTransform;
-		Onyx::Transform::Mat44f sProjectionTransform{Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, 0.01f, 100.f)};
-
-		sViewTransform.sPosition.tZ = 10.f;
+		Onyx::Transform::Mat44f sProjectionTransform{Onyx::Transform::Transform::perspective(1.333f, 45.f / 180.f * 3.141592f, .1f, 100.f)};
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::VisibleDefault);
 
 		while (pWindow->loopEventAvailable())
+		{
+			using fseconds = std::chrono::duration<float>;
+
+			const auto sCurrent{std::chrono::system_clock::now()};
+			const auto nTimeDelta{std::chrono::duration_cast<fseconds>(sCurrent - sNow).count()};
+
+			if ((1 << 15) & GetAsyncKeyState(VK_LEFT))
+				sViewTransform.rotateY(100.f / 180.f * 3.1415f * nTimeDelta, Onyx::Transform::Transform::Space::World);
+
+			if ((1 << 15) & GetAsyncKeyState(VK_RIGHT))
+				sViewTransform.rotateY(-100.f / 180.f * 3.1415f * nTimeDelta, Onyx::Transform::Transform::Space::World);
+
+			if ((1 << 15) & GetAsyncKeyState(VK_UP))
+				sViewTransform.rotateX(100.f / 180.f * 3.1415f * nTimeDelta, Onyx::Transform::Transform::Space::Local);
+
+			if ((1 << 15) & GetAsyncKeyState(VK_DOWN))
+				sViewTransform.rotateX(-100.f / 180.f * 3.1415f * nTimeDelta, Onyx::Transform::Transform::Space::Local);
+
+			if ((1 << 15) & GetAsyncKeyState('W'))
+				sViewTransform.translateZ(-6.f * nTimeDelta, Onyx::Transform::Transform::Space::Local);
+
+			if ((1 << 15) & GetAsyncKeyState('S'))
+				sViewTransform.translateZ(6.f * nTimeDelta, Onyx::Transform::Transform::Space::Local);
+
+			if ((1 << 15) & GetAsyncKeyState('A'))
+				sViewTransform.translateX(-6.f * nTimeDelta, Onyx::Transform::Transform::Space::Local);
+
+			if ((1 << 15) & GetAsyncKeyState('D'))
+				sViewTransform.translateX(6.f * nTimeDelta, Onyx::Transform::Transform::Space::Local);
+
 			pContext->render(sViewTransform.inverseMatrix(), sProjectionTransform, sTranformList, sRenderableList);
+
+			sNow = sCurrent;
+		}
 
 		pWindow->setVisibility(Onyx::Display::Window::Visibility::Invisible);
 	}

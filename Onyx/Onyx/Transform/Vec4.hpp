@@ -294,12 +294,12 @@ namespace Onyx::Transform
 
 	template<class T> Vec4<T> Vec4<T>::front()
 	{
-		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0)};
+		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(-1), static_cast<T>(0)};
 	}
 
 	template<class T> Vec4<T> Vec4<T>::back()
 	{
-		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(-1), static_cast<T>(0)};
+		return {static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0)};
 	}
 
 	template<class T> T Vec4<T>::dot(const Vec4<T> &tLeft, const Vec4<T> &tRight)

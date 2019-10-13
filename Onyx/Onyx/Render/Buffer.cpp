@@ -12,7 +12,8 @@ namespace Onyx::Render
 {
 	Buffer::Buffer(Context *pContext, Usage eUsage, VkDeviceSize nSize) :
 		pContext{pContext},
-		eUsage{eUsage}
+		eUsage{eUsage},
+		nSize{nSize}
 	{
 		assert(this->pContext);
 
@@ -31,37 +32,10 @@ namespace Onyx::Render
 		if (vkCreateBuffer(this->pContext->device().vulkanDevice(), &vkBufferCreateInfo, nullptr, &this->vkBuffer) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create buffer"};
 
-		VkMemoryRequirements vkBufferMemoryReq;
-		vkGetBufferMemoryRequirements(this->pContext->device().vulkanDevice(), this->vkBuffer, &vkBufferMemoryReq);
-
-		std::optional<std::uint32_t> sMemoryTypeIndex;
-		const auto &vkMemoryProperty{this->pContext->device().physicalDeviceAttribute().vkMemoryProperty};
-
-		VkMemoryPropertyFlags vkMemoryPropertyFlag{VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
-
-		for (std::uint32_t nIndex{0}; nIndex < vkMemoryProperty.memoryTypeCount; ++nIndex)
-			if (vkBufferMemoryReq.memoryTypeBits & (1 << nIndex) && (vkMemoryProperty.memoryTypes[nIndex].propertyFlags & vkMemoryPropertyFlag) == vkMemoryPropertyFlag)
-				sMemoryTypeIndex = nIndex;
-
-		if (!sMemoryTypeIndex)
-			throw std::runtime_error{"unable to find suitable memory type"};
-
-		VkMemoryAllocateInfo vkMemoryAllocateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-			nullptr,
-			vkBufferMemoryReq.size,
-			*sMemoryTypeIndex
-		};
-
-		if (vkAllocateMemory(this->pContext->device().vulkanDevice(), &vkMemoryAllocateInfo, nullptr, &this->vkDeviceMemory) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to allocate memory"};
+		this->vkDeviceMemory = this->pContext->memoryMgr().allocateBuffer(this->vkBuffer, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 		if (vkBindBufferMemory(this->pContext->device().vulkanDevice(), this->vkBuffer, this->vkDeviceMemory, 0) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to bind buffer memory"};
-
-		this->nSize = vkBufferCreateInfo.size;
-		this->nAllocationSize = vkMemoryAllocateInfo.allocationSize;
 	}
 
 	//Buffer::Buffer(const Buffer &sSrc)
@@ -77,13 +51,10 @@ namespace Onyx::Render
 		eUsage{sSrc.eUsage},
 		vkBuffer{sSrc.vkBuffer},
 		vkDeviceMemory{sSrc.vkDeviceMemory},
-		nSize{sSrc.nSize},
-		nAllocationSize{sSrc.nAllocationSize}
+		nSize{sSrc.nSize}
 	{
 		sSrc.vkBuffer = VK_NULL_HANDLE;
 		sSrc.vkDeviceMemory = VK_NULL_HANDLE;
-		sSrc.nSize = 0;
-		sSrc.nAllocationSize = 0;
 	}
 
 	Buffer::~Buffer()
@@ -122,12 +93,9 @@ namespace Onyx::Render
 		this->vkBuffer = sSrc.vkBuffer;
 		this->vkDeviceMemory = sSrc.vkDeviceMemory;
 		this->nSize = sSrc.nSize;
-		this->nAllocationSize = sSrc.nAllocationSize;
 
 		sSrc.vkBuffer = VK_NULL_HANDLE;
 		sSrc.vkDeviceMemory = VK_NULL_HANDLE;
-		sSrc.nSize = 0;
-		sSrc.nAllocationSize = 0;
 
 		return *this;
 	}
@@ -136,7 +104,7 @@ namespace Onyx::Render
 	{
 		void *pData;
 
-		if (vkMapMemory(this->pContext->device().vulkanDevice(), this->vkDeviceMemory, 0, static_cast<VkDeviceSize>(this->nSize), 0, &pData) != VkResult::VK_SUCCESS)
+		if (vkMapMemory(this->pContext->device().vulkanDevice(), this->vkDeviceMemory, 0, VK_WHOLE_SIZE, 0, &pData) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to map buffer"};
 
 		fMapFunction(pData);
@@ -164,36 +132,11 @@ namespace Onyx::Render
 		if (vkCreateBuffer(this->pContext->device().vulkanDevice(), &vkBufferCreateInfo, nullptr, &this->vkBuffer) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create buffer"};
 
-		VkMemoryRequirements vkBufferMemoryReq;
-		vkGetBufferMemoryRequirements(this->pContext->device().vulkanDevice(), this->vkBuffer, &vkBufferMemoryReq);
-
-		std::optional<std::uint32_t> sMemoryTypeIndex;
-		const auto &vkMemoryProperty{this->pContext->device().physicalDeviceAttribute().vkMemoryProperty};
-
-		VkMemoryPropertyFlags vkMemoryPropertyFlag{VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
-
-		for (std::uint32_t nIndex{0}; nIndex < vkMemoryProperty.memoryTypeCount; ++nIndex)
-			if (vkBufferMemoryReq.memoryTypeBits & (1 << nIndex) && (vkMemoryProperty.memoryTypes[nIndex].propertyFlags & vkMemoryPropertyFlag) == vkMemoryPropertyFlag)
-				sMemoryTypeIndex = nIndex;
-
-		if (!sMemoryTypeIndex)
-			throw std::runtime_error{"unable to find suitable memory type"};
-
-		VkMemoryAllocateInfo vkMemoryAllocateInfo
-		{
-			VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-			nullptr,
-			vkBufferMemoryReq.size,
-			*sMemoryTypeIndex
-		};
-
-		if (vkAllocateMemory(this->pContext->device().vulkanDevice(), &vkMemoryAllocateInfo, nullptr, &this->vkDeviceMemory) != VkResult::VK_SUCCESS)
-			throw std::runtime_error{"unable to allocate memory"};
+		this->vkDeviceMemory = this->pContext->memoryMgr().allocateBuffer(this->vkBuffer, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 		if (vkBindBufferMemory(this->pContext->device().vulkanDevice(), this->vkBuffer, this->vkDeviceMemory, 0) != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to bind buffer memory"};
 
-		this->nSize = vkBufferCreateInfo.size;
-		this->nAllocationSize = vkMemoryAllocateInfo.allocationSize;
+		this->nSize = nSize;
 	}
 }
