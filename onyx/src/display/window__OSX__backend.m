@@ -7,6 +7,7 @@
 void initApp()
 {
 	[NSApplication sharedApplication];
+	[NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 }
 
 const void *createWindow(enum Style eStyle, int nMinX, int nMinY, int nMaxX, int nMaxY, const char *pTitle)
@@ -41,6 +42,7 @@ const void *createWindow(enum Style eStyle, int nMinX, int nMinY, int nMaxX, int
 	pNSWindow.releasedWhenClosed	 = YES;
 	pNSWindow.contentView.wantsLayer = YES;
 	pNSWindow.contentView.layer		 = [CAMetalLayer layer];
+	[pNSWindow center];
 
 	return CFBridgingRetain(pNSWindow);
 }
@@ -90,7 +92,7 @@ void setVisibility(const void *pWindow, enum Visibility eVisibility)
 		[pNSWindow orderOut:pNSWindow];
 	} break;
 	case VisibleDefault: {
-		[pNSWindow makeKeyAndOrderFront:pNSWindow];
+		[pNSWindow makeKeyAndOrderFront:nil];
 		[NSApp activateIgnoringOtherApps:YES];
 	} break;
 	case VisibleMinimized: {

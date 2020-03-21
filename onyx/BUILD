@@ -45,6 +45,9 @@ cc_library(
         "includes/display/window__OSX.h",
         "includes/display/window__WINDOWS.h",
         "includes/onyx.h",
+        "includes/transform/vec.h",
+        "includes/transform/vec2.h",
+        "includes/transform/vec2.hpp",
     ],
     copts = [
         "-std=c++2a",

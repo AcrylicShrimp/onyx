@@ -16,7 +16,7 @@ int main()
 
 	auto pWindow{sInstance.displayMgr().createWindow("main")};
 
-	pWindow->create(onyx::display::Window::Style::Standard, onyx::display::Window::Region{0, 0, 200, 200}, "Test");
+	pWindow->create(onyx::display::Window::Style::Title, onyx::display::Window::Region{200, 200, 800, 800}, "Test");
 
 	auto pContext{sInstance.contextMgr().createContext(pWindow)};
 	std::cout << pContext->deviceInfo()->properties().deviceName << std::endl;

@@ -82,8 +82,8 @@ namespace onyx::core {
 			// auto nWidth{static_cast<uint32_t>(sInnerRegion.nMaxX -
 			// sInnerRegion.nMinX)}; auto
 			// nHeight{static_cast<uint32_t>(sInnerRegion.nMaxY - sInnerRegion.nMinY)};
-			auto nWidth{static_cast<uint32_t>(200)};
-			auto nHeight{static_cast<uint32_t>(200)};
+			auto nWidth{static_cast<uint32_t>(800)};
+			auto nHeight{static_cast<uint32_t>(800)};
 
 			sSurfaceCapabilities.currentExtent.width = std::max(
 				std::min(nWidth, sSurfaceCapabilities.maxImageExtent.width),

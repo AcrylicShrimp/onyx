@@ -1,12 +1,17 @@
 
 #include "onyx/includes/display/displayManager.h"
 
+#include "onyx/includes/common/platform.h"
+#include "onyx/includes/display/window__OSX__backend.h"
+
 #include <stdexcept>
 
 namespace onyx::display {
 	DisplayManager::DisplayManager(Onyx *pInstance) : Manager{pInstance}
 	{
-		// Empty.
+#if __ONYX_PLATFORM_APPLE_OSX
+		::initApp();
+#endif
 	}
 
 	Window *DisplayManager::createWindow(const std::string &sId)
