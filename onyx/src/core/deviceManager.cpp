@@ -5,6 +5,7 @@
 #include "onyx/includes/core/contextManager.h"
 #include "onyx/includes/core/deviceInfo.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <unordered_set>
@@ -69,12 +70,12 @@ namespace onyx::core {
 
 	void DeviceManager::init(const DeviceInfo &sDevice)
 	{
-		std::uint32_t nGraphicsQueueIndex{0};
-		std::uint32_t nPresentQueueIndex{0};
+		this->nGraphicsQueueFamilyIndex = 0;
+		this->nPresentQueueFamilyIndex	= 0;
 
 		for (const auto &sQueueProp: sDevice.queueProperties()) {
 			if (sQueueProp.queueCount && sQueueProp.queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT) break;
-			++nGraphicsQueueIndex;
+			++this->nGraphicsQueueFamilyIndex;
 		}
 
 		for (const auto &sQueueProp: sDevice.queueProperties()) {
@@ -83,7 +84,7 @@ namespace onyx::core {
 
 				if (vkGetPhysicalDeviceSurfaceSupportKHR(
 						sDevice.physicalDevice(),
-						nPresentQueueIndex,
+						this->nPresentQueueFamilyIndex,
 						this->pContext->surfaceMgr().vulkanSurface(),
 						&vkSurfaceSupport)
 					!= VkResult::VK_SUCCESS)
@@ -92,11 +93,12 @@ namespace onyx::core {
 				if (vkSurfaceSupport) break;
 			}
 
-			++nPresentQueueIndex;
+			++this->nPresentQueueFamilyIndex;
 		}
 
 		auto							  nQueuePriority{1.f};
-		std::unordered_set<std::uint32_t> sQueueIndexSet{nGraphicsQueueIndex, nPresentQueueIndex};
+		std::unordered_set<std::uint32_t> sQueueIndexSet{this->nGraphicsQueueFamilyIndex,
+														 this->nPresentQueueFamilyIndex};
 
 		std::vector<VkDeviceQueueCreateInfo> sQueueCreateInfoVec;
 		sQueueCreateInfoVec.reserve(sQueueIndexSet.size());
@@ -133,8 +135,8 @@ namespace onyx::core {
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create device instance"};
 
-		vkGetDeviceQueue(this->sDevice, nGraphicsQueueIndex, 0, &this->sGraphicsQueue);
-		vkGetDeviceQueue(this->sDevice, nPresentQueueIndex, 0, &this->sPresentQueue);
+		vkGetDeviceQueue(this->sDevice, this->nGraphicsQueueFamilyIndex, 0, &this->sGraphicsQueue);
+		vkGetDeviceQueue(this->sDevice, this->nPresentQueueFamilyIndex, 0, &this->sPresentQueue);
 	}
 
 	void DeviceManager::fin()

@@ -6,9 +6,6 @@
 #include "onyx/includes/core/perContextManager.h"
 #include "onyx/includes/core/vulkan.h"
 
-#include <cstdint>
-#include <stdexcept>
-
 namespace onyx {
 	namespace core {
 		class Context;
@@ -39,11 +36,11 @@ namespace onyx::core {
 		virtual void fin() override;
 
 	public:
-		VkSurfaceKHR vulkanSurface() const
+		VkSurfaceKHR vulkanSurface() const noexcept
 		{
 			return this->sSurface;
 		}
-		VkSurfaceFormatKHR vulkanSurfaceFormat() const
+		VkSurfaceFormatKHR vulkanSurfaceFormat() const noexcept
 		{
 			return this->sSurfaceFormat;
 		}

@@ -28,6 +28,8 @@ namespace onyx::core {
 		VkDevice				 sDevice;
 		VkQueue					 sGraphicsQueue;
 		VkQueue					 sPresentQueue;
+		std::uint32_t			 nGraphicsQueueFamilyIndex;
+		std::uint32_t			 nPresentQueueFamilyIndex;
 		std::vector<std::string> sExtensionVec;
 
 	public:
@@ -46,17 +48,25 @@ namespace onyx::core {
 		{
 			this->sExtensionVec.emplace_back(std::move(sExtension));
 		}
-		VkDevice vulkanDevice() const
+		VkDevice vulkanDevice() const noexcept
 		{
 			return this->sDevice;
 		}
-		VkQueue graphicsQueue() const
+		VkQueue graphicsQueue() const noexcept
 		{
 			return this->sGraphicsQueue;
 		}
-		VkQueue presentQueue() const
+		VkQueue presentQueue() const noexcept
 		{
 			return this->sPresentQueue;
+		}
+		std::uint32_t graphicsQueueFamilyIndex() const noexcept
+		{
+			return this->nGraphicsQueueFamilyIndex;
+		}
+		std::uint32_t presentQueueFamilyIndex() const noexcept
+		{
+			return this->nPresentQueueFamilyIndex;
 		}
 	};
 }	 // namespace onyx::core

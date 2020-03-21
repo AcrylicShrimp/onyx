@@ -23,7 +23,7 @@ int main()
 
 	pWindow->setVisibility(onyx::display::Window::Visibility::VisibleDefault);
 
-	while (pWindow->loopEventAvailable()) {}
+	while (pWindow->loopEventAvailable()) pContext->renderingMgr().render();
 
 	pWindow->destroy();
 

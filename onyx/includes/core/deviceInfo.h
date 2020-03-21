@@ -27,27 +27,27 @@ namespace onyx::core {
 		DeviceInfo &operator=(DeviceInfo &&sRhs) = default;
 
 	public:
-		VkPhysicalDevice physicalDevice() const
+		VkPhysicalDevice physicalDevice() const noexcept
 		{
 			return this->sPhysicalDevice;
 		}
-		const VkPhysicalDeviceFeatures &features() const
+		const VkPhysicalDeviceFeatures &features() const noexcept
 		{
 			return this->sFeatures;
 		}
-		const VkPhysicalDeviceProperties &properties() const
+		const VkPhysicalDeviceProperties &properties() const noexcept
 		{
 			return this->sProperties;
 		}
-		const VkPhysicalDeviceMemoryProperties &memoryProperties() const
+		const VkPhysicalDeviceMemoryProperties &memoryProperties() const noexcept
 		{
 			return this->sMemoryProperties;
 		}
-		const std::vector<VkQueueFamilyProperties> &queueProperties() const
+		const std::vector<VkQueueFamilyProperties> &queueProperties() const noexcept
 		{
 			return this->sQueueProperties;
 		}
-		const std::unordered_map<std::string, std::uint32_t> &extensionProperties() const
+		const std::unordered_map<std::string, std::uint32_t> &extensionProperties() const noexcept
 		{
 			return this->sExtensionProperties;
 		}

@@ -17,7 +17,9 @@ namespace onyx::core {
 		pContextMgr{pContextMgr},
 		sSurfaceMgr{this, pWindow},
 		sDeviceMgr{this},
-		sSwapchainMgr{this}
+		sSwapchainMgr{this},
+		sSyncMgr{this, 3},
+		sRenderingMgr{this}
 	{
 		assert(this->pContextMgr);
 

@@ -132,19 +132,19 @@ namespace onyx::core {
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to query swapchain image of device"};
 
-		this->sImageList.resize(nImageCount);
+		this->sImageVec.resize(nImageCount);
 
 		if (vkGetSwapchainImagesKHR(
 				this->pContext->deviceMgr().vulkanDevice(),
 				this->sSwapchain,
 				&nImageCount,
-				this->sImageList.data())
+				this->sImageVec.data())
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to query swapchain image of device"};
 
-		this->sImageViewList.reserve(this->sImageList.size());
+		this->sImageViewVec.reserve(this->sImageVec.size());
 
-		for (auto vkImage: this->sImageList) {
+		for (auto vkImage: this->sImageVec) {
 			VkImageViewCreateInfo sImageViewCreateInfo{
 				VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 				nullptr,
@@ -168,7 +168,7 @@ namespace onyx::core {
 				!= VkResult::VK_SUCCESS)
 				throw std::runtime_error("unable to create image view");
 
-			this->sImageViewList.emplace_back(sImageView);
+			this->sImageViewVec.emplace_back(sImageView);
 		}
 
 		// ##################################################
@@ -226,7 +226,7 @@ namespace onyx::core {
 				&this->sDepthImageView)
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error("unable to create image view");
-	}	 // namespace onyx::core
+	}
 
 	void SwapchainManager::fin()
 	{
