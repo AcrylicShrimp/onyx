@@ -1,5 +1,7 @@
 
 #include "onyx/includes/common/version.h"
+#include "onyx/includes/core/context.h"
+#include "onyx/includes/core/deviceInfo.h"
 #include "onyx/includes/onyx.h"
 
 #include <iostream>
@@ -16,11 +18,14 @@ int main()
 
 	pWindow->create(onyx::display::Window::Style::Standard, onyx::display::Window::Region{0, 0, 200, 200}, "Test");
 
-	auto sContext{sInstance.contextMgr().createContext(pWindow)};
+	auto pContext{sInstance.contextMgr().createContext(pWindow)};
+	std::cout << pContext->deviceInfo()->properties().deviceName << std::endl;
 
 	pWindow->setVisibility(onyx::display::Window::Visibility::VisibleDefault);
 
 	while (pWindow->loopEventAvailable()) {}
+
+	pWindow->destroy();
 
 	return 0;
 }

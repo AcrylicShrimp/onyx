@@ -6,10 +6,6 @@ cc_binary(
     copts = [
         "-std=c++2a",
     ],
-    defines = [
-        "DEBUG",
-        "_DEBUG",
-    ],
     visibility = ["//visibility:public"],
     deps = ["//onyx:main"],
 )

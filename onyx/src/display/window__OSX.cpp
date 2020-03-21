@@ -71,10 +71,10 @@ namespace onyx::display {
 		::Visibility eOSXVisibility;
 
 		switch (eVisibility) {
-		case Visibility::Invisible: eOSXVisibility = ::Visibility::Invisible;
-		case Visibility::VisibleDefault: eOSXVisibility = ::Visibility::VisibleDefault;
-		case Visibility::VisibleMinimized: eOSXVisibility = ::Visibility::VisibleMinimized;
-		case Visibility::VisibleMaximized: eOSXVisibility = ::Visibility::VisibleMaximized;
+		case Visibility::Invisible: eOSXVisibility = ::Visibility::Invisible; break;
+		case Visibility::VisibleDefault: eOSXVisibility = ::Visibility::VisibleDefault; break;
+		case Visibility::VisibleMinimized: eOSXVisibility = ::Visibility::VisibleMinimized; break;
+		case Visibility::VisibleMaximized: eOSXVisibility = ::Visibility::VisibleMaximized; break;
 		default: return;
 		}
 

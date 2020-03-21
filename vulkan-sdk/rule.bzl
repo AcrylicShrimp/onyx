@@ -1,8 +1,8 @@
 def _impl(repository_ctx):
     repository_ctx.download_and_extract(
-        "https://sdk.lunarg.com/sdk/download/1.1.126.0/mac/vulkansdk-macos-1.1.126.0.tar.gz?u=",
+        "https://sdk.lunarg.com/sdk/download/1.2.131.2/mac/vulkansdk-macos-1.2.131.2.tar.gz?u=",
         output = "lunarg_vulkan_sdk",
-        sha256 = "1ae62cc33227cbb32eff50951011405b0afa7a220765df06a975d6334cc45db4",
+        sha256 = "e28363ae0bdb3d881ebf93cdd7a721d052f6a2e5686d0fb3447e6edd585bb53f",
     )
 
     repository_ctx.file("WORKSPACE", content = "")
@@ -11,9 +11,9 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name="main",
-    hdrs=glob(["lunarg_vulkan_sdk/vulkansdk-macos-1.1.126.0/macOS/include/**"]),
-    srcs=glob(["lunarg_vulkan_sdk/vulkansdk-macos-1.1.126.0/macOS/lib/libvulkan.dylib"]),
-    strip_include_prefix="lunarg_vulkan_sdk/vulkansdk-macos-1.1.126.0/macOS/include",
+    hdrs=glob(["lunarg_vulkan_sdk/vulkansdk-macos-1.2.131.2/macOS/include/**"]),
+    srcs=glob(["lunarg_vulkan_sdk/vulkansdk-macos-1.2.131.2/macOS/lib/libvulkan.dylib"]),
+    strip_include_prefix="lunarg_vulkan_sdk/vulkansdk-macos-1.2.131.2/macOS/include",
     visibility = ["//visibility:public"],
 )
     """)

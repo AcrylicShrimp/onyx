@@ -18,6 +18,7 @@ namespace onyx::core {
 		VkPresentModeKHR		 ePresentMode;
 		VkImage					 sDepthImage;
 		VkImageView				 sDepthImageView;
+		VkDeviceMemory			 sDepthImageMemory;
 		std::vector<VkImage>	 sImageList;
 		std::vector<VkImageView> sImageViewList;
 

@@ -19,27 +19,24 @@ const void *createWindow(enum Style eStyle, int nMinX, int nMinY, int nMaxX, int
 	NSUInteger nStyle;
 
 	switch (eStyle) {
-	case ContentOnly: {
-		nStyle = NSWindowStyleMaskBorderless;
-	} break;
-	case Title: {
-		nStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable;
-	} break;
-	case TitleResizable: {
+	case ContentOnly: nStyle = NSWindowStyleMaskBorderless; break;
+	case Title: nStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable; break;
+	case TitleResizable:
 		nStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
 				 | NSWindowStyleMaskResizable;
-	} break;
-	case Standard: {
+		break;
+	case Standard:
 		nStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
 				 | NSWindowStyleMaskResizable;
-	} break;
+		break;
+	default: return nil;
 	}
 
-	NSWindow *pNSWindow = [[NSWindow alloc]
-		initWithContentRect:NSMakeRect(nMinXF, nMinYF, nMaxXF - nMinXF, nMaxYF - nMinYF)
-				  styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable
-					backing:NSBackingStoreBuffered
-					  defer:NO];
+	NSWindow *pNSWindow =
+		[[NSWindow alloc] initWithContentRect:NSMakeRect(nMinXF, nMinYF, nMaxXF - nMinXF, nMaxYF - nMinYF)
+									styleMask:nStyle
+									  backing:NSBackingStoreBuffered
+										defer:NO];
 
 	pNSWindow.releasedWhenClosed	 = YES;
 	pNSWindow.contentView.wantsLayer = YES;

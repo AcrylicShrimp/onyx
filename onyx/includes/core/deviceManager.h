@@ -21,6 +21,8 @@ namespace onyx {
 }	 // namespace onyx
 
 namespace onyx::core {
+	enum class DeviceMemoryType { Local, HostShared };
+
 	class DeviceManager final : public PerContextManager {
 	protected:
 		VkDevice				 sDevice;
@@ -34,9 +36,10 @@ namespace onyx::core {
 		~DeviceManager() noexcept;
 
 	public:
-		virtual bool isCompatible(const DeviceInfo &sDevice) override;
-		virtual void init(const DeviceInfo &sDevice) override;
-		virtual void fin() override;
+		virtual bool   isCompatible(const DeviceInfo &sDevice) override;
+		virtual void   init(const DeviceInfo &sDevice) override;
+		virtual void   fin() override;
+		VkDeviceMemory allocateImageMemory(DeviceMemoryType eMemType, VkImage sImage) const;
 
 	public:
 		void addExtension(std::string sExtension)

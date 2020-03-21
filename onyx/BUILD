@@ -45,10 +45,6 @@ cc_library(
     copts = [
         "-std=c++2a",
     ],
-    defines = [
-        "DEBUG",
-        "_DEBUG",
-    ],
     linkopts = [
         "-framework Foundation",
         "-framework Cocoa",

@@ -6,7 +6,7 @@
 #include "onyx/includes/core/deviceInfo.h"
 
 #include <cstdint>
-#include <iostream>
+#include <optional>
 #include <unordered_set>
 
 namespace onyx::core {
@@ -69,8 +69,6 @@ namespace onyx::core {
 
 	void DeviceManager::init(const DeviceInfo &sDevice)
 	{
-		std::cout << "@@@@@@@@@@ DeviceManager::init 1 @@@@@@@@@@" << std::endl;
-
 		std::uint32_t nGraphicsQueueIndex{0};
 		std::uint32_t nPresentQueueIndex{0};
 
@@ -97,8 +95,6 @@ namespace onyx::core {
 			++nPresentQueueIndex;
 		}
 
-		std::cout << "@@@@@@@@@@ DeviceManager::init 2 @@@@@@@@@@" << std::endl;
-
 		auto							  nQueuePriority{1.f};
 		std::unordered_set<std::uint32_t> sQueueIndexSet{nGraphicsQueueIndex, nPresentQueueIndex};
 
@@ -114,15 +110,11 @@ namespace onyx::core {
 										1,
 										&nQueuePriority});
 
-		std::cout << "@@@@@@@@@@ DeviceManager::init 3 @@@@@@@@@@" << std::endl;
-
 		VkPhysicalDeviceFeatures sDeviceFeatures{};
 		sDeviceFeatures.fillModeNonSolid = VK_TRUE;
 
 		std::vector<const char *> sDeviceExtensionVec;
 		sDeviceExtensionVec.reserve(this->sExtensionVec.size());
-
-		std::cout << "@@@@@@@@@@ DeviceManager::init 4 @@@@@@@@@@" << std::endl;
 
 		for (const auto &sExtension: this->sExtensionVec) sDeviceExtensionVec.emplace_back(sExtension.c_str());
 
@@ -137,26 +129,60 @@ namespace onyx::core {
 											 sDeviceExtensionVec.data(),
 											 &sDeviceFeatures};
 
-		std::cout << "@@@@@@@@@@ DeviceManager::init 5 @@@@@@@@@@" << std::endl;
-
-		VkResult eResult;
-
-		if ((eResult = vkCreateDevice(sDevice.physicalDevice(), &sDeviceCreateInfo, nullptr, &this->sDevice))
-			!= VkResult::VK_SUCCESS) {
-			std::cout << eResult << std::endl;
+		if (vkCreateDevice(sDevice.physicalDevice(), &sDeviceCreateInfo, nullptr, &this->sDevice)
+			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create device instance"};
-		}
-
-		std::cout << "@@@@@@@@@@ DeviceManager::init 6 @@@@@@@@@@" << std::endl;
 
 		vkGetDeviceQueue(this->sDevice, nGraphicsQueueIndex, 0, &this->sGraphicsQueue);
 		vkGetDeviceQueue(this->sDevice, nPresentQueueIndex, 0, &this->sPresentQueue);
-
-		std::cout << "@@@@@@@@@@ DeviceManager::init @@@@@@@@@@" << std::endl;
 	}
 
 	void DeviceManager::fin()
 	{
-		// Empty.
+		vkDestroyDevice(this->sDevice, nullptr);
+	}
+
+	VkDeviceMemory DeviceManager::allocateImageMemory(DeviceMemoryType eMemType, VkImage sImage) const
+	{
+		VkMemoryRequirements sMemoryReq;
+		vkGetImageMemoryRequirements(this->sDevice, sImage, &sMemoryReq);
+
+		std::optional<std::uint32_t> sMemoryTypeIndex;
+		const auto &				 sMemoryProperties{this->pContext->deviceInfo()->memoryProperties()};
+
+		VkMemoryPropertyFlags eMemoryPropertyFlags;
+
+		switch (eMemType) {
+		case DeviceMemoryType::Local:
+			eMemoryPropertyFlags = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+			break;
+		case DeviceMemoryType::HostShared:
+			eMemoryPropertyFlags
+				= VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+			break;
+		default: return VK_NULL_HANDLE;
+		}
+
+		for (std::uint32_t nIndex{0}; nIndex < sMemoryProperties.memoryTypeCount; ++nIndex)
+			if (sMemoryReq.memoryTypeBits & (1 << nIndex)
+				&& (sMemoryProperties.memoryTypes[nIndex].propertyFlags & eMemoryPropertyFlags)
+					   == eMemoryPropertyFlags) {
+				sMemoryTypeIndex = nIndex;
+				break;
+			}
+
+		if (!sMemoryTypeIndex) throw std::runtime_error{"unable to find suitable memory type"};
+
+		VkMemoryAllocateInfo vkMemoryAllocateInfo{VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+												  nullptr,
+												  sMemoryReq.size,
+												  *sMemoryTypeIndex};
+
+		VkDeviceMemory sMemory;
+
+		if (vkAllocateMemory(this->sDevice, &vkMemoryAllocateInfo, nullptr, &sMemory) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to allocate memory"};
+
+		return sMemory;
 	}
 }	 // namespace onyx::core
