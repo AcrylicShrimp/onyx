@@ -175,7 +175,7 @@ namespace onyx::core {
 		// ## Rendering begin
 		// ##################################################
 
-		std::vector<VkClearValue> sClearValue{VkClearValue{1.f, .0f, .0f, .0f}, VkClearValue{1.f, 0}};
+		std::vector<VkClearValue> sClearValue{VkClearValue{.0f, .0f, .0f, .0f}, VkClearValue{1.f, 0}};
 		VkRenderPassBeginInfo	  sRenderPassBeginInfo{VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 												   nullptr,
 												   this->sRenderPass,

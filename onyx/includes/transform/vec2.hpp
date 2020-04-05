@@ -33,7 +33,6 @@ namespace onyx::transform {
 	{
 		switch (nIndex) {
 		case 0: return this->tX;
-
 		default: return this->tY;
 		}
 	}
