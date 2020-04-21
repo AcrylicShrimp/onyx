@@ -42,37 +42,37 @@ namespace onyx::transform {
 		template<class U>
 		Mat23 &operator+=(const Vec3<U> &uRhs) noexcept;
 		template<class U>
-		Mat23 &operator+=(const Mat23<U> &sRhs) noexcept;
+		Mat23 &operator+=(const Mat23<U> &uRhs) noexcept;
 		template<class U>
 		Mat23 &operator-=(U uRhs) noexcept;
 		template<class U>
 		Mat23 &operator-=(const Vec3<U> &uRhs) noexcept;
 		template<class U>
-		Mat23 &operator-=(const Mat23<U> &sRhs) noexcept;
+		Mat23 &operator-=(const Mat23<U> &uRhs) noexcept;
 		template<class U>
 		Mat23 &operator*=(U uRhs) noexcept;
 		template<class U>
 		Mat23 &operator*=(const Vec3<U> &uRhs) noexcept;
 		template<class U>
-		Mat23 &operator*=(const Mat23<U> &sRhs) noexcept;
+		Mat23 &operator*=(const Mat23<U> &uRhs) noexcept;
 		template<class U>
 		Mat23 &operator/=(U uRhs) noexcept;
 		template<class U>
 		Mat23 &operator/=(const Vec3<U> &uRhs) noexcept;
 		template<class U>
-		Mat23 &operator/=(const Mat23<U> &sRhs) noexcept;
+		Mat23 &operator/=(const Mat23<U> &uRhs) noexcept;
 		template<class U>
 		bool operator==(U uRhs) const noexcept;
 		template<class U>
 		bool operator==(const Vec3<U> &uRhs) const noexcept;
 		template<class U>
-		bool operator==(const Mat23<U> &sRhs) const noexcept;
+		bool operator==(const Mat23<U> &uRhs) const noexcept;
 		template<class U>
 		bool operator!=(U uRhs) const noexcept;
 		template<class U>
 		bool operator!=(const Vec3<U> &uRhs) const noexcept;
 		template<class U>
-		bool operator!=(const Mat23<U> &sRhs) const noexcept;
+		bool operator!=(const Mat23<U> &uRhs) const noexcept;
 		template<class U>
 		operator Mat23<U>() const noexcept;
 
