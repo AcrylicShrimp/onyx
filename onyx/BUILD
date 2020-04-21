@@ -50,6 +50,8 @@ cc_library(
         "includes/transform/mat22.hpp",
         "includes/transform/mat23.h",
         "includes/transform/mat23.hpp",
+        "includes/transform/mat24.h",
+        "includes/transform/mat24.hpp",
         "includes/transform/vec.h",
         "includes/transform/vec2.h",
         "includes/transform/vec2.hpp",
