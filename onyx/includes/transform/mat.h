@@ -14,6 +14,7 @@
 #include "onyx/includes/transform/mat33.h"
 #include "onyx/includes/transform/mat34.h"
 #include "onyx/includes/transform/mat42.h"
+#include "onyx/includes/transform/mat43.h"
 
 // Mat definitions
 #include "onyx/includes/transform/mat22.hpp"
@@ -23,5 +24,6 @@
 #include "onyx/includes/transform/mat33.hpp"
 #include "onyx/includes/transform/mat34.hpp"
 #include "onyx/includes/transform/mat42.hpp"
+#include "onyx/includes/transform/mat43.hpp"
 
 #endif
