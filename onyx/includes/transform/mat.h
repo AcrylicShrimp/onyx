@@ -28,4 +28,7 @@
 #include "onyx/includes/transform/mat43.hpp"
 #include "onyx/includes/transform/mat44.hpp"
 
+// Matmul
+#include "onyx/includes/transform/matmul.hpp"
+
 #endif
