@@ -25,6 +25,7 @@ cc_library(
         "src/display/window__OSX.cpp",
         "src/display/window__WINDOWS.cpp",
         "src/onyx.cpp",
+        "src/render/helper.cpp",
     ],
     hdrs = [
         "includes/common/manager.h",
@@ -45,6 +46,7 @@ cc_library(
         "includes/display/window__OSX.h",
         "includes/display/window__WINDOWS.h",
         "includes/onyx.h",
+        "includes/render/helper.h",
         "includes/transform/mat.h",
         "includes/transform/mat22.h",
         "includes/transform/mat22.hpp",
