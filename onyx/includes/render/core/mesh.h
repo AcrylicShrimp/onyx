@@ -15,7 +15,7 @@ namespace onyx::core {
 
 namespace onyx::render::core {
 	class Mesh final {
-	private:
+	public:
 		const ::onyx::core::Context *const pContext;
 
 	private:
