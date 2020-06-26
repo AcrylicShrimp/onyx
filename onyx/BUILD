@@ -25,6 +25,8 @@ cc_library(
         "src/display/window__OSX.cpp",
         "src/display/window__WINDOWS.cpp",
         "src/onyx.cpp",
+        "src/render/core/mesh.cpp",
+        "src/render/core/meshElement.cpp",
         "src/render/helper.cpp",
     ],
     hdrs = [
@@ -46,6 +48,8 @@ cc_library(
         "includes/display/window__OSX.h",
         "includes/display/window__WINDOWS.h",
         "includes/onyx.h",
+        "includes/render/core/mesh.h",
+        "includes/render/core/meshElement.h",
         "includes/render/helper.h",
         "includes/transform/mat.h",
         "includes/transform/mat22.h",
