@@ -1,5 +1,4 @@
 ---
-
 Language: Cpp
 Standard: Cpp11
 
@@ -20,7 +19,7 @@ MaxEmptyLinesToKeep: 1
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
-# AlignConsecutiveMacros: true
+AlignConsecutiveMacros: true
 AlignEscapedNewlines: Right
 AlignOperands: true
 AlignTrailingComments: true
@@ -28,10 +27,10 @@ AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: true # Always
+AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: true # Always
+AllowShortIfStatementsOnASingleLine: Always
 AllowShortLambdasOnASingleLine: Empty
 AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterReturnType: None
@@ -70,7 +69,7 @@ SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: false
-# SpaceInEmptyBlock: false
+SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 4
 SpacesInAngles: false
@@ -80,7 +79,7 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 
 IndentCaseLabels: false
-# IndentGotoLabels: false
+IndentGotoLabels: false
 IndentPPDirectives: AfterHash
 IndentWrappedFunctionNames: true
 NamespaceIndentation: All
@@ -99,10 +98,9 @@ SortUsingDeclarations: true
 DerivePointerAlignment: false
 PointerAlignment: Right
 
-ForEachMacros: ['BOOST_FOREACH']
+ForEachMacros: ["BOOST_FOREACH"]
 
 ---
-
 Language: ObjC
 
 BasedOnStyle: LLVM
@@ -122,7 +120,7 @@ MaxEmptyLinesToKeep: 1
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
-# AlignConsecutiveMacros: true
+AlignConsecutiveMacros: true
 AlignEscapedNewlines: Right
 AlignOperands: true
 AlignTrailingComments: true
@@ -130,10 +128,10 @@ AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: true # Always
+AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: true # Always
+AllowShortIfStatementsOnASingleLine: Always
 AllowShortLambdasOnASingleLine: Empty
 AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterReturnType: None
@@ -172,7 +170,7 @@ SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: false
-# SpaceInEmptyBlock: false
+SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 4
 SpacesInAngles: false
@@ -182,7 +180,7 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 
 IndentCaseLabels: false
-# IndentGotoLabels: false
+IndentGotoLabels: false
 IndentPPDirectives: AfterHash
 IndentWrappedFunctionNames: true
 NamespaceIndentation: All
@@ -201,4 +199,4 @@ SortUsingDeclarations: true
 DerivePointerAlignment: false
 PointerAlignment: Right
 
-ForEachMacros: ['BOOST_FOREACH']
+ForEachMacros: ["BOOST_FOREACH"]
