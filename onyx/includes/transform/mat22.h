@@ -17,11 +17,11 @@ namespace onyx::transform {
 		Mat22() noexcept;
 		Mat22(Vec2<T> tX, Vec2<T> tY) noexcept;
 		Mat22(T tXX, T tXY, T tYX, T tYY) noexcept;
-		Mat22(const Mat22 &sSrc) noexcept = default;
+		Mat22(const Mat22 &sRhs) noexcept = default;
 		~Mat22() noexcept				  = default;
 
 	public:
-		Mat22 &operator=(const Mat22 &sSrc) noexcept = default;
+		Mat22 &operator=(const Mat22 &sRhs) noexcept = default;
 
 	public:
 		Vec2<T> &	   operator[](std::size_t nIndex) noexcept;
