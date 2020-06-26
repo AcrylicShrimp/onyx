@@ -79,6 +79,7 @@
 		"unordered_set": "cpp",
 		"utility": "cpp",
 		"vector": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"cassert": "cpp"
 	}
 }
