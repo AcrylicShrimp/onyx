@@ -41,7 +41,9 @@ namespace onyx::core {
 		virtual bool   isCompatible(const DeviceInfo &sDevice) override;
 		virtual void   init(const DeviceInfo &sDevice) override;
 		virtual void   fin() override;
+		VkDeviceMemory allocateBufferMemory(DeviceMemoryType eMemType, VkBuffer sBuffer) const;
 		VkDeviceMemory allocateImageMemory(DeviceMemoryType eMemType, VkImage sImage) const;
+		VkDeviceMemory allocateMemory(DeviceMemoryType eMemType, VkMemoryRequirements sMemReq) const;
 
 	public:
 		void addExtension(std::string sExtension)

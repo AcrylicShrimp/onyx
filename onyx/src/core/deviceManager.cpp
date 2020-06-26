@@ -97,20 +97,21 @@ namespace onyx::core {
 		}
 
 		auto							  nQueuePriority{1.f};
-		std::unordered_set<std::uint32_t> sQueueIndexSet{this->nGraphicsQueueFamilyIndex,
-														 this->nPresentQueueFamilyIndex};
+		std::unordered_set<std::uint32_t> sQueueIndexSet{
+			this->nGraphicsQueueFamilyIndex,
+			this->nPresentQueueFamilyIndex};
 
 		std::vector<VkDeviceQueueCreateInfo> sQueueCreateInfoVec;
 		sQueueCreateInfoVec.reserve(sQueueIndexSet.size());
 
 		for (auto nQueueIndex: sQueueIndexSet)
-			sQueueCreateInfoVec.emplace_back(
-				VkDeviceQueueCreateInfo{VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-										nullptr,
-										0,
-										nQueueIndex,
-										1,
-										&nQueuePriority});
+			sQueueCreateInfoVec.emplace_back(VkDeviceQueueCreateInfo{
+				VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+				nullptr,
+				0,
+				nQueueIndex,
+				1,
+				&nQueuePriority});
 
 		VkPhysicalDeviceFeatures sDeviceFeatures{};
 		sDeviceFeatures.fillModeNonSolid = VK_TRUE;
@@ -120,16 +121,17 @@ namespace onyx::core {
 
 		for (const auto &sExtension: this->sExtensionVec) sDeviceExtensionVec.emplace_back(sExtension.c_str());
 
-		VkDeviceCreateInfo sDeviceCreateInfo{VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-											 nullptr,
-											 0,
-											 static_cast<std::uint32_t>(sQueueCreateInfoVec.size()),
-											 sQueueCreateInfoVec.data(),
-											 0,
-											 nullptr,
-											 static_cast<std::uint32_t>(sDeviceExtensionVec.size()),
-											 sDeviceExtensionVec.data(),
-											 &sDeviceFeatures};
+		VkDeviceCreateInfo sDeviceCreateInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+			nullptr,
+			0,
+			static_cast<std::uint32_t>(sQueueCreateInfoVec.size()),
+			sQueueCreateInfoVec.data(),
+			0,
+			nullptr,
+			static_cast<std::uint32_t>(sDeviceExtensionVec.size()),
+			sDeviceExtensionVec.data(),
+			&sDeviceFeatures};
 
 		if (vkCreateDevice(sDevice.physicalDevice(), &sDeviceCreateInfo, nullptr, &this->sDevice)
 			!= VkResult::VK_SUCCESS)
@@ -144,11 +146,24 @@ namespace onyx::core {
 		vkDestroyDevice(this->sDevice, nullptr);
 	}
 
+	VkDeviceMemory DeviceManager::allocateBufferMemory(DeviceMemoryType eMemType, VkBuffer sBuffer) const
+	{
+		VkMemoryRequirements sMemReq;
+		vkGetBufferMemoryRequirements(this->sDevice, sBuffer, &sMemReq);
+
+		return this->allocateMemory(eMemType, sMemReq);
+	}
+
 	VkDeviceMemory DeviceManager::allocateImageMemory(DeviceMemoryType eMemType, VkImage sImage) const
 	{
-		VkMemoryRequirements sMemoryReq;
-		vkGetImageMemoryRequirements(this->sDevice, sImage, &sMemoryReq);
+		VkMemoryRequirements sMemReq;
+		vkGetImageMemoryRequirements(this->sDevice, sImage, &sMemReq);
 
+		return this->allocateMemory(eMemType, sMemReq);
+	}
+
+	VkDeviceMemory DeviceManager::allocateMemory(DeviceMemoryType eMemType, VkMemoryRequirements sMemReq) const
+	{
 		std::optional<std::uint32_t> sMemoryTypeIndex;
 		const auto &				 sMemoryProperties{this->pContext->deviceInfo()->memoryProperties()};
 
@@ -166,7 +181,7 @@ namespace onyx::core {
 		}
 
 		for (std::uint32_t nIndex{0}; nIndex < sMemoryProperties.memoryTypeCount; ++nIndex)
-			if (sMemoryReq.memoryTypeBits & (1 << nIndex)
+			if (sMemReq.memoryTypeBits & (1 << nIndex)
 				&& (sMemoryProperties.memoryTypes[nIndex].propertyFlags & eMemoryPropertyFlags)
 					   == eMemoryPropertyFlags) {
 				sMemoryTypeIndex = nIndex;
@@ -175,10 +190,11 @@ namespace onyx::core {
 
 		if (!sMemoryTypeIndex) throw std::runtime_error{"unable to find suitable memory type"};
 
-		VkMemoryAllocateInfo vkMemoryAllocateInfo{VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-												  nullptr,
-												  sMemoryReq.size,
-												  *sMemoryTypeIndex};
+		VkMemoryAllocateInfo vkMemoryAllocateInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+			nullptr,
+			sMemReq.size,
+			*sMemoryTypeIndex};
 
 		VkDeviceMemory sMemory;
 
