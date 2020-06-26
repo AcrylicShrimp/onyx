@@ -27,6 +27,7 @@ cc_library(
         "src/onyx.cpp",
         "src/render/core/mesh.cpp",
         "src/render/core/meshElement.cpp",
+        "src/render/core/shader.cpp",
         "src/render/helper.cpp",
     ],
     hdrs = [
@@ -50,6 +51,7 @@ cc_library(
         "includes/onyx.h",
         "includes/render/core/mesh.h",
         "includes/render/core/meshElement.h",
+        "includes/render/core/shader.h",
         "includes/render/helper.h",
         "includes/transform/mat.h",
         "includes/transform/mat22.h",
