@@ -80,6 +80,7 @@
 		"utility": "cpp",
 		"vector": "cpp",
 		"filesystem": "cpp",
-		"cassert": "cpp"
+		"cassert": "cpp",
+		"regex": "cpp"
 	}
 }
