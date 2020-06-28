@@ -30,6 +30,7 @@ cc_library(
         "src/render/core/meshElement.cpp",
         "src/render/core/shader.cpp",
         "src/render/helper.cpp",
+        "src/render/io/meshLoader.cpp",
     ],
     hdrs = [
         "includes/common/manager.h",
@@ -55,6 +56,7 @@ cc_library(
         "includes/render/core/meshElement.h",
         "includes/render/core/shader.h",
         "includes/render/helper.h",
+        "includes/render/io/meshLoader.h",
         "includes/transform/mat.h",
         "includes/transform/mat22.h",
         "includes/transform/mat22.hpp",
