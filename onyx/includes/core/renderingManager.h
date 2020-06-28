@@ -6,6 +6,7 @@
 #include "onyx/includes/core/perContextManager.h"
 #include "onyx/includes/core/vulkan.h"
 
+#include <tuple>
 #include <vector>
 
 namespace onyx {
@@ -16,6 +17,10 @@ namespace onyx {
 	namespace display {
 		class Window;
 	}	 // namespace display
+	namespace render::core {
+		class Material;
+		class Mesh;
+	}	 // namespace render::core
 }	 // namespace onyx
 
 namespace onyx::core {
@@ -32,7 +37,15 @@ namespace onyx::core {
 	public:
 		virtual void init(const DeviceInfo &sDevice) override;
 		virtual void fin() override;
-		void		 render();
+		void		 render(
+					const std::vector<std::tuple<const ::onyx::render::core::Material *, const ::onyx::render::core::Mesh *>>
+						&sMaterialMeshVec);
+
+	public:
+		VkRenderPass renderPass() const noexcept
+		{
+			return this->sRenderPass;
+		}
 	};
 }	 // namespace onyx::core
 

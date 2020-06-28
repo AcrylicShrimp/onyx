@@ -2,6 +2,9 @@
 #include "onyx/includes/core/renderingManager.h"
 
 #include "onyx/includes/core/context.h"
+#include "onyx/includes/render/core/material.h"
+#include "onyx/includes/render/core/mesh.h"
+#include "onyx/includes/render/core/shader.h"
 
 #include <cstdint>
 
@@ -99,7 +102,9 @@ namespace onyx::core {
 		// Empty.
 	}
 
-	void RenderingManager::render()
+	void RenderingManager::render(
+		const std::vector<std::tuple<const ::onyx::render::core::Material *, const ::onyx::render::core::Mesh *>>
+			&sMaterialMeshVec)
 	{
 		auto sDevice{this->pContext->deviceMgr().vulkanDevice()};
 
@@ -188,6 +193,19 @@ namespace onyx::core {
 			sGraphicsCommandBuffer,
 			&sRenderPassBeginInfo,
 			VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+
+		for (const auto &sMaterialMesh: sMaterialMeshVec) {
+			vkCmdBindPipeline(
+				sGraphicsCommandBuffer,
+				VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS,
+				std::get<0>(sMaterialMesh)->pipeline());
+
+			auto		 sBuffer{std::get<1>(sMaterialMesh)->buffer()};
+			VkDeviceSize nOffset{0};
+			vkCmdBindVertexBuffers(sGraphicsCommandBuffer, 0, 1, &sBuffer, &nOffset);
+
+			vkCmdDraw(sGraphicsCommandBuffer, std::get<1>(sMaterialMesh)->count(), 1, 0, 0);
+		}
 
 		vkCmdEndRenderPass(sGraphicsCommandBuffer);
 
