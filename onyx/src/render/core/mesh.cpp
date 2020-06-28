@@ -5,17 +5,27 @@
 #include "onyx/includes/core/deviceInfo.h"
 #include "onyx/includes/core/deviceManager.h"
 
+#include <cstddef>
 #include <cstring>
+#include <stdexcept>
 
 namespace onyx::render::core {
-	Mesh::Mesh(const ::onyx::core::Context *pContext, std::vector<MeshElement> sElementVec) : pContext{pContext}
+	Mesh::Mesh(const ::onyx::core::Context *pContext, std::vector<MeshElement> sElementVec) :
+		pContext{pContext},
+		nCount{0},
+		nStride{0}
 	{
-		this->sOffsetFormatVec.reserve(sElementVec.size());
+		this->sFormatOffsetVec.reserve(sElementVec.size());
 
 		VkDeviceSize nSize{0};
 
+		if (!sElementVec.empty()) this->nCount = sElementVec.front().count();
+
 		for (const auto &sElement: sElementVec) {
-			this->sOffsetFormatVec.emplace_back(nSize, sElement.eFormat);
+			if (this->nCount != sElement.count()) throw std::runtime_error{"the count of mesh elements are not match"};
+
+			this->sFormatOffsetVec.emplace_back(sElement.eFormat, this->nStride);
+			this->nStride += sElement.stride();
 			nSize += sElement.nSize;
 		}
 
@@ -33,8 +43,9 @@ namespace onyx::render::core {
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create buffer"};
 
-		this->sDeviceMemory
-			= this->pContext->deviceMgr().allocateBufferMemory(::onyx::core::DeviceMemoryType::Local, this->sBuffer);
+		this->sDeviceMemory = this->pContext->deviceMgr().allocateBufferMemory(
+			::onyx::core::DeviceMemoryType::HostShared,
+			this->sBuffer);
 
 		if (vkBindBufferMemory(this->pContext->deviceMgr().vulkanDevice(), this->sBuffer, this->sDeviceMemory, 0)
 			!= VkResult::VK_SUCCESS)
@@ -52,9 +63,17 @@ namespace onyx::render::core {
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to map buffer"};
 
-		for (const auto &sElement: sElementVec) {
-			std::memcpy(pBuffer, sElement.pData, sElement.nSize);
-			pBuffer += sElement.nSize;
+		for (std::size_t nIndex{0}, nMaxIndex{sElementVec.size()}; nIndex < nMaxIndex; ++nIndex) {
+			auto  nElementStride{sElementVec[nIndex].stride()};
+			auto *pSrc{pBuffer + std::get<1>(this->sFormatOffsetVec[nIndex])};
+
+			for (std::uint32_t nCount{0}, nMaxCount{sElementVec[nIndex].count()}; nCount < nMaxCount; ++nCount) {
+				std::memcpy(
+					pSrc,
+					reinterpret_cast<const unsigned char *>(sElementVec[nIndex].pData) + nElementStride * nCount,
+					nElementStride);
+				pSrc += this->nStride;
+			}
 		}
 
 		vkUnmapMemory(this->pContext->deviceMgr().vulkanDevice(), this->sDeviceMemory);

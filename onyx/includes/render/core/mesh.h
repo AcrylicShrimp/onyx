@@ -6,6 +6,7 @@
 #include "onyx/includes/core/vulkan.h"
 #include "onyx/includes/render/core/meshElement.h"
 
+#include <cstdint>
 #include <tuple>
 #include <vector>
 
@@ -19,9 +20,11 @@ namespace onyx::render::core {
 		const ::onyx::core::Context *const pContext;
 
 	private:
-		VkBuffer										sBuffer;
-		VkDeviceMemory									sDeviceMemory;
-		std::vector<std::tuple<VkDeviceSize, VkFormat>> sOffsetFormatVec;
+		VkBuffer										 sBuffer;
+		VkDeviceMemory									 sDeviceMemory;
+		std::uint32_t									 nCount;
+		std::uint32_t									 nStride;
+		std::vector<std::tuple<VkFormat, std::uint32_t>> sFormatOffsetVec;
 
 	public:
 		Mesh(const ::onyx::core::Context *pContext, std::vector<MeshElement> sElementVec);
@@ -36,9 +39,17 @@ namespace onyx::render::core {
 		{
 			return this->sBuffer;
 		}
-		const std::vector<std::tuple<VkDeviceSize, VkFormat>> &offsetFormatVec() const noexcept
+		std::uint32_t count() const noexcept
 		{
-			return this->sOffsetFormatVec;
+			return this->nCount;
+		}
+		std::uint32_t stride() const noexcept
+		{
+			return this->nStride;
+		}
+		const std::vector<std::tuple<VkFormat, std::uint32_t>> &formatOffsetVec() const noexcept
+		{
+			return this->sFormatOffsetVec;
 		}
 	};
 }	 // namespace onyx::render::core
