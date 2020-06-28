@@ -95,7 +95,6 @@ namespace onyx::render::core {
 			}
 
 			auto nLocation{pInput->location};
-
 			auto fSpecifyLayoutNext{[this, pInput, eFormat, &nLocation]() {
 				for (std::uint32_t nRow{0}, nMaxRow{std::max(1u, pInput->numeric.matrix.row_count)}; nRow < nMaxRow;
 					 ++nRow, ++nLocation)
@@ -104,7 +103,7 @@ namespace onyx::render::core {
 
 			if (!pInput->array.dims_count) {
 				fSpecifyLayoutNext();
-				return;
+				continue;
 			}
 
 			std::uint32_t nLayoutCount{1};
