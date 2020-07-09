@@ -2,6 +2,7 @@
 #include "onyx/includes/core/synchronizationManager.h"
 
 #include "onyx/includes/core/context.h"
+#include "onyx/includes/core/deviceManager.h"
 
 namespace onyx::core {
 	SynchronizationManager::SynchronizationManager(Context *pContext, std::size_t nMaxConcurrentFrameCount) :
@@ -126,6 +127,60 @@ namespace onyx::core {
 	void SynchronizationManager::fin()
 	{
 		// Empty.
+	}
+
+	void SynchronizationManager::executeOnetimeCommand(
+		const std::function<void(VkCommandBuffer)> &fCommandFunction) const
+	{
+		VkCommandBuffer sCommandBuffer;
+
+		VkCommandBufferAllocateInfo sCommandBufferAllocateInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+			nullptr,
+			this->sOnetimeCommandPool,
+			VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+			1};
+
+		if (vkAllocateCommandBuffers(
+				this->pContext->deviceMgr().vulkanDevice(),
+				&sCommandBufferAllocateInfo,
+				&sCommandBuffer)
+			!= VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to allocate command buffer"};
+
+		VkCommandBufferBeginInfo sCommandBufferBeginInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+			nullptr,
+			VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+			nullptr};
+
+		if (vkBeginCommandBuffer(sCommandBuffer, &sCommandBufferBeginInfo) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to begin command buffer"};
+
+		fCommandFunction(sCommandBuffer);
+
+		if (vkEndCommandBuffer(sCommandBuffer) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to end command buffer"};
+
+		VkSubmitInfo vkSubmitInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO,
+			nullptr,
+			0,
+			nullptr,
+			nullptr,
+			1,
+			&sCommandBuffer,
+			0,
+			nullptr};
+
+		if (vkQueueSubmit(this->pContext->deviceMgr().graphicsQueue(), 1, &vkSubmitInfo, VK_NULL_HANDLE)
+			!= VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to submit command buffer"};
+
+		if (vkQueueWaitIdle(this->pContext->deviceMgr().graphicsQueue()) != VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to wait queue for idle"};
+
+		vkFreeCommandBuffers(this->pContext->deviceMgr().vulkanDevice(), this->sOnetimeCommandPool, 1, &sCommandBuffer);
 	}
 
 	std::tuple<VkCommandBuffer, VkCommandBuffer, VkSemaphore, VkSemaphore, VkSemaphore, VkFence>

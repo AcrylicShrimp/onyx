@@ -35,6 +35,7 @@ namespace onyx::core {
 	public:
 		virtual void init(const DeviceInfo &sDevice) override;
 		virtual void fin() override;
+		void		 executeOnetimeCommand(const std::function<void(VkCommandBuffer)> &fCommandFunction) const;
 		std::tuple<VkCommandBuffer, VkCommandBuffer, VkSemaphore, VkSemaphore, VkSemaphore, VkFence>
 			nextSynchronizationObject();
 	};

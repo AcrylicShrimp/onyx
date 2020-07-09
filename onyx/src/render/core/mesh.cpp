@@ -4,6 +4,7 @@
 #include "onyx/includes/core/context.h"
 #include "onyx/includes/core/deviceInfo.h"
 #include "onyx/includes/core/deviceManager.h"
+#include "onyx/includes/core/synchronizationManager.h"
 
 #include <cstddef>
 #include <cstring>
@@ -29,7 +30,8 @@ namespace onyx::render::core {
 			nSize += sElement.nSize;
 		}
 
-		VkBufferCreateInfo sBufferCreateInfo{
+		VkBuffer		   sStagingBuffer;
+		VkBufferCreateInfo sStagingBufferCreateInfo{
 			VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 			nullptr,
 			0,
@@ -39,15 +41,19 @@ namespace onyx::render::core {
 			0,
 			nullptr};
 
-		if (vkCreateBuffer(this->pContext->deviceMgr().vulkanDevice(), &sBufferCreateInfo, nullptr, &this->sBuffer)
+		if (vkCreateBuffer(
+				this->pContext->deviceMgr().vulkanDevice(),
+				&sStagingBufferCreateInfo,
+				nullptr,
+				&sStagingBuffer)
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to create buffer"};
 
-		this->sDeviceMemory = this->pContext->deviceMgr().allocateBufferMemory(
+		VkDeviceMemory sStagingDeviceMemory{this->pContext->deviceMgr().allocateBufferMemory(
 			::onyx::core::DeviceMemoryType::HostShared,
-			this->sBuffer);
+			sStagingBuffer)};
 
-		if (vkBindBufferMemory(this->pContext->deviceMgr().vulkanDevice(), this->sBuffer, this->sDeviceMemory, 0)
+		if (vkBindBufferMemory(this->pContext->deviceMgr().vulkanDevice(), sStagingBuffer, sStagingDeviceMemory, 0)
 			!= VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to bind buffer memory"};
 
@@ -55,7 +61,7 @@ namespace onyx::render::core {
 
 		if (vkMapMemory(
 				this->pContext->deviceMgr().vulkanDevice(),
-				this->sDeviceMemory,
+				sStagingDeviceMemory,
 				0,
 				VK_WHOLE_SIZE,
 				0,
@@ -76,7 +82,36 @@ namespace onyx::render::core {
 			}
 		}
 
-		vkUnmapMemory(this->pContext->deviceMgr().vulkanDevice(), this->sDeviceMemory);
+		vkUnmapMemory(this->pContext->deviceMgr().vulkanDevice(), sStagingDeviceMemory);
+
+		VkBufferCreateInfo sBufferCreateInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+			nullptr,
+			0,
+			nSize,
+			VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+			VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
+			0,
+			nullptr};
+
+		if (vkCreateBuffer(this->pContext->deviceMgr().vulkanDevice(), &sBufferCreateInfo, nullptr, &this->sBuffer)
+			!= VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to create buffer"};
+
+		this->sDeviceMemory
+			= this->pContext->deviceMgr().allocateBufferMemory(::onyx::core::DeviceMemoryType::Local, this->sBuffer);
+
+		if (vkBindBufferMemory(this->pContext->deviceMgr().vulkanDevice(), this->sBuffer, this->sDeviceMemory, 0)
+			!= VkResult::VK_SUCCESS)
+			throw std::runtime_error{"unable to bind buffer memory"};
+
+		this->pContext->syncMgr().executeOnetimeCommand([nSize, sStagingBuffer, this](auto sCommandBuffer) {
+			VkBufferCopy sBufferCopy{0, 0, nSize};
+			vkCmdCopyBuffer(sCommandBuffer, sStagingBuffer, this->sBuffer, 1, &sBufferCopy);
+		});
+
+		vkDestroyBuffer(this->pContext->deviceMgr().vulkanDevice(), sStagingBuffer, nullptr);
+		vkFreeMemory(this->pContext->deviceMgr().vulkanDevice(), sStagingDeviceMemory, nullptr);
 	}
 
 	Mesh::~Mesh() noexcept
