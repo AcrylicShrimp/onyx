@@ -89,12 +89,14 @@ namespace onyx::core {
 				   != VkResult::VK_SUCCESS)
 			throw std::runtime_error{"unable to allocate command buffer"};
 
-		VkSemaphoreCreateInfo vkSemaphoreCreateInfo{VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-													nullptr,
-													0};
-		VkFenceCreateInfo	  vkFenceCreateInfo{VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-											nullptr,
-											VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT};
+		VkSemaphoreCreateInfo vkSemaphoreCreateInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+			nullptr,
+			0};
+		VkFenceCreateInfo vkFenceCreateInfo{
+			VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+			nullptr,
+			VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT};
 
 		for (std::size_t nIndex{0}; nIndex < this->nMaxConcurrentFrameCount; ++nIndex)
 			if (vkCreateSemaphore(
